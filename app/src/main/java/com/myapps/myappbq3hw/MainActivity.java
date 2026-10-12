@@ -1,4 +1,4 @@
-package com.myapps.apcreatorr4ep1;
+package com.myapps.myappbq3hw;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -43,7 +43,6 @@ public class MainActivity extends Activity {
         s.setUseWideViewPort(true);
         s.setLoadWithOverviewMode(true);
         s.setMediaPlaybackRequiresUserGesture(true);
-        s.setGeolocationEnabled(true);
 
         web.setWebChromeClient(new WebChromeClient() {
             @Override
@@ -89,18 +88,6 @@ public class MainActivity extends Activity {
                 return true;
             }
 
-            @Override
-            public void onPermissionRequest(final PermissionRequest request) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() { request.grant(request.getResources()); }
-                });
-            }
-
-            @Override
-            public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
-                callback.invoke(origin, true, false);
-            }
         });
         web.setWebViewClient(new WebViewClient() {
             @Override
@@ -115,9 +102,6 @@ public class MainActivity extends Activity {
                 return true;
             }
         });
-        if (Build.VERSION.SDK_INT >= 23) {
-            requestPermissions(new String[]{"android.permission.CAMERA", "android.permission.RECORD_AUDIO", "android.permission.ACCESS_FINE_LOCATION", "android.permission.ACCESS_COARSE_LOCATION"}, 1);
-        }
         web.loadUrl("file:///android_asset/index.html");
     }
 
