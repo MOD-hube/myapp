@@ -1,189 +1,613 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>APK Studio</title>
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Serif+Display&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
-:root{--bg:#0a0f24;--card:#111a3a;--card2:#17214a;--line:#25316b;--tx:#eef2ff;--mut:#97a3d3;--acc:#6c7bff;--acc2:#22d3b6;--bad:#ff6b81;--ok:#34d399;--warn:#fbbf24}
+:root{--cream:#FFF9EB;--beige:#EDDDD3;--beige2:#E4D0C4;--sage:#9FB2AC;--blood:#5D0D18;--orange:#E2692F;--green:#3E6A4B;--ink:#2B1015;--mut:#7a5a5f}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:'Tajawal',sans-serif;background:radial-gradient(900px 500px at 90% -10%,#1d2a7a 0%,transparent 60%),var(--bg);color:var(--tx);min-height:100vh;padding-bottom:120px}
-header{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line);background:rgba(10,15,36,.85);backdrop-filter:blur(8px);position:sticky;top:0;z-index:10}
-.logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--acc),var(--acc2));display:grid;place-items:center;font-weight:800;color:#07102a;font-size:15px}
-header h1{font-size:18px;font-weight:800}header p{font-size:12px;color:var(--mut)}
-.pill{margin-right:auto;font-size:12px;padding:6px 12px;border-radius:99px;border:1px solid var(--line);color:var(--mut);white-space:nowrap}
-.pill.ok{color:var(--ok);border-color:var(--ok)}
-.wrap{max-width:760px;margin:auto;padding:14px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}
-.card h2{font-size:15px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.card h2 i{font-style:normal;width:24px;height:24px;border-radius:8px;background:var(--card2);display:grid;place-items:center;font-size:12px;color:var(--acc2)}
-details.card summary{cursor:pointer;font-weight:700;font-size:15px;list-style:none;display:flex;align-items:center;gap:8px}
+body{font-family:'Space Grotesk',sans-serif;color:var(--ink);min-height:100vh;padding-bottom:130px;background-color:var(--beige);
+background-image:linear-gradient(rgba(93,13,24,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(93,13,24,.07) 1px,transparent 1px);background-size:96px 96px}
+.wrap{max-width:860px;margin:auto;padding:16px}
+.hero{position:relative;padding:6px 0 26px;overflow:hidden}
+.blobs{position:absolute;right:-60px;top:-40px;width:340px;height:300px;z-index:0;opacity:.95;pointer-events:none}
+.topline{position:relative;z-index:5;display:flex;align-items:center;gap:12px;margin-bottom:34px}
+.topline .sp{flex:1}
+.logo{font-family:'DM Serif Display',serif;font-size:44px;color:var(--orange);line-height:1}
+.kebab{width:44px;height:44px;border:2px solid var(--blood);background:var(--cream);border-radius:6px;cursor:pointer;display:grid;place-items:center;flex:none}
+.kebab i{display:block;width:5px;height:5px;border-radius:50%;background:var(--blood);box-shadow:0 -9px 0 var(--blood),0 9px 0 var(--blood)}
+.kebab:hover{background:var(--blood)}.kebab:hover i{background:var(--cream);box-shadow:0 -9px 0 var(--cream),0 9px 0 var(--cream)}
+.menu{position:absolute;left:0;top:52px;background:var(--cream);border:2px solid var(--blood);border-radius:6px;min-width:250px;display:none;z-index:50;box-shadow:0 12px 30px rgba(43,16,21,.25)}
+.menu.on{display:block}
+.mi{display:block;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid rgba(93,13,24,.15);padding:12px 14px;cursor:pointer;font-family:inherit;color:var(--blood)}
+.mi:last-child{border:0}
+.mi:hover{background:var(--beige)}
+.mi .a{display:block;font-family:'Tajawal',sans-serif;font-weight:700;font-size:15px;direction:rtl;text-align:right}
+.mi .e{display:block;font-size:12px;font-weight:600;letter-spacing:.04em;direction:ltr;text-align:left;margin-top:2px;color:var(--mut)}
+.pill{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--orange);font-weight:600}
+.pill .arrow{width:0;height:0;border-left:22px solid var(--green);border-top:15px solid transparent;border-bottom:15px solid transparent;display:block}
+.pill.ok{color:var(--green)}.pill.bad{color:var(--blood)}
+.stack{position:relative;z-index:2;display:grid;grid-template-columns:1fr 1fr;max-width:640px}
+.blk{padding:14px 16px;font-weight:500;font-size:20px;line-height:1.25}
+.blk.o{background:var(--orange);color:var(--cream)}
+.blk.g{grid-column:1/3;background:var(--green);color:var(--cream);font-size:clamp(34px,8vw,58px);font-weight:700;letter-spacing:-1px;padding:18px 16px}
+.blk.o2{grid-column:2;background:var(--orange);color:var(--cream)}
+.sub{position:relative;z-index:2;margin-top:18px;max-width:560px;color:var(--blood);font-weight:500;font-size:15px;line-height:1.6}
+.card{background:var(--cream);padding:20px;margin-bottom:18px;border-radius:6px;position:relative}
+.tag{display:inline-flex;margin-bottom:16px;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.tag b{background:var(--orange);color:var(--cream);padding:6px 11px}
+.tag span{background:var(--green);color:var(--cream);padding:6px 14px}
+details.card summary{cursor:pointer;list-style:none;display:block}
 details.card summary::-webkit-details-marker{display:none}
-details.card[open] summary{margin-bottom:12px}
-label{display:block;font-size:13px;color:var(--mut);margin:10px 0 6px}
-input[type=text],input[type=password],input[type=number],select,textarea{width:100%;background:#0c1330;border:1px solid var(--line);color:var(--tx);border-radius:10px;padding:11px 12px;font-family:inherit;font-size:15px;outline:none}
-input:focus,select:focus,textarea:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(108,123,255,.2)}
-input[type=color]{width:100%;height:44px;border:1px solid var(--line);border-radius:10px;background:#0c1330;padding:3px}
-.ltr{direction:ltr;text-align:left}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.msg{font-size:13px;margin-top:8px;line-height:1.8;min-height:18px}
-.msg.bad{color:var(--bad)}.msg.ok{color:var(--ok)}.msg.warn{color:var(--warn)}
-.sw{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px dashed var(--line);font-size:14px}
+label.f{display:block;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--blood);margin:14px 0 6px}
+input[type=text],input[type=password],input[type=number],select,textarea{width:100%;background:var(--beige);border:0;border-bottom:2px solid var(--blood);color:var(--ink);border-radius:4px 4px 0 0;padding:12px;font-family:inherit;font-size:15px;outline:none}
+input:focus,select:focus,textarea:focus{border-bottom-color:var(--orange);background:#f1e3da}
+input[type=color]{width:100%;height:46px;border:0;border-bottom:2px solid var(--blood);background:var(--beige);padding:4px;border-radius:4px 4px 0 0;cursor:pointer}
+.mono{font-family:Consolas,Menlo,monospace}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:520px){.row3{grid-template-columns:1fr 1fr}}
+.msg{font-size:13px;margin-top:10px;line-height:1.7;min-height:18px;font-weight:500}
+.msg.bad{color:var(--blood)}.msg.ok{color:var(--green)}.msg.warn{color:var(--orange)}
+.hint{font-size:12px;color:var(--mut);margin-top:8px;line-height:1.7}
+.hint a,.msg a{color:var(--orange);font-weight:600}
+code{background:var(--beige);padding:2px 6px;font-size:12px;border-radius:3px;font-family:Consolas,monospace}
+.sw{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 0;border-bottom:1px solid rgba(93,13,24,.14);cursor:pointer}
 .sw:last-child{border:0}
-.sw input{appearance:none;-webkit-appearance:none;width:44px;height:25px;background:#2a3470;border-radius:99px;position:relative;cursor:pointer;transition:.2s;flex:none}
-.sw input::after{content:"";position:absolute;top:3px;right:3px;width:19px;height:19px;border-radius:50%;background:#fff;transition:.2s}
-.sw input:checked{background:var(--acc)}.sw input:checked::after{right:22px}
-.btn{border:0;border-radius:12px;padding:12px 16px;font-family:inherit;font-weight:700;font-size:14px;cursor:pointer;color:var(--tx);background:var(--card2);border:1px solid var(--line);text-decoration:none;display:inline-block;text-align:center}
-.btn.main{background:linear-gradient(135deg,var(--acc),#8a6bff);border:0;color:#fff;font-size:16px;padding:15px;width:100%;box-shadow:0 10px 30px rgba(108,123,255,.35)}
-.btn:disabled{opacity:.55}
-.btn.green{background:linear-gradient(135deg,#10b981,#22d3b6);color:#04201a;border:0;font-size:17px;padding:16px;width:100%}
-.iconrow{display:flex;gap:14px;align-items:center}
-#iconPrev{width:76px;height:76px;border-radius:18px;border:1px solid var(--line);flex:none}
-.drop{border:2px dashed var(--line);border-radius:14px;padding:20px;text-align:center;color:var(--mut);cursor:pointer;font-size:14px;line-height:1.8}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-.chip{background:var(--card2);border:1px solid var(--line);border-radius:99px;padding:5px 12px;font-size:12px;display:flex;gap:8px;align-items:center;direction:ltr}
-.chip b{color:var(--bad);cursor:pointer}
-.tabs{display:flex;gap:6px;margin-bottom:10px}
-.tab{padding:9px 16px;border-radius:10px;background:var(--card2);border:1px solid var(--line);color:var(--mut);cursor:pointer;font-weight:700;font-size:14px}
-.tab.on{background:var(--acc);color:#fff;border-color:var(--acc)}
-textarea.ed{height:300px;direction:ltr;text-align:left;font-family:Consolas,Menlo,monospace;font-size:13px;line-height:1.6;resize:vertical;white-space:pre;tab-size:2}
+.sw b{display:block;font-size:15px;font-weight:600}
+.sw small{display:block;font-size:12px;color:var(--mut);margin-top:2px;line-height:1.5}
+.sw input{appearance:none;-webkit-appearance:none;flex:none;width:48px;height:26px;background:var(--beige2);border-radius:99px;position:relative;cursor:pointer;transition:.2s;border:2px solid var(--blood)}
+.sw input::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:var(--blood);transition:.2s}
+.sw input:checked{background:var(--green);border-color:var(--green)}
+.sw input:checked::after{left:24px;background:var(--cream)}
+.btn{border:2px solid var(--blood);border-radius:4px;padding:12px 16px;font-family:inherit;font-weight:700;font-size:14px;cursor:pointer;color:var(--blood);background:transparent;text-decoration:none;display:inline-block;text-align:center;letter-spacing:.02em;transition:.15s}
+.btn:hover{background:var(--blood);color:var(--cream)}
+.btn.main{background:var(--blood);color:var(--cream);font-size:16px;padding:16px;flex:1;letter-spacing:.06em;text-transform:uppercase}
+.btn.main:hover{background:var(--orange);border-color:var(--orange)}
+.btn:disabled{opacity:.55;pointer-events:none}
+.btn.dl{background:var(--orange);border-color:var(--orange);color:var(--cream);font-size:18px;padding:18px;width:100%;display:block}
+.btn.dl:hover{background:var(--cream);color:var(--blood)}
+.btn.ghost-l{border-color:var(--cream);color:var(--cream)}
+.btn.ghost-l:hover{background:var(--cream);color:var(--blood)}
+.btn.sm{padding:9px 12px;font-size:12px}
+.iconrow{display:flex;gap:16px;align-items:center}
+#iconPrev{width:84px;height:84px;border-radius:18px;flex:none;box-shadow:0 0 0 2px var(--blood)}
+.drop{border:2px dashed var(--blood);border-radius:6px;padding:26px 16px;text-align:center;color:var(--blood);cursor:pointer;font-size:14px;line-height:1.8;font-weight:500;background:var(--beige)}
+.drop:hover{background:var(--beige2)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{background:var(--sage);color:var(--blood);padding:5px 12px;font-size:12px;display:flex;gap:10px;align-items:center;font-weight:600;border-radius:3px}
+.chip b{cursor:pointer}
+.tabs{display:flex;gap:0;margin:16px 0 10px}
+.tab{padding:10px 20px;background:var(--beige);color:var(--blood);cursor:pointer;font-weight:700;font-size:13px;letter-spacing:.06em}
+.tab.on{background:var(--green);color:var(--cream)}
+textarea.ed{height:300px;font-family:Consolas,Menlo,monospace;font-size:13px;line-height:1.6;resize:vertical;white-space:pre;tab-size:2}
 .pvwrap{display:flex;justify-content:center}
-.phone{width:280px;height:520px;border-radius:36px;border:9px solid #060a1c;background:#fff;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5),0 0 0 2px var(--line)}
-.phone.land{width:100%;max-width:520px;height:280px}
-.phone .bar{height:24px;background:#6c7bff}
+.phone{width:280px;height:520px;border-radius:34px;border:10px solid var(--ink);background:#fff;overflow:hidden;box-shadow:0 18px 50px rgba(43,16,21,.3)}
+.phone.land{width:100%;max-width:540px;height:290px}
+.phone .bar{height:24px;background:#5D0D18}
 .phone iframe{width:100%;height:calc(100% - 24px);border:0;background:#fff}
-.hint{font-size:12px;color:var(--mut);margin-top:8px;line-height:1.8}
-.hint a,.msg a{color:var(--acc2)}
-code{background:#0c1330;padding:2px 6px;border-radius:6px;font-size:12px;direction:ltr;display:inline-block}
-.bar-bottom{position:fixed;bottom:0;left:0;right:0;padding:12px 14px calc(12px + env(safe-area-inset-bottom));background:rgba(10,15,36,.92);backdrop-filter:blur(8px);border-top:1px solid var(--line);z-index:12}
-.bar-bottom .in{max-width:760px;margin:auto}
-.st{display:flex;gap:10px;padding:9px 0;align-items:center;font-size:14px;color:var(--mut)}
-.st .ic{width:24px;height:24px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:12px;flex:none}
-.st.run{color:var(--tx)}.st.run .ic{border-color:var(--acc);border-top-color:transparent;animation:sp 1s linear infinite}
-.st.ok{color:var(--tx)}.st.ok .ic{background:var(--ok);border-color:var(--ok);color:#052e22}
-.st.err{color:var(--bad)}.st.err .ic{background:var(--bad);border-color:var(--bad);color:#fff}
-.st small{color:var(--mut);margin-right:auto;font-size:12px}
-@keyframes sp{to{transform:rotate(360deg)}}
-.hist{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px dashed var(--line);font-size:14px}
-.hist:last-child{border:0}.hist small{color:var(--mut);display:block;font-size:12px}
 .hidden{display:none}
-.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--card2);border:1px solid var(--line);padding:11px 18px;border-radius:12px;font-size:14px;z-index:30;display:none;max-width:90%}
+.card.prog{background:var(--sage);color:var(--blood)}
+.card.prog .tag b{background:var(--blood)}
+.st{display:flex;gap:12px;padding:10px 0;align-items:center;font-size:15px;font-weight:600;opacity:.6}
+.st .ic{width:24px;height:24px;border:2px solid var(--blood);display:grid;place-items:center;font-size:13px;flex:none;border-radius:4px}
+.st.run{opacity:1}.st.run .ic{border-radius:50%;border-top-color:transparent;animation:sp 1s linear infinite}
+.st.ok{opacity:1}.st.ok .ic{background:var(--blood);color:var(--cream)}
+.st.err{opacity:1;color:#8a1020}.st.err .ic{background:var(--orange);border-color:var(--orange);color:var(--cream)}
+.st small{margin-left:auto;font-size:12px;font-weight:500}
+@keyframes sp{to{transform:rotate(360deg)}}
+.card.prog .msg.bad{color:var(--blood);background:var(--cream);padding:10px 12px;border-radius:4px}
+.card.res{background:var(--blood);color:var(--cream)}
+.card.res h3{font-size:30px;line-height:1.1;font-weight:700;margin-bottom:6px}
+.card.res p{color:#e8cfd2;font-size:14px;line-height:1.6;margin-bottom:16px}
+.card.res .hint{color:#d7b7bb}
+.card.res code{background:rgba(255,249,235,.12);color:var(--cream);word-break:break-all;display:block;margin-top:6px;padding:8px}
+.qrbox{background:var(--cream);padding:12px;display:inline-block;margin-top:14px;border-radius:4px}
+.qrwrap{display:flex;gap:18px;align-items:flex-end;flex-wrap:wrap}
+.hist{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid rgba(93,13,24,.14);font-size:15px;font-weight:600}
+.hist:last-child{border:0}.hist small{color:var(--mut);display:block;font-size:12px;font-weight:500}
+.bar-bottom{position:fixed;bottom:0;left:0;right:0;padding:12px 14px calc(12px + env(safe-area-inset-bottom));background:var(--beige);border-top:3px solid var(--blood);z-index:12}
+.bar-bottom .in{max-width:860px;margin:auto;display:flex;gap:10px}
+.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--cream);padding:12px 20px;border-radius:4px;font-size:14px;z-index:90;display:none;max-width:90%;font-weight:500}
+.foot{text-align:center;font-size:12px;color:var(--mut);padding:10px 0 4px;letter-spacing:.06em}
+.tokrow{display:flex;gap:8px;align-items:flex-end}
+.tokrow>div{flex:1}
+/* ===== Guide modal ===== */
+.ov{position:fixed;inset:0;background:rgba(43,16,21,.65);display:none;z-index:80;padding:12px;align-items:flex-start;justify-content:center;overflow:auto}
+.ov.on{display:flex}
+.gd{background:var(--cream);width:100%;max-width:760px;margin:20px auto;border-radius:8px;border:3px solid var(--blood);overflow:hidden}
+.gd-head{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--blood);color:var(--cream);padding:14px 16px;position:sticky;top:0;z-index:3}
+.gd-head h2{font-size:18px;letter-spacing:.04em}
+.gd-x{background:var(--orange);border:0;color:var(--cream);width:36px;height:36px;border-radius:4px;font-size:18px;cursor:pointer;font-weight:700}
+.gd-tabs{display:flex;background:var(--beige);border-bottom:2px solid var(--blood);position:sticky;top:64px;z-index:2}
+.gd-tabs button{flex:1;padding:13px;border:0;background:transparent;font-family:inherit;font-weight:700;font-size:15px;color:var(--blood);cursor:pointer}
+.gd-tabs button.on{background:var(--green);color:var(--cream)}
+.gd-body{padding:18px}
+.sec{display:none}.sec.on{display:block}
+.sec.ar{direction:rtl;text-align:right;font-family:'Tajawal',sans-serif}
+.sec.en{direction:ltr;text-align:left;font-family:'Space Grotesk',sans-serif}
+.jump{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.jump a{background:var(--beige);border:2px solid var(--blood);color:var(--blood);padding:7px 12px;font-size:13px;font-weight:700;text-decoration:none;border-radius:4px;cursor:pointer}
+.jump a:hover{background:var(--blood);color:var(--cream)}
+.sec h3{background:var(--green);color:var(--cream);padding:10px 14px;font-size:17px;margin:22px 0 12px}
+.sec h3:first-of-type{margin-top:0}
+.stp{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid rgba(93,13,24,.14);align-items:flex-start}
+.stp:last-child{border:0}
+.stp>i{font-style:normal;flex:none;width:30px;height:30px;background:var(--orange);color:var(--cream);display:grid;place-items:center;font-weight:700;font-size:14px;border-radius:4px}
+.stp>div{flex:1;font-size:15px;line-height:1.9;min-width:0}
+.sec.ar .stp>div{font-size:16px}
+.stp b.t{display:block;color:var(--blood);font-size:16px;margin-bottom:2px}
+.en-box{display:block;direction:ltr;text-align:left;background:var(--beige);border-left:4px solid var(--orange);padding:8px 12px;margin:6px 0;font-family:Consolas,Menlo,monospace;font-size:13px;line-height:1.6;word-break:break-all;color:var(--ink);unicode-bidi:isolate}
+.note{background:var(--sage);color:var(--blood);padding:12px 14px;margin:12px 0;font-size:14px;line-height:1.8;border-radius:4px}
+.warnbox{background:var(--blood);color:var(--cream);padding:12px 14px;margin:12px 0;font-size:14px;line-height:1.8;border-radius:4px}
+.gbtn{display:inline-block;background:var(--orange);color:var(--cream);padding:11px 16px;font-weight:700;font-size:14px;text-decoration:none;border-radius:4px;margin:6px 0;font-family:'Space Grotesk',sans-serif;direction:ltr;cursor:pointer;border:0}
 </style>
 </head>
 <body>
-<header>
-  <div class="logo">APK</div>
-  <div><h1>APK Studio</h1><p>حوّل موقعك إلى تطبيق أندرويد</p></div>
-  <div class="pill" id="pill">غير متصل</div>
-</header>
-
 <div class="wrap">
 
-  <details class="card" id="setupBox" open>
-    <summary>🔑 إعداد GitHub (مرة واحدة فقط)</summary>
-    <label>اسم المستخدم</label>
-    <input type="text" id="ghUser" class="ltr" autocapitalize="off" autocomplete="off">
-    <label>اسم المستودع</label>
-    <input type="text" id="ghRepo" class="ltr" autocapitalize="off" autocomplete="off">
-    <label>مفتاح الوصول (Token)</label>
-    <input type="password" id="ghToken" class="ltr" placeholder="ghp_..." autocomplete="off">
-    <div class="hint">المفتاح يُحفظ في متصفحك فقط ولا يُرسل لأي جهة سوى GitHub.</div>
-    <div style="margin-top:12px;display:flex;gap:8px">
-      <button type="button" class="btn" id="saveCfg" style="flex:1">حفظ واختبار الاتصال</button>
-    </div>
-    <div class="msg" id="cfgMsg"></div>
-  </details>
-
-  <div class="card">
-    <h2><i>1</i>معلومات التطبيق</h2>
-    <label>اسم التطبيق</label>
-    <input type="text" id="appName" value="تطبيقي">
-    <label>معرّف الحزمة (Package)</label>
-    <input type="text" id="pkg" class="ltr" value="com.mod.myapp" autocapitalize="off">
-    <div class="row">
-      <div><label>اسم الإصدار</label><input type="text" id="verName" class="ltr" value="1.0"></div>
-      <div><label>رقم الإصدار</label><input type="number" id="verCode" value="1" min="1"></div>
-    </div>
-    <div class="hint">يزداد رقم الإصدار تلقائياً بعد كل بناء ناجح.</div>
-  </div>
-
-  <div class="card">
-    <h2><i>2</i>الأيقونة والألوان</h2>
-    <div class="iconrow">
-      <canvas id="iconPrev" width="152" height="152"></canvas>
-      <div>
-        <button type="button" class="btn" id="iconBtn">رفع أيقونة</button>
-        <input type="file" id="iconFile" accept="image/*" hidden>
-        <div class="hint">صورة مربعة 512×512 يُفضّل</div>
+<div class="hero">
+  <svg class="blobs" viewBox="0 0 340 300" xmlns="http://www.w3.org/2000/svg">
+    <path d="M340 0 L340 300 C300 290 285 250 262 238 C238 226 222 244 202 214 C182 184 214 170 190 140 C166 110 128 128 112 96 C96 64 126 38 150 20 C170 6 190 14 210 8 C240 0 300 6 340 0Z" fill="#9FB2AC"/>
+    <path d="M340 90 L340 300 C312 296 304 270 288 262 C270 252 258 262 246 240 C234 218 254 208 250 188 C246 168 270 160 286 140 C300 124 316 118 328 100 C334 94 338 92 340 90Z" fill="#5D0D18"/>
+    <ellipse cx="236" cy="168" rx="9" ry="13" fill="#5D0D18"/>
+  </svg>
+  <div class="topline">
+    <div style="position:relative">
+      <button type="button" class="kebab" id="menuBtn" aria-label="Menu"><i></i></button>
+      <div class="menu" id="menu">
+        <button type="button" class="mi" data-g="use"><span class="a">دليل الاستخدام</span><span class="e">Usage guide</span></button>
+        <button type="button" class="mi" data-g="token"><span class="a">كيفية إنشاء مفتاح GitHub</span><span class="e">How to create a GitHub token</span></button>
+        <button type="button" class="mi" data-g="fix"><span class="a">حل المشاكل</span><span class="e">Troubleshooting</span></button>
+        <button type="button" class="mi" id="miSetup"><span class="a">إعداد الاتصال</span><span class="e">GitHub connection</span></button>
       </div>
     </div>
-    <div class="row">
-      <div><label>لون الأيقونة</label><input type="color" id="iconColor" value="#6c7bff"></div>
-      <div><label>لون شريط الحالة</label><input type="color" id="statusColor" value="#6c7bff"></div>
+    <div class="logo">apk</div>
+    <div class="sp"></div>
+    <div class="pill" id="pill"><span id="pillText">Not connected</span><i class="arrow"></i></div>
+  </div>
+  <div class="stack">
+    <div class="blk o">Web code<br>to</div>
+    <div class="blk g">APK Studio</div>
+    <div class="blk o2">Android apps<br>in minutes</div>
+  </div>
+  <p class="sub">Write or upload HTML, CSS and JavaScript, tune the options, press one button and download a ready APK.</p>
+</div>
+
+<details class="card" id="setupBox" open>
+  <summary><div class="tag"><b>01</b><span>GitHub connection</span></div></summary>
+  <div class="row">
+    <div><label class="f">Username</label><input type="text" id="ghUser" class="mono" autocapitalize="off" autocomplete="off"></div>
+    <div><label class="f">Repository</label><input type="text" id="ghRepo" class="mono" autocapitalize="off" autocomplete="off"></div>
+  </div>
+  <label class="f">Access token</label>
+  <div class="tokrow">
+    <div><input type="password" id="ghToken" class="mono" placeholder="ghp_..." autocomplete="off" autocapitalize="off" spellcheck="false"></div>
+    <button type="button" class="btn sm" id="showTok">Show</button>
+  </div>
+  <div class="hint">Paste your own token here. It is stored in this browser only and sent only to GitHub. Never put it inside your app files.</div>
+  <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+    <button type="button" class="btn" id="saveCfg">Save &amp; test connection</button>
+    <button type="button" class="btn" id="tokHelp">How to create a token</button>
+  </div>
+  <div class="msg" id="cfgMsg"></div>
+</details>
+
+<div class="card">
+  <div class="tag"><b>02</b><span>App info</span></div>
+  <label class="f">App name</label>
+  <input type="text" id="appName" value="My App">
+  <label class="f">Package ID</label>
+  <input type="text" id="pkg" class="mono" value="com.mod.myapp" autocapitalize="off">
+  <div class="row3">
+    <div><label class="f">Version name</label><input type="text" id="verName" class="mono" value="1.0"></div>
+    <div><label class="f">Version code</label><input type="number" id="verCode" value="1" min="1"></div>
+    <div><label class="f">Min Android</label>
+      <select id="minSdk"><option value="21">5.0 (API 21)</option><option value="24">7.0 (API 24)</option><option value="26">8.0 (API 26)</option><option value="28">9.0 (API 28)</option></select>
     </div>
   </div>
+  <div class="hint">Version code goes up automatically after every successful build.</div>
+</div>
 
-  <div class="card">
-    <h2><i>3</i>الإعدادات</h2>
-    <label>اتجاه الشاشة</label>
-    <select id="orient"><option value="unspecified">تلقائي</option><option value="portrait">عمودي</option><option value="landscape">أفقي</option></select>
-    <div style="margin-top:6px">
-      <div class="sw"><span>ملء الشاشة</span><input type="checkbox" id="fullscreen"></div>
-      <div class="sw"><span>السماح بالإنترنت</span><input type="checkbox" id="internet" checked></div>
-      <div class="sw"><span>تشغيل الصوت والفيديو تلقائياً</span><input type="checkbox" id="autoplay"></div>
+<div class="card">
+  <div class="tag"><b>03</b><span>Branding</span></div>
+  <div class="iconrow">
+    <canvas id="iconPrev" width="168" height="168"></canvas>
+    <div>
+      <button type="button" class="btn" id="iconBtn">Upload icon</button>
+      <input type="file" id="iconFile" accept="image/*" hidden>
+      <div class="hint">Square image, 512×512 recommended. Without one, an icon is generated from the app name.</div>
     </div>
   </div>
-
-  <div class="card">
-    <h2><i>4</i>ملفات الموقع</h2>
-    <div class="drop" id="drop">اضغط لاختيار الملفات<br>(HTML / CSS / JS / صور / خطوط) أو ملف ZIP فيه موقعك كاملاً</div>
-    <input type="file" id="files" multiple hidden>
-    <div class="chips" id="chips"></div>
-    <div class="tabs" style="margin-top:14px">
-      <div class="tab on" data-t="html">HTML</div>
-      <div class="tab" data-t="css">CSS</div>
-      <div class="tab" data-t="js">JavaScript</div>
-    </div>
-    <textarea class="ed" id="ed-html" spellcheck="false"></textarea>
-    <textarea class="ed hidden" id="ed-css" spellcheck="false"></textarea>
-    <textarea class="ed hidden" id="ed-js" spellcheck="false"></textarea>
-    <div class="hint">إن لم تربط CSS وJS داخل HTML فسيُضاف الربط تلقائياً. الملف الرئيسي يُحفظ باسم <code>index.html</code>.</div>
+  <div class="row3">
+    <div><label class="f">Default icon</label><input type="color" id="iconColor" value="#E2692F"></div>
+    <div><label class="f">Status bar</label><input type="color" id="statusColor" value="#5D0D18"></div>
+    <div><label class="f">Navigation bar</label><input type="color" id="navColor" value="#5D0D18"></div>
   </div>
-
-  <div class="card">
-    <h2><i>👁</i>معاينة مباشرة</h2>
-    <div class="pvwrap"><div class="phone" id="phone"><div class="bar" id="sbar"></div><iframe id="pv" sandbox="allow-scripts allow-forms allow-modals"></iframe></div></div>
+  <div class="row">
+    <div><label class="f">Loading background</label><input type="color" id="bgColor" value="#FFF9EB"></div>
+    <div></div>
   </div>
+  <div class="sw" style="margin-top:6px"><label for="lightIcons" style="flex:1;cursor:pointer"><b>Dark status bar icons</b><small>Use when the status bar color is light.</small></label><input type="checkbox" id="lightIcons"></div>
+</div>
 
-  <div class="card hidden" id="progCard">
-    <h2><i>⚙</i>مراحل البناء</h2>
-    <div id="steps"></div>
-    <div class="msg" id="buildMsg"></div>
-  </div>
-
-  <div class="card hidden" id="result"></div>
-
-  <div class="card hidden" id="histCard">
-    <h2><i>🗂</i>تطبيقاتك السابقة</h2>
-    <div id="hist"></div>
+<div class="card">
+  <div class="tag"><b>04</b><span>Behavior</span></div>
+  <label class="f">Screen orientation</label>
+  <select id="orient"><option value="unspecified">Auto</option><option value="portrait">Portrait</option><option value="landscape">Landscape</option></select>
+  <div style="margin-top:8px">
+    <div class="sw"><label for="fullscreen" style="flex:1;cursor:pointer"><b>Fullscreen</b><small>Hide the status bar.</small></label><input type="checkbox" id="fullscreen"></div>
+    <div class="sw"><label for="immersive" style="flex:1;cursor:pointer"><b>Immersive mode</b><small>Also hide the navigation bar (great for games).</small></label><input type="checkbox" id="immersive"></div>
+    <div class="sw"><label for="keepAwake" style="flex:1;cursor:pointer"><b>Keep screen awake</b><small>Screen never dims while the app is open.</small></label><input type="checkbox" id="keepAwake"></div>
+    <div class="sw"><label for="internet" style="flex:1;cursor:pointer"><b>Internet access</b><small>Needed for online fonts, images and APIs.</small></label><input type="checkbox" id="internet" checked></div>
+    <div class="sw"><label for="autoplay" style="flex:1;cursor:pointer"><b>Autoplay audio &amp; video</b><small>Allow media to start without a tap.</small></label><input type="checkbox" id="autoplay"></div>
+    <div class="sw"><label for="external" style="flex:1;cursor:pointer"><b>Open web links in browser</b><small>Links to websites open in Chrome instead of inside the app.</small></label><input type="checkbox" id="external" checked></div>
+    <div class="sw"><label for="noZoom" style="flex:1;cursor:pointer"><b>Disable pinch zoom</b><small>Makes the page feel like a native app.</small></label><input type="checkbox" id="noZoom"></div>
+    <div class="sw"><label for="noSelect" style="flex:1;cursor:pointer"><b>Disable long-press selection</b><small>Blocks text selection and the copy menu.</small></label><input type="checkbox" id="noSelect"></div>
+    <div class="sw"><label for="doubleBack" style="flex:1;cursor:pointer"><b>Press back twice to exit</b><small>Prevents closing the app by accident.</small></label><input type="checkbox" id="doubleBack" checked></div>
   </div>
 </div>
 
-<div class="bar-bottom"><div class="in"><button type="button" class="btn main" id="buildBtn">⚡ بناء التطبيق (APK)</button></div></div>
+<div class="card">
+  <div class="tag"><b>05</b><span>Permissions</span></div>
+  <div class="sw"><label for="permCam" style="flex:1;cursor:pointer"><b>Camera</b><small>For pages that use the camera.</small></label><input type="checkbox" id="permCam"></div>
+  <div class="sw"><label for="permMic" style="flex:1;cursor:pointer"><b>Microphone</b><small>For voice input and recording (speech apps).</small></label><input type="checkbox" id="permMic"></div>
+  <div class="sw"><label for="permLoc" style="flex:1;cursor:pointer"><b>Location</b><small>For pages that use GPS.</small></label><input type="checkbox" id="permLoc"></div>
+  <div class="hint">Android will ask the user to allow each one the first time the app opens.</div>
+</div>
+
+<div class="card">
+  <div class="tag"><b>06</b><span>Files &amp; code</span></div>
+  <div class="drop" id="drop">Tap to choose files<br>HTML / CSS / JS / images / fonts &mdash; or one ZIP with your whole site</div>
+  <input type="file" id="files" multiple hidden>
+  <div class="chips" id="chips"></div>
+  <div class="tabs">
+    <div class="tab on" data-t="html">HTML</div>
+    <div class="tab" data-t="css">CSS</div>
+    <div class="tab" data-t="js">JavaScript</div>
+  </div>
+  <textarea class="ed" id="ed-html" spellcheck="false"></textarea>
+  <textarea class="ed hidden" id="ed-css" spellcheck="false"></textarea>
+  <textarea class="ed hidden" id="ed-js" spellcheck="false"></textarea>
+  <div class="hint">These boxes are for YOUR app code only. If your HTML does not link the CSS and JS files, links are added automatically. The main page is saved as <code>index.html</code>.</div>
+  <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+    <button type="button" class="btn" id="zipBtn">Export project ZIP</button>
+    <button type="button" class="btn" id="resetBtn">Reset form</button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="tag"><b>07</b><span>Live preview</span></div>
+  <div class="pvwrap"><div class="phone" id="phone"><div class="bar" id="sbar"></div><iframe id="pv" sandbox="allow-scripts allow-forms allow-modals"></iframe></div></div>
+</div>
+
+<div class="card prog hidden" id="progCard">
+  <div class="tag"><b>08</b><span>Build progress</span></div>
+  <div id="steps"></div>
+  <div class="msg" id="buildMsg"></div>
+</div>
+
+<div class="card res hidden" id="result"></div>
+
+<div class="card hidden" id="histCard">
+  <div class="tag"><b>09</b><span>Previous builds</span></div>
+  <div id="hist"></div>
+</div>
+
+<div class="foot">APK STUDIO &mdash; A1 &bull; B2 &bull; C3</div>
+</div>
+
+<div class="bar-bottom"><div class="in">
+  <button type="button" class="btn main" id="buildBtn">Build APK</button>
+</div></div>
 <div class="toast" id="toast"></div>
+
+<!-- ================= GUIDE ================= -->
+<div class="ov" id="guide">
+  <div class="gd">
+    <div class="gd-head"><h2>APK Studio &mdash; Guide</h2><button type="button" class="gd-x" id="gClose">&#10005;</button></div>
+    <div class="gd-tabs">
+      <button type="button" id="tAr" class="on">العربية</button>
+      <button type="button" id="tEn">English</button>
+    </div>
+    <div class="gd-body">
+
+      <!-- ===== ARABIC ===== -->
+      <div class="sec ar on" id="secAr">
+        <div class="jump">
+          <a data-j="ar-token">إنشاء المفتاح</a>
+          <a data-j="ar-use">طريقة الاستخدام</a>
+          <a data-j="ar-fix">حل المشاكل</a>
+        </div>
+
+        <h3 id="ar-token">أولاً: كيف تنشئ مفتاح GitHub (Token)</h3>
+        <div class="note">المفتاح هو كلمة سر خاصة تسمح للأداة برفع ملفاتك إلى مستودعك على GitHub. تنشئه مرة واحدة فقط، وتلصقه في الأداة بنفسك.</div>
+
+        <div class="stp"><i>0</i><div><b class="t">تجهيز المستودع (إن لم يكن موجوداً)</b>
+          افتح هذا الرابط في المتصفح:
+          <span class="en-box">github.com/new</span>
+          في خانة اسم المستودع اكتب:
+          <span class="en-box">myapp</span>
+          اختر:
+          <span class="en-box">Public</span>
+          ثم اضغط:
+          <span class="en-box">Create repository</span>
+          المستودع يجب أن يحتوي ملفاً واحداً على الأقل. إن كان فارغاً أنشئ فيه أي ملف، مثل README.</div></div>
+
+        <div class="stp"><i>1</i><div><b class="t">سجّل الدخول إلى GitHub</b>
+          افتح الموقع وسجّل دخولك بحسابك.
+          <span class="en-box">github.com</span></div></div>
+
+        <div class="stp"><i>2</i><div><b class="t">افتح صفحة إنشاء المفتاح</b>
+          اضغط الزر التالي لفتحها في تبويب جديد:
+          <div><a class="gbtn" href="https://github.com/settings/tokens/new?scopes=repo,workflow&description=apk-studio" target="_blank" rel="noopener">Open token page</a></div>
+          وإن لم يفتح، افتح هذا الرابط:
+          <span class="en-box">github.com/settings/tokens</span>
+          ثم اضغط:
+          <span class="en-box">Generate new token</span>
+          واختر:
+          <span class="en-box">Generate new token (classic)</span>
+          لا تختر الخيار الأول (Fine-grained) لأنه لا يعمل مع الأداة. قد يطلب منك GitHub كلمة المرور، فأدخلها.</div></div>
+
+        <div class="stp"><i>3</i><div><b class="t">اكتب اسماً للمفتاح</b>
+          في خانة الاسم اكتب:
+          <span class="en-box">apk-studio</span>
+          الخانة اسمها:
+          <span class="en-box">Note</span></div></div>
+
+        <div class="stp"><i>4</i><div><b class="t">حدّد مدة الصلاحية</b>
+          في القائمة المنسدلة اختر:
+          <span class="en-box">90 days</span>
+          اسم القائمة:
+          <span class="en-box">Expiration</span>
+          بعد انتهاء المدة تنشئ مفتاحاً جديداً بنفس الخطوات.</div></div>
+
+        <div class="stp"><i>5</i><div><b class="t">فعّل صلاحيتين فقط</b>
+          ضع علامة صح على المربعين التاليين، ولا تفعّل غيرهما:
+          <span class="en-box">repo</span>
+          <span class="en-box">workflow</span>
+          عند تفعيل repo تتفعل المربعات الصغيرة تحته تلقائياً، وهذا طبيعي. أما workflow فمربع مستقل يقع بعده بقليل، فتأكد منه.</div></div>
+
+        <div class="stp"><i>6</i><div><b class="t">أنشئ المفتاح</b>
+          انزل إلى آخر الصفحة واضغط الزر الأخضر:
+          <span class="en-box">Generate token</span></div></div>
+
+        <div class="stp"><i>7</i><div><b class="t">انسخ المفتاح فوراً</b>
+          سيظهر نص أخضر طويل يبدأ بهذه الأحرف:
+          <span class="en-box">ghp_</span>
+          اضغط أيقونة النسخ بجانبه. <b>لا تغلق الصفحة قبل النسخ</b>، لأن GitHub لا يعرضه مرة ثانية.</div></div>
+
+        <div class="stp"><i>8</i><div><b class="t">الصقه في الأداة</b>
+          ارجع إلى الأداة وافتح الصندوق رقم 01. الصق المفتاح في الخانة:
+          <span class="en-box">Access token</span>
+          ثم اضغط:
+          <span class="en-box">Save &amp; test connection</span>
+          انتظر ثواني حتى تظهر رسالة خضراء تبدأ بـ:
+          <span class="en-box">Connected to</span>
+          وبعدها يظهر اسمك أعلى الصفحة وتصبح الأداة جاهزة.</div></div>
+
+        <div class="warnbox"><b>تنبيه أمني:</b> لا تكتب المفتاح داخل ملفات تطبيقك ولا ترسله لأحد ولا تنشره. إن تسرّب، احذفه فوراً من هذه الصفحة وأنشئ غيره:
+          <span class="en-box" style="background:rgba(255,249,235,.12);color:#FFF9EB;border-color:#E2692F">github.com/settings/tokens</span>
+          وإن وُجد مفتاح داخل الملفات، سيرفض GitHub رفعها، وتوقف الأداة البناء أيضاً.</div>
+
+        <h3 id="ar-use">ثانياً: طريقة استخدام الأداة</h3>
+
+        <div class="stp"><i>1</i><div><b class="t">الاتصال</b>
+          أكمل الصندوق 01 كما شرحنا أعلاه. اسم المستخدم والمستودع يجب أن يطابقا ما في GitHub.</div></div>
+
+        <div class="stp"><i>2</i><div><b class="t">معلومات التطبيق (02)</b>
+          اكتب اسم التطبيق الذي سيظهر تحت أيقونته. أما معرّف الحزمة فهو اسم فني فريد، مثل:
+          <span class="en-box">com.mod.myapp</span>
+          شروطه: حروف إنجليزية صغيرة وأرقام، بلا مسافات، وفيه نقطة واحدة على الأقل. رقم الإصدار يزداد وحده بعد كل بناء ناجح.</div></div>
+
+        <div class="stp"><i>3</i><div><b class="t">الهوية والألوان (03)</b>
+          ارفع أيقونة مربعة، أو اتركها فتُصنع أيقونة تلقائية بالحرف الأول. اختر لون شريط الحالة وشريط التنقل وخلفية التحميل.</div></div>
+
+        <div class="stp"><i>4</i><div><b class="t">السلوك (04)</b>
+          اختر اتجاه الشاشة، ثم فعّل ما تحتاجه: ملء الشاشة، الوضع الغامر للألعاب، إبقاء الشاشة مضاءة، الإنترنت، التشغيل التلقائي للصوت، فتح الروابط في المتصفح، منع التكبير، منع تحديد النص، والضغط مرتين على رجوع للخروج.</div></div>
+
+        <div class="stp"><i>5</i><div><b class="t">الصلاحيات (05)</b>
+          فعّل الكاميرا أو المايكروفون أو الموقع إن احتاجها تطبيقك. ألعاب النطق تحتاج المايكروفون. سيطلب أندرويد الموافقة من المستخدم عند أول فتح.</div></div>
+
+        <div class="stp"><i>6</i><div><b class="t">ملفات تطبيقك (06)</b>
+          لديك طريقتان: اضغط على مربع الرفع واختر ملفاتك (أو ملف ZIP فيه موقعك كاملاً)، أو الصق الكود في التبويبات الثلاثة. هذه الخانات لكود تطبيقك أنت فقط، وليست لكود الأداة. وإن امتلأت بالخطأ اضغط:
+          <span class="en-box">Reset form</span></div></div>
+
+        <div class="stp"><i>7</i><div><b class="t">المعاينة (07)</b>
+          تعرض شكل تطبيقك مباشرة. تأكد أنه يعمل قبل البناء.</div></div>
+
+        <div class="stp"><i>8</i><div><b class="t">ابنِ التطبيق</b>
+          اضغط الزر الثابت في الأسفل:
+          <span class="en-box">Build APK</span>
+          تظهر المراحل في الصندوق 08. المرحلة الخامسة تأخذ من 2 إلى 5 دقائق، <b>فلا تغلق الصفحة ولا تخرج من المتصفح</b> حتى تنتهي.</div></div>
+
+        <div class="stp"><i>9</i><div><b class="t">نزّل التطبيق وثبّته</b>
+          عند النجاح يظهر زر برتقالي:
+          <span class="en-box">Download APK</span>
+          اضغط عليه، ثم افتح الملف من التنزيلات ووافق على التثبيت من مصدر غير معروف إن طلب الهاتف. يمكنك أيضاً مسح رمز QR لتنزيله على هاتف آخر.</div></div>
+
+        <div class="stp"><i>10</i><div><b class="t">البناءات السابقة (09)</b>
+          تحفظ الأداة آخر 10 تطبيقات بنيتها لتنزلها لاحقاً. وكل بناء جديد يستبدل ملفات المشروع في المستودع، فلتطبيقات منفصلة استخدم لكل تطبيق مستودعاً مستقلاً.</div></div>
+
+        <h3 id="ar-fix">ثالثاً: حل المشاكل الشائعة</h3>
+
+        <div class="stp"><i>!</i><div><b class="t">المفتاح غير صحيح أو منتهي</b>
+          أنشئ مفتاحاً جديداً بالخطوات أعلاه، وتأكد أنك لصقته كاملاً بلا مسافات.</div></div>
+        <div class="stp"><i>!</i><div><b class="t">المستودع غير موجود</b>
+          تحقق من اسم المستخدم واسم المستودع، ومن تفعيل صلاحية:
+          <span class="en-box">repo</span></div></div>
+        <div class="stp"><i>!</i><div><b class="t">المستودع فارغ</b>
+          أضف إليه أي ملف واحد (مثل README) من موقع GitHub ثم أعد المحاولة.</div></div>
+        <div class="stp"><i>!</i><div><b class="t">اكتشاف مفتاح داخل الملفات</b>
+          يعني أن ملفاتك تحتوي نصاً يشبه المفتاح. احذفه من الكود، واضغط
+          <span class="en-box">Reset form</span>
+          ثم الصق كود تطبيقك الصحيح فقط.</div></div>
+        <div class="stp"><i>!</i><div><b class="t">فشل البناء</b>
+          افتح رابط سجل البناء الذي يظهر تحت الرسالة، وأرسل صورة الخطأ لتحليله. تأكد أيضاً أن الصلاحية التالية مفعّلة في المفتاح:
+          <span class="en-box">workflow</span></div></div>
+        <div class="stp"><i>!</i><div><b class="t">لم يبدأ البناء</b>
+          افتح تبويب Actions في مستودعك على GitHub وتأكد أنه مفعّل.</div></div>
+      </div>
+
+      <!-- ===== ENGLISH ===== -->
+      <div class="sec en" id="secEn">
+        <div class="jump">
+          <a data-j="en-token">Create token</a>
+          <a data-j="en-use">How to use</a>
+          <a data-j="en-fix">Troubleshooting</a>
+        </div>
+
+        <h3 id="en-token">Part 1: How to create a GitHub token</h3>
+        <div class="note">The token is a private password that lets this tool upload your files to your GitHub repository. You create it once and paste it into the tool yourself.</div>
+
+        <div class="stp"><i>0</i><div><b class="t">Prepare the repository (if you do not have one)</b>
+          Open:
+          <span class="en-box">github.com/new</span>
+          Repository name:
+          <span class="en-box">myapp</span>
+          Choose:
+          <span class="en-box">Public</span>
+          Then press:
+          <span class="en-box">Create repository</span>
+          The repository must contain at least one file. If it is empty, add any file such as README.</div></div>
+
+        <div class="stp"><i>1</i><div><b class="t">Sign in to GitHub</b>
+          Open the website and sign in.
+          <span class="en-box">github.com</span></div></div>
+
+        <div class="stp"><i>2</i><div><b class="t">Open the token page</b>
+          Press this button to open it in a new tab:
+          <div><a class="gbtn" href="https://github.com/settings/tokens/new?scopes=repo,workflow&description=apk-studio" target="_blank" rel="noopener">Open token page</a></div>
+          If it does not open, go to:
+          <span class="en-box">github.com/settings/tokens</span>
+          Press:
+          <span class="en-box">Generate new token</span>
+          Then choose:
+          <span class="en-box">Generate new token (classic)</span>
+          Do not choose the first option (Fine-grained); it does not work with this tool. GitHub may ask for your password.</div></div>
+
+        <div class="stp"><i>3</i><div><b class="t">Name the token</b>
+          In the field called:
+          <span class="en-box">Note</span>
+          type:
+          <span class="en-box">apk-studio</span></div></div>
+
+        <div class="stp"><i>4</i><div><b class="t">Set the expiration</b>
+          In the dropdown called:
+          <span class="en-box">Expiration</span>
+          choose:
+          <span class="en-box">90 days</span>
+          When it expires, create a new one with the same steps.</div></div>
+
+        <div class="stp"><i>5</i><div><b class="t">Enable exactly two scopes</b>
+          Tick these two boxes and nothing else:
+          <span class="en-box">repo</span>
+          <span class="en-box">workflow</span>
+          Ticking repo automatically ticks the small boxes under it; that is normal. workflow is a separate box a little lower, so double-check it.</div></div>
+
+        <div class="stp"><i>6</i><div><b class="t">Generate the token</b>
+          Scroll to the bottom and press the green button:
+          <span class="en-box">Generate token</span></div></div>
+
+        <div class="stp"><i>7</i><div><b class="t">Copy it immediately</b>
+          A long green text appears, starting with:
+          <span class="en-box">ghp_</span>
+          Tap the copy icon next to it. <b>Do not close the page before copying</b>; GitHub never shows it again.</div></div>
+
+        <div class="stp"><i>8</i><div><b class="t">Paste it into the tool</b>
+          Come back to the tool and open box 01. Paste the token into:
+          <span class="en-box">Access token</span>
+          Then press:
+          <span class="en-box">Save &amp; test connection</span>
+          After a few seconds you should see a green message starting with:
+          <span class="en-box">Connected to</span>
+          Your username then appears at the top and the tool is ready.</div></div>
+
+        <div class="warnbox"><b>Security:</b> never write the token inside your app files, never send it to anyone and never post it. If it leaks, delete it right away on this page and create a new one:
+          <span class="en-box" style="background:rgba(255,249,235,.12);color:#FFF9EB;border-color:#E2692F">github.com/settings/tokens</span>
+          If a token is found inside the files, GitHub rejects the upload and this tool stops the build too.</div>
+
+        <h3 id="en-use">Part 2: How to use the tool</h3>
+
+        <div class="stp"><i>1</i><div><b class="t">Connection</b>
+          Complete box 01 as described above. The username and repository must match GitHub exactly.</div></div>
+
+        <div class="stp"><i>2</i><div><b class="t">App info (02)</b>
+          Type the app name shown under its icon. The package ID is a unique technical name, for example:
+          <span class="en-box">com.mod.myapp</span>
+          Rules: lowercase letters and digits, no spaces, at least one dot. The version code increases by itself after each successful build.</div></div>
+
+        <div class="stp"><i>3</i><div><b class="t">Branding (03)</b>
+          Upload a square icon, or leave it empty and an icon is generated from the first letter. Pick the status bar, navigation bar and loading background colors.</div></div>
+
+        <div class="stp"><i>4</i><div><b class="t">Behavior (04)</b>
+          Choose the screen orientation, then switch on what you need: fullscreen, immersive mode for games, keep screen awake, internet, autoplay media, open links in browser, disable zoom, disable text selection and double back to exit.</div></div>
+
+        <div class="stp"><i>5</i><div><b class="t">Permissions (05)</b>
+          Enable camera, microphone or location if your app needs them. Speech games need the microphone. Android asks the user to allow each one on first launch.</div></div>
+
+        <div class="stp"><i>6</i><div><b class="t">Your app files (06)</b>
+          Two ways: tap the upload area and choose your files (or one ZIP with the whole site), or paste code into the three tabs. These boxes are for YOUR app code only, not the tool's code. If they are filled by mistake, press:
+          <span class="en-box">Reset form</span></div></div>
+
+        <div class="stp"><i>7</i><div><b class="t">Preview (07)</b>
+          Shows your app live. Check that it works before building.</div></div>
+
+        <div class="stp"><i>8</i><div><b class="t">Build the app</b>
+          Press the fixed button at the bottom:
+          <span class="en-box">Build APK</span>
+          Progress appears in box 08. Step five takes 2 to 5 minutes, <b>so do not close the page or leave the browser</b> until it finishes.</div></div>
+
+        <div class="stp"><i>9</i><div><b class="t">Download and install</b>
+          On success an orange button appears:
+          <span class="en-box">Download APK</span>
+          Tap it, open the file from Downloads and allow installing from unknown sources if the phone asks. You can also scan the QR code to download on another phone.</div></div>
+
+        <div class="stp"><i>10</i><div><b class="t">Previous builds (09)</b>
+          The tool keeps your last 10 builds for later download. Every new build replaces the project files in the repository, so for separate apps use a separate repository for each.</div></div>
+
+        <h3 id="en-fix">Part 3: Troubleshooting</h3>
+
+        <div class="stp"><i>!</i><div><b class="t">Token invalid or expired</b>
+          Create a new token with the steps above and make sure you pasted it whole, without spaces.</div></div>
+        <div class="stp"><i>!</i><div><b class="t">Repository not found</b>
+          Check the username and repository name, and that this scope is enabled:
+          <span class="en-box">repo</span></div></div>
+        <div class="stp"><i>!</i><div><b class="t">Repository is empty</b>
+          Add any single file (such as README) on the GitHub website, then try again.</div></div>
+        <div class="stp"><i>!</i><div><b class="t">Token found inside files</b>
+          Your files contain text that looks like a token. Remove it from the code, press
+          <span class="en-box">Reset form</span>
+          and paste only your real app code.</div></div>
+        <div class="stp"><i>!</i><div><b class="t">Build failed</b>
+          Open the build log link shown under the message and send me the error screenshot. Also make sure this scope is enabled on your token:
+          <span class="en-box">workflow</span></div></div>
+        <div class="stp"><i>!</i><div><b class="t">Build did not start</b>
+          Open the Actions tab of your repository on GitHub and make sure it is enabled.</div></div>
+      </div>
+
+    </div>
+  </div>
+</div>
 
 <script>
 var $=function(s){return document.querySelector(s)},$$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
-var ls={get:function(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set:function(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+var ls={get:function(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set:function(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},del:function(k){try{localStorage.removeItem(k)}catch(e){}}};
 var sleep=function(ms){return new Promise(function(r){setTimeout(r,ms)})};
 var extra={},extraText={},extraURL={},iconImg=null,busy=false,curStep=-1,lastRunUrl='';
-var cfg=ls.get('apk_cfg')||{user:'MOD-hube',repo:'myapp',token:''};
 
-var defHTML='<!DOCTYPE html>\n<html lang="ar" dir="rtl">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<title>تطبيقي</title>\n</head>\n<body>\n  <h1>مرحباً بك 👋</h1>\n  <p>هذا تطبيقك داخل أندرويد.</p>\n  <button id="btn">عدّاد: 0</button>\n</body>\n</html>';
-var defCSS='body{font-family:sans-serif;background:#f4f6ff;display:grid;place-items:center;min-height:100vh;margin:0;text-align:center}\nh1{color:#3b4cca}\nbutton{background:#3b4cca;color:#fff;border:0;border-radius:12px;padding:14px 28px;font-size:18px}';
-var defJS="let n=0;\ndocument.getElementById('btn').onclick=function(){n++;this.textContent='عدّاد: '+n;};";
+/* ===== Default connection: NO token here. You paste it in the UI. ===== */
+var DEFAULTS={user:'MOD-hube',repo:'myapp',token:''};
+var saved=ls.get('apk_cfg')||{};
+var cfg={user:saved.user||DEFAULTS.user,repo:saved.repo||DEFAULTS.repo,token:saved.token||''};
+
+var defHTML='<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<title>My App</title>\n</head>\n<body>\n  <h1>Hello 👋</h1>\n  <p>This is your app running inside Android.</p>\n  <button id="btn">Count: 0</button>\n</body>\n</html>';
+var defCSS='body{font-family:sans-serif;background:#FFF9EB;display:grid;place-items:center;min-height:100vh;margin:0;text-align:center}\nh1{color:#5D0D18}\nbutton{background:#5D0D18;color:#FFF9EB;border:0;border-radius:10px;padding:14px 28px;font-size:18px}';
+var defJS="let n=0;\ndocument.getElementById('btn').onclick=function(){n++;this.textContent='Count: '+n;};";
 
 var WORKFLOW=[
 'name: Build APK',
@@ -214,10 +638,10 @@ var WORKFLOW=[
 '          gh release create "build-${{ github.run_number }}" app.apk --title "Build ${{ github.run_number }}" --notes "APK build" --target "${{ github.sha }}"',
 ''].join('\n');
 
-var FIELDS=['appName','pkg','verName','verCode','iconColor','statusColor','orient'];
-var CHECKS=['fullscreen','internet','autoplay'];
+var FIELDS=['appName','pkg','verName','verCode','minSdk','iconColor','statusColor','navColor','bgColor','orient'];
+var CHECKS=['fullscreen','immersive','keepAwake','internet','autoplay','external','noZoom','noSelect','doubleBack','lightIcons','permCam','permMic','permLoc'];
 
-function toast(m){var t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(function(){t.style.display='none'},2600)}
+function toast(m){var t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(function(){t.style.display='none'},2800)}
 
 function load(){
   var d=ls.get('apk_form')||{};
@@ -225,7 +649,8 @@ function load(){
   CHECKS.forEach(function(k){if(d[k]!=null)$('#'+k).checked=d[k]});
   $('#ed-html').value=d.html||defHTML;$('#ed-css').value=d.css||defCSS;$('#ed-js').value=d.js||defJS;
   $('#ghUser').value=cfg.user||'';$('#ghRepo').value=cfg.repo||'';$('#ghToken').value=cfg.token||'';
-  if(cfg.token){$('#setupBox').open=false;setPill(true)}
+  if(cfg.token){$('#setupBox').open=false;verifySilent()}
+  else{$('#setupBox').open=true;setPill('','Not connected')}
   renderHist();
 }
 function save(){
@@ -233,7 +658,7 @@ function save(){
   FIELDS.forEach(function(k){d[k]=$('#'+k).value});CHECKS.forEach(function(k){d[k]=$('#'+k).checked});
   ls.set('apk_form',d);
 }
-function setPill(ok){var p=$('#pill');p.textContent=ok?'GitHub متصل ✓':'غير متصل';p.classList.toggle('ok',ok)}
+function setPill(state,text){var p=$('#pill');p.className='pill'+(state?' '+state:'');$('#pillText').textContent=text}
 
 async function gh(path,opt){
   opt=opt||{};
@@ -245,51 +670,59 @@ async function gh(path,opt){
 }
 function friendly(e){
   var msg=String(e&&e.message||e);
-  if(msg==='NORUN')return 'لم يبدأ البناء خلال 90 ثانية. افتح تبويب Actions في المستودع وتأكد أنه مفعّل.';
-  if(msg==='TIMEOUT')return 'استغرق البناء وقتاً طويلاً جداً. افتح تبويب Actions لمتابعته.';
-  if(msg==='NOREL')return 'انتهى البناء لكن لم أجد ملف التطبيق. افتح صفحة Releases في المستودع.';
-  if(msg.indexOf('BUILDFAIL')===0){var p=msg.split('|');return 'فشل البناء في المرحلة: '+(p[1]||'غير معروفة')+'. افتح سجل البناء من الرابط أدناه.'}
-  if(e.status===401)return 'المفتاح (Token) غير صحيح أو منتهي. أنشئ مفتاحاً جديداً.';
-  if(e.status===404)return 'المستودع غير موجود أو المفتاح لا يملك صلاحية عليه. تأكد من الاسمين ومن صلاحية repo.';
-  if(e.status===403)return 'رُفض الطلب: '+msg+' (تأكد أن المفتاح يملك صلاحيتي repo وworkflow).';
-  if(e.status===422&&/workflow/i.test(msg))return 'المفتاح يحتاج صلاحية workflow. أنشئه من جديد مع تفعيلها.';
-  if(e.status===409)return 'المستودع فارغ. أضف إليه أي ملف واحد ثم أعد المحاولة.';
-  if(e instanceof TypeError)return 'تعذّر الاتصال بالإنترنت.';
+  if(msg.indexOf('SECRET')===0){return 'A token was found inside this file: '+msg.split('|')[1]+'. Remove it from your code (or press Reset form) and try again.'}
+  if(msg==='NORUN')return 'The build did not start within 90 seconds. Open the Actions tab of the repository and make sure Actions is enabled.';
+  if(msg==='TIMEOUT')return 'The build is taking too long. Check the Actions tab of the repository.';
+  if(msg==='NOREL')return 'The build finished but the APK was not found. Check the Releases page of the repository.';
+  if(msg.indexOf('BUILDFAIL')===0){var p=msg.split('|');return 'Build failed at step: '+(p[1]||'unknown')+'. Open the build log below.'}
+  if(e.status===401)return 'The token is invalid or expired. Create a new token (menu: How to create a GitHub token).';
+  if(e.status===404)return 'Repository not found or the token has no access. Check the username, repository name and the repo scope.';
+  if(e.status===403)return 'Request refused: '+msg+' (the token needs repo and workflow scopes).';
+  if(e.status===422&&/workflow/i.test(msg))return 'The token needs the workflow scope. Create a new token with it enabled.';
+  if(e.status===409)return 'The repository is empty. Add any file to it, then try again.';
+  if(e instanceof TypeError)return 'No internet connection.';
   return msg;
 }
 
+async function verifySilent(){
+  try{
+    var resp=await fetch('https://api.github.com/user',{headers:{Authorization:'Bearer '+cfg.token,Accept:'application/vnd.github+json'}});
+    if(resp.ok){var u=await resp.json();setPill('ok','Connected: '+u.login)}
+    else setPill('bad','Token invalid');
+  }catch(e){setPill('','Offline')}
+}
 async function saveConfig(){
   var u=$('#ghUser').value.trim(),r=$('#ghRepo').value.trim(),t=$('#ghToken').value.trim();
   var m=$('#cfgMsg');m.className='msg';
-  if(!u||!r||!t){m.className='msg bad';m.textContent='املأ الحقول الثلاثة.';return}
-  cfg={user:u,repo:r,token:t};m.textContent='جارٍ الاختبار...';
+  if(!u||!r||!t){m.className='msg bad';m.textContent='Fill in all three fields. Need a token? Open the menu (three dots, top left).';return}
+  cfg={user:u,repo:r,token:t};m.textContent='Testing...';
   try{
     var resp=await fetch('https://api.github.com/user',{headers:{Authorization:'Bearer '+t,Accept:'application/vnd.github+json'}});
     if(!resp.ok){var er=new Error('bad');er.status=resp.status;throw er}
     var scopes=resp.headers.get('x-oauth-scopes');
     var repo=await gh('/repos/'+u+'/'+r);
-    if(repo.permissions&&!repo.permissions.push){var e2=new Error('لا تملك صلاحية الكتابة على هذا المستودع');e2.status=403;throw e2}
-    ls.set('apk_cfg',cfg);setPill(true);
-    if(scopes!==null&&scopes.indexOf('workflow')<0){m.className='msg warn';m.textContent='تم الاتصال، لكن المفتاح لا يملك صلاحية workflow وقد يفشل البناء. أنشئ مفتاحاً جديداً مع تفعيلها.'}
-    else{m.className='msg ok';m.textContent='✓ تم الاتصال بالمستودع '+repo.full_name;setTimeout(function(){$('#setupBox').open=false},1200)}
-  }catch(e){setPill(false);m.className='msg bad';m.textContent=friendly(e)}
+    if(repo.permissions&&!repo.permissions.push){var e2=new Error('You do not have write access to this repository');e2.status=403;throw e2}
+    ls.set('apk_cfg',cfg);setPill('ok','Connected: '+u);
+    if(scopes!==null&&scopes.indexOf('workflow')<0){m.className='msg warn';m.textContent='Connected, but the token has no workflow scope and the build may fail. Create a new token with it enabled.'}
+    else{m.className='msg ok';m.textContent='Connected to '+repo.full_name;setTimeout(function(){$('#setupBox').open=false},1200)}
+  }catch(e){setPill('bad','Not connected');m.className='msg bad';m.textContent=friendly(e)}
 }
 
 function assemble(inline){
   var h=$('#ed-html').value,c=$('#ed-css').value.trim(),j=$('#ed-js').value.trim();
   var inject=function(src,tag,before){var re=new RegExp(before,'i');return re.test(src)?src.replace(re,function(m){return tag+'\n'+m}):src+'\n'+tag};
-  var CLOSE_STYLE='<'+'/style>',CLOSE_SCRIPT='<'+'/script>';
-  if(c&&(inline||!/style\.css/i.test(h)))h=inject(h,inline?'<style>'+c+CLOSE_STYLE:'<link rel="stylesheet" href="style.css">','<'+'/head>');
-  if(j&&(inline||!/script\.js/i.test(h)))h=inject(h,inline?'<script>'+j+CLOSE_SCRIPT:'<script src="script.js">'+CLOSE_SCRIPT,'<'+'/body>');
+  var CS='<'+'/style>',CC='<'+'/script>';
+  if(c&&(inline||!/style\.css/i.test(h)))h=inject(h,inline?'<style>'+c+CS:'<link rel="stylesheet" href="style.css">','<'+'/head>');
+  if(j&&(inline||!/script\.js/i.test(h)))h=inject(h,inline?'<script>'+j+CC:'<script src="script.js">'+CC,'<'+'/body>');
   return h;
 }
 function previewHTML(){
   var h=assemble(true);
-  var CLOSE_STYLE='<'+'/style>',CLOSE_SCRIPT='<'+'/script>';
+  var CS='<'+'/style>',CC='<'+'/script>';
   Object.keys(extra).forEach(function(p){
     var e=p.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-    if(/\.css$/i.test(p)&&extraText[p]!=null)h=h.replace(new RegExp('<link[^>]*href=["\']\\.?/?'+e+'["\'][^>]*>','gi'),function(){return '<style>'+extraText[p]+CLOSE_STYLE});
-    else if(/\.js$/i.test(p)&&extraText[p]!=null)h=h.replace(new RegExp('<script[^>]*src=["\']\\.?/?'+e+'["\'][^>]*>\\s*<'+'\\/script>','gi'),function(){return '<script>'+extraText[p]+CLOSE_SCRIPT});
+    if(/\.css$/i.test(p)&&extraText[p]!=null)h=h.replace(new RegExp('<link[^>]*href=["\']\\.?/?'+e+'["\'][^>]*>','gi'),function(){return '<style>'+extraText[p]+CS});
+    else if(/\.js$/i.test(p)&&extraText[p]!=null)h=h.replace(new RegExp('<script[^>]*src=["\']\\.?/?'+e+'["\'][^>]*>\\s*<'+'\\/script>','gi'),function(){return '<script>'+extraText[p]+CC});
     else{if(!extraURL[p])extraURL[p]=URL.createObjectURL(extra[p]);h=h.split(p).join(extraURL[p])}
   });
   return h;
@@ -300,9 +733,9 @@ function preview(){
     try{
       $('#pv').srcdoc=previewHTML();
       $('#sbar').style.background=$('#statusColor').value;
-      $('#sbar').style.display=$('#fullscreen').checked?'none':'block';
+      $('#sbar').style.display=$('#fullscreen').checked||$('#immersive').checked?'none':'block';
       $('#phone').classList.toggle('land',$('#orient').value==='landscape');
-      drawIcon($('#iconPrev'),152);save();
+      drawIcon($('#iconPrev'),168);save();
     }catch(e){}
   },300);
 }
@@ -314,9 +747,9 @@ function drawIcon(cv,size){
   x.clip();
   if(iconImg){var s=Math.min(iconImg.width,iconImg.height);x.drawImage(iconImg,(iconImg.width-s)/2,(iconImg.height-s)/2,s,s,0,0,size,size)}
   else{
-    var g=x.createLinearGradient(0,0,size,size);g.addColorStop(0,$('#iconColor').value);g.addColorStop(1,'#22d3b6');
+    var g=x.createLinearGradient(0,0,size,size);g.addColorStop(0,$('#iconColor').value);g.addColorStop(1,'#3E6A4B');
     x.fillStyle=g;x.fillRect(0,0,size,size);
-    x.fillStyle='#fff';x.font='bold '+(size*.5)+'px sans-serif';x.textAlign='center';x.textBaseline='middle';
+    x.fillStyle='#FFF9EB';x.font='bold '+(size*.5)+'px sans-serif';x.textAlign='center';x.textBaseline='middle';
     x.fillText(($('#appName').value.trim()[0]||'A').toUpperCase(),size/2,size/2+size*.03);
   }
   x.restore();
@@ -346,8 +779,8 @@ async function addFiles(list){
       var f=list[i];
       if(/\.zip$/i.test(f.name))await addZip(f);else await addOne(f.name,f,st);
     }
-    renderChips();preview();toast('تمت إضافة الملفات ✓');
-  }catch(e){toast('تعذّرت قراءة الملفات: '+e.message)}
+    renderChips();preview();toast('Files added');
+  }catch(e){toast('Could not read files: '+e.message)}
 }
 function renderChips(){
   var k=Object.keys(extra);
@@ -356,11 +789,17 @@ function renderChips(){
 }
 
 var xml=function(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'\\"').replace(/'/g,"\\'")};
+var hex=function(id,def){var v=$('#'+id).value;return /^#[0-9a-fA-F]{6}$/.test(v)?v:def};
+
 async function projectFiles(){
   var pkg=$('#pkg').value.trim(),name=$('#appName').value.trim()||'App';
-  var vName=$('#verName').value.trim()||'1.0',vCode=parseInt($('#verCode').value)||1;
-  var color=/^#[0-9a-fA-F]{6}$/.test($('#statusColor').value)?$('#statusColor').value:'#6c7bff';
-  var fs=$('#fullscreen').checked,net=$('#internet').checked,auto=$('#autoplay').checked,orient=$('#orient').value;
+  var vName=$('#verName').value.trim()||'1.0',vCode=parseInt($('#verCode').value)||1,minSdk=parseInt($('#minSdk').value)||21;
+  var cStatus=hex('statusColor','#5D0D18'),cNav=hex('navColor','#5D0D18'),cBg=hex('bgColor','#FFF9EB');
+  var on=function(id){return $('#'+id).checked};
+  var fs=on('fullscreen'),imm=on('immersive'),keep=on('keepAwake'),net=on('internet'),auto=on('autoplay'),ext=on('external');
+  var noZoom=on('noZoom'),noSel=on('noSelect'),dbl=on('doubleBack'),light=on('lightIcons');
+  var cam=on('permCam'),mic=on('permMic'),loc=on('permLoc'),orient=$('#orient').value;
+  var anyPerm=cam||mic||loc;
   var F=[],add=function(path,content){F.push({path:path,content:content})};
 
   add('settings.gradle','pluginManagement {\n    repositories { google(); mavenCentral(); gradlePluginPortal() }\n}\ndependencyResolutionManagement {\n    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)\n    repositories { google(); mavenCentral() }\n}\nrootProject.name = "WebApp"\ninclude \':app\'\n');
@@ -374,7 +813,7 @@ android {
     compileSdk 34
     defaultConfig {
         applicationId '${pkg}'
-        minSdk 21
+        minSdk ${minSdk}
         targetSdk 34
         versionCode ${vCode}
         versionName '${vName}'
@@ -388,9 +827,16 @@ android {
     }
 }
 `);
+
+  var perms='';
+  if(net)perms+='    <uses-permission android:name="android.permission.INTERNET" />\n';
+  if(cam)perms+='    <uses-permission android:name="android.permission.CAMERA" />\n    <uses-feature android:name="android.hardware.camera" android:required="false" />\n';
+  if(mic)perms+='    <uses-permission android:name="android.permission.RECORD_AUDIO" />\n    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />\n';
+  if(loc)perms+='    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n';
+
   add('app/src/main/AndroidManifest.xml',`<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-${net?'    <uses-permission android:name="android.permission.INTERNET" />\n':''}    <application
+${perms}    <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -410,28 +856,90 @@ ${net?'    <uses-permission android:name="android.permission.INTERNET" />\n':''}
 </manifest>
 `);
   add('app/src/main/res/values/strings.xml','<resources>\n    <string name="app_name">'+xml(name)+'</string>\n</resources>\n');
+
+  var bFS=fs?'        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);\n':'';
+  var bKeep=keep?'        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);\n':'';
+  var bLight=light?'        if (Build.VERSION.SDK_INT >= 23) {\n            View dv = getWindow().getDecorView();\n            dv.setSystemUiVisibility(dv.getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);\n        }\n':'';
+  var bImm=imm?'        applyImmersive();\n':'';
+  var mImm=imm?`
+    private void applyImmersive() {
+        getWindow().getDecorView().setSystemUiVisibility(
+            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+            | View.SYSTEM_UI_FLAG_FULLSCREEN
+            | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) applyImmersive();
+    }
+`:'';
+  var bZoom=noZoom?'        s.setSupportZoom(false);\n        s.setBuiltInZoomControls(false);\n':'';
+  var bLoc=loc?'        s.setGeolocationEnabled(true);\n':'';
+  var bSel=noSel?'        web.setLongClickable(false);\n        web.setOnLongClickListener(new View.OnLongClickListener() {\n            @Override\n            public boolean onLongClick(View v) { return true; }\n        });\n':'';
+  var chromeBody='';
+  if(anyPerm){
+    chromeBody=`
+            @Override
+            public void onPermissionRequest(final PermissionRequest request) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() { request.grant(request.getResources()); }
+                });
+            }
+
+            @Override
+            public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+                callback.invoke(origin, true, false);
+            }
+        `;
+  }
+  var permArr=[];
+  if(cam)permArr.push('"android.permission.CAMERA"');
+  if(mic)permArr.push('"android.permission.RECORD_AUDIO"');
+  if(loc){permArr.push('"android.permission.ACCESS_FINE_LOCATION"');permArr.push('"android.permission.ACCESS_COARSE_LOCATION"')}
+  var bReq=anyPerm?'        if (Build.VERSION.SDK_INT >= 23) {\n            requestPermissions(new String[]{'+permArr.join(', ')+'}, 1);\n        }\n':'';
+  var bLink=ext
+    ?'                if (u.startsWith("http")) {\n                    try { startActivity(new Intent(Intent.ACTION_VIEW, r.getUrl())); } catch (Exception e) { }\n                    return true;\n                }\n'
+    :'                if (u.startsWith("http")) return false;\n';
+  var bBack=dbl
+    ?'        if (System.currentTimeMillis() - lastBack < 2000) {\n            super.onBackPressed();\n        } else {\n            lastBack = System.currentTimeMillis();\n            Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show();\n        }\n'
+    :'        super.onBackPressed();\n';
+
   add('app/src/main/java/'+pkg.replace(/\./g,'/')+'/MainActivity.java',`package ${pkg};
 
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
 import android.view.WindowManager;
+import android.webkit.GeolocationPermissions;
+import android.webkit.PermissionRequest;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
     private WebView web;
+    private long lastBack = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-${fs?'        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);\n':''}        getWindow().setStatusBarColor(Color.parseColor("${color}"));
-
+${bFS}${bKeep}        getWindow().setStatusBarColor(Color.parseColor("${cStatus}"));
+        getWindow().setNavigationBarColor(Color.parseColor("${cNav}"));
+${bLight}${bImm}
         web = new WebView(this);
+        web.setBackgroundColor(Color.parseColor("${cBg}"));
         setContentView(web);
 
         WebSettings s = web.getSettings();
@@ -441,24 +949,27 @@ ${fs?'        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, W
         s.setUseWideViewPort(true);
         s.setLoadWithOverviewMode(true);
         s.setMediaPlaybackRequiresUserGesture(${auto?'false':'true'});
-
-        web.setWebChromeClient(new WebChromeClient());
+${bZoom}${bLoc}
+        web.setWebChromeClient(new WebChromeClient() {${chromeBody}});
         web.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest r) {
                 String u = r.getUrl().toString();
-                if (u.startsWith("file:") || u.startsWith("http")) return false;
-                try { startActivity(new Intent(Intent.ACTION_VIEW, r.getUrl())); } catch (Exception e) { }
+                if (u.startsWith("file:")) return false;
+${bLink}                try { startActivity(new Intent(Intent.ACTION_VIEW, r.getUrl())); } catch (Exception e) { }
                 return true;
             }
         });
-        web.loadUrl("file:///android_asset/index.html");
+${bSel}${bReq}        web.loadUrl("file:///android_asset/index.html");
     }
-
+${mImm}
     @Override
     public void onBackPressed() {
-        if (web.canGoBack()) web.goBack(); else super.onBackPressed();
-    }
+        if (web.canGoBack()) {
+            web.goBack();
+            return;
+        }
+${bBack}    }
 }
 `);
   var dens={mdpi:48,hdpi:72,xhdpi:96,xxhdpi:144,xxxhdpi:192};
@@ -476,8 +987,19 @@ async function toB64(c){
   var s='';for(var i=0;i<buf.length;i+=0x8000)s+=String.fromCharCode.apply(null,buf.subarray(i,i+0x8000));
   return btoa(s);
 }
+/* Safety: stop the build if any text file contains something that looks like a GitHub token */
+var SECRET_RE=/(ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|gho_[A-Za-z0-9]{20,}|ghs_[A-Za-z0-9]{20,})/;
+async function scanSecrets(files){
+  for(var i=0;i<files.length;i++){
+    var f=files[i],c=f.content;
+    if(typeof c==='string'){if(SECRET_RE.test(c))throw new Error('SECRET|'+f.path)}
+    else if(c&&/\.(html?|css|js|json|txt|svg|xml|md)$/i.test(f.path)){
+      var t=await c.text();if(SECRET_RE.test(t))throw new Error('SECRET|'+f.path);
+    }
+  }
+}
 
-var STEPS=['تجهيز ملفات التطبيق','الاتصال بالمستودع','رفع الملفات','بدء البناء','بناء التطبيق (2-5 دقائق)','تجهيز رابط التنزيل'];
+var STEPS=['Prepare app files','Connect to repository','Upload files','Start build','Build app (2-5 min)','Prepare download link'];
 function initSteps(){
   $('#steps').innerHTML=STEPS.map(function(s,i){return '<div class="st" id="st'+i+'"><div class="ic"></div><span>'+s+'</span><small></small></div>'}).join('');
   $('#progCard').classList.remove('hidden');$('#result').classList.add('hidden');$('#buildMsg').textContent='';$('#buildMsg').className='msg';
@@ -491,14 +1013,14 @@ var fmt=function(ms){var s=Math.floor(ms/1000);return Math.floor(s/60)+':'+Strin
 
 async function build(){
   if(busy)return;
-  if(!cfg.token){$('#setupBox').open=true;window.scrollTo({top:0,behavior:'smooth'});toast('أكمل إعداد GitHub أولاً');return}
+  if(!cfg.token){$('#setupBox').open=true;window.scrollTo({top:0,behavior:'smooth'});toast('Paste your GitHub token first (menu: How to create a token)');return}
   var pkg=$('#pkg').value.trim();
-  if(!/^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$/.test(pkg)){toast('معرّف الحزمة غير صحيح، مثال: com.mod.myapp');$('#pkg').focus();return}
-  busy=true;$('#buildBtn').disabled=true;$('#buildBtn').textContent='جارٍ البناء...';
+  if(!/^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$/.test(pkg)){toast('Invalid package ID, e.g. com.mod.myapp');$('#pkg').focus();return}
+  busy=true;$('#buildBtn').disabled=true;$('#buildBtn').textContent='Building...';
   initSteps();$('#progCard').scrollIntoView({behavior:'smooth'});
   var R=cfg.user+'/'+cfg.repo;
   try{
-    step(0,'run');var files=await projectFiles();step(0,'ok',files.length+' ملف');
+    step(0,'run');var files=await projectFiles();await scanSecrets(files);step(0,'ok',files.length+' files');
 
     step(1,'run');
     var repo=await gh('/repos/'+R);var br=repo.default_branch;
@@ -564,37 +1086,81 @@ async function build(){
 
     var name=$('#appName').value.trim()||'App';
     var h=ls.get('apk_hist')||[];
-    h.unshift({name:name,ver:$('#verName').value.trim(),url:url,page:rel.html_url,date:new Date().toLocaleString('ar')});
+    h.unshift({name:name,ver:$('#verName').value.trim(),url:url,page:rel.html_url,date:new Date().toLocaleString('en-GB')});
     ls.set('apk_hist',h.slice(0,10));
     $('#verCode').value=(parseInt($('#verCode').value)||1)+1;save();
     showResult(url,rel.html_url,name);renderHist();
   }catch(e){
     if(curStep>=0)step(curStep,'err');
     var m=$('#buildMsg');m.className='msg bad';
-    m.innerHTML=friendly(e).replace(/</g,'&lt;')+(lastRunUrl&&/BUILDFAIL|TIMEOUT/.test(String(e.message))?' <a href="'+lastRunUrl+'" target="_blank">فتح سجل البناء</a>':'');
+    m.innerHTML=friendly(e).replace(/</g,'&lt;')+(lastRunUrl&&/BUILDFAIL|TIMEOUT/.test(String(e.message))?' <a href="'+lastRunUrl+'" target="_blank">Open build log</a>':'');
   }
-  busy=false;$('#buildBtn').disabled=false;$('#buildBtn').textContent='⚡ بناء التطبيق (APK)';
+  busy=false;$('#buildBtn').disabled=false;$('#buildBtn').textContent='Build APK';
 }
 
 function showResult(url,page,name){
   var r=$('#result');r.classList.remove('hidden');
-  r.innerHTML='<h2><i>✅</i>تطبيق «'+name.replace(/</g,'&lt;')+'» جاهز</h2>'+
-  '<a class="btn green" href="'+url+'" target="_blank" rel="noopener">⬇ تنزيل ملف APK</a>'+
-  '<div class="hint">بعد التنزيل اضغط على الملف من تطبيق الملفات لتثبيته، ووافق على «التثبيت من مصدر غير معروف» إن طلب الهاتف ذلك.</div>'+
-  '<div class="hint">رابط مباشر للمشاركة: <code style="word-break:break-all">'+url+'</code></div>'+
-  '<div style="margin-top:10px;display:flex;gap:8px"><button type="button" class="btn" style="flex:1" id="cpy">نسخ الرابط</button><a class="btn" style="flex:1" href="'+page+'" target="_blank">صفحة الإصدار</a></div>';
-  $('#cpy').onclick=function(){if(navigator.clipboard)navigator.clipboard.writeText(url).then(function(){toast('تم نسخ الرابط ✓')})};
+  r.innerHTML='<h3>'+name.replace(/</g,'&lt;')+'<br>is ready.</h3>'+
+  '<p>Install the APK on your phone. If Android asks, allow installing from this source.</p>'+
+  '<a class="btn dl" href="'+url+'" target="_blank" rel="noopener">Download APK</a>'+
+  '<div class="qrwrap"><div><div class="qrbox" id="qr"></div></div><div style="flex:1;min-width:200px"><div class="hint">Scan the code to download on another phone, or copy the direct link:</div><code>'+url+'</code></div></div>'+
+  '<div style="margin-top:16px;display:flex;gap:10px"><button type="button" class="btn ghost-l" style="flex:1" id="cpy">Copy link</button><a class="btn ghost-l" style="flex:1" href="'+page+'" target="_blank">Release page</a></div>';
+  try{if(typeof QRCode!=='undefined')new QRCode($('#qr'),{text:url,width:132,height:132,colorDark:'#5D0D18',colorLight:'#FFF9EB'});else $('#qr').parentNode.style.display='none'}catch(e){}
+  $('#cpy').onclick=function(){if(navigator.clipboard)navigator.clipboard.writeText(url).then(function(){toast('Link copied')})};
   r.scrollIntoView({behavior:'smooth'});
 }
 function renderHist(){
   var h=ls.get('apk_hist')||[];
   $('#histCard').classList.toggle('hidden',!h.length);
-  $('#hist').innerHTML=h.map(function(x){return '<div class="hist"><div>'+String(x.name).replace(/</g,'&lt;')+' <small>v'+String(x.ver).replace(/</g,'&lt;')+' • '+x.date+'</small></div><a class="btn" href="'+x.url+'" target="_blank" rel="noopener">تنزيل</a></div>'}).join('');
+  $('#hist').innerHTML=h.map(function(x){return '<div class="hist"><div>'+String(x.name).replace(/</g,'&lt;')+' <small>v'+String(x.ver).replace(/</g,'&lt;')+' &bull; '+x.date+'</small></div><a class="btn" href="'+x.url+'" target="_blank" rel="noopener">Download</a></div>'}).join('');
 }
 
-// ---------- ربط الأزرار ----------
+async function exportZip(){
+  var pkg=$('#pkg').value.trim();
+  if(!/^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$/.test(pkg)){toast('Invalid package ID, e.g. com.mod.myapp');return}
+  try{
+    var files=await projectFiles();await scanSecrets(files);var z=new JSZip();
+    files.forEach(function(f){z.file(f.path,f.content)});
+    var blob=await z.generateAsync({type:'blob'});
+    var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=pkg.split('.').pop()+'-android-project.zip';a.click();
+    toast('Project ZIP exported');
+  }catch(e){toast(friendly(e))}
+}
+
+/* ===== Menu + Guide ===== */
+function setLang(l){
+  $('#tAr').classList.toggle('on',l==='ar');$('#tEn').classList.toggle('on',l==='en');
+  $('#secAr').classList.toggle('on',l==='ar');$('#secEn').classList.toggle('on',l==='en');
+}
+function openGuide(sec,lang){
+  $('#menu').classList.remove('on');
+  setLang(lang||($('#tEn').classList.contains('on')?'en':'ar'));
+  $('#guide').classList.add('on');
+  document.body.style.overflow='hidden';
+  var l=$('#tEn').classList.contains('on')?'en':'ar';
+  setTimeout(function(){
+    var el=$('#'+l+'-'+sec);
+    if(el&&sec!=='top')el.scrollIntoView({behavior:'smooth',block:'start'});
+    else $('#guide').scrollTop=0;
+  },60);
+}
+function closeGuide(){$('#guide').classList.remove('on');document.body.style.overflow=''}
+$('#menuBtn').addEventListener('click',function(e){e.stopPropagation();$('#menu').classList.toggle('on')});
+document.addEventListener('click',function(e){if(!$('#menu').contains(e.target))$('#menu').classList.remove('on')});
+$$('.mi[data-g]').forEach(function(b){b.addEventListener('click',function(){openGuide(b.dataset.g==='use'?'use':b.dataset.g)})});
+$('#miSetup').addEventListener('click',function(){$('#menu').classList.remove('on');$('#setupBox').open=true;$('#setupBox').scrollIntoView({behavior:'smooth'})});
+$('#gClose').addEventListener('click',closeGuide);
+$('#guide').addEventListener('click',function(e){if(e.target===$('#guide'))closeGuide()});
+$('#tAr').addEventListener('click',function(){setLang('ar');$('#guide').scrollTop=0});
+$('#tEn').addEventListener('click',function(){setLang('en');$('#guide').scrollTop=0});
+$$('.jump a').forEach(function(a){a.addEventListener('click',function(){var el=$('#'+a.dataset.j);if(el)el.scrollIntoView({behavior:'smooth',block:'start'})})});
+$('#tokHelp').addEventListener('click',function(){openGuide('token')});
+$('#showTok').addEventListener('click',function(){var i=$('#ghToken');var show=i.type==='password';i.type=show?'text':'password';this.textContent=show?'Hide':'Show'});
+
 $('#saveCfg').addEventListener('click',saveConfig);
 $('#buildBtn').addEventListener('click',build);
+$('#zipBtn').addEventListener('click',exportZip);
+$('#resetBtn').addEventListener('click',function(){if(confirm('Reset all fields and code to defaults?')){ls.del('apk_form');location.reload()}});
 $('#iconBtn').addEventListener('click',function(){$('#iconFile').click()});
 $('#iconFile').addEventListener('change',function(e){var f=e.target.files[0];if(!f)return;var im=new Image();im.onload=function(){iconImg=im;preview()};im.src=URL.createObjectURL(f)});
 $('#drop').addEventListener('click',function(){$('#files').click()});
