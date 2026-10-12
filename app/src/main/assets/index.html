@@ -1,1204 +1,600 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>APK Studio</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Serif+Display&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<html lang="en"><head><meta charset="utf-8"><title>AttendPro</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#1e5fa8"><meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%231e5fa8%27/%3E%3Cpath d=%27M18 33l10 10 19-22%27 stroke=%27white%27 stroke-width=%278%27 fill=%27none%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E">
 <style>
-:root{--cream:#FFF9EB;--beige:#EDDDD3;--beige2:#E4D0C4;--sage:#9FB2AC;--blood:#5D0D18;--orange:#E2692F;--green:#3E6A4B;--ink:#2B1015;--mut:#7a5a5f}
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:'Space Grotesk',sans-serif;color:var(--ink);min-height:100vh;padding-bottom:130px;background-color:var(--beige);
-background-image:linear-gradient(rgba(93,13,24,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(93,13,24,.07) 1px,transparent 1px);background-size:96px 96px}
-.wrap{max-width:860px;margin:auto;padding:16px}
-.hero{position:relative;padding:6px 0 26px;overflow:hidden}
-.blobs{position:absolute;right:-60px;top:-40px;width:340px;height:300px;z-index:0;opacity:.95;pointer-events:none}
-.topline{position:relative;z-index:5;display:flex;align-items:center;gap:12px;margin-bottom:34px}
-.topline .sp{flex:1}
-.logo{font-family:'DM Serif Display',serif;font-size:44px;color:var(--orange);line-height:1}
-.kebab{width:44px;height:44px;border:2px solid var(--blood);background:var(--cream);border-radius:6px;cursor:pointer;display:grid;place-items:center;flex:none}
-.kebab i{display:block;width:5px;height:5px;border-radius:50%;background:var(--blood);box-shadow:0 -9px 0 var(--blood),0 9px 0 var(--blood)}
-.kebab:hover{background:var(--blood)}.kebab:hover i{background:var(--cream);box-shadow:0 -9px 0 var(--cream),0 9px 0 var(--cream)}
-.menu{position:absolute;left:0;top:52px;background:var(--cream);border:2px solid var(--blood);border-radius:6px;min-width:250px;display:none;z-index:50;box-shadow:0 12px 30px rgba(43,16,21,.25)}
-.menu.on{display:block}
-.mi{display:block;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid rgba(93,13,24,.15);padding:12px 14px;cursor:pointer;font-family:inherit;color:var(--blood)}
-.mi:last-child{border:0}
-.mi:hover{background:var(--beige)}
-.mi .a{display:block;font-family:'Tajawal',sans-serif;font-weight:700;font-size:15px;direction:rtl;text-align:right}
-.mi .e{display:block;font-size:12px;font-weight:600;letter-spacing:.04em;direction:ltr;text-align:left;margin-top:2px;color:var(--mut)}
-.pill{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--orange);font-weight:600}
-.pill .arrow{width:0;height:0;border-left:22px solid var(--green);border-top:15px solid transparent;border-bottom:15px solid transparent;display:block}
-.pill.ok{color:var(--green)}.pill.bad{color:var(--blood)}
-.stack{position:relative;z-index:2;display:grid;grid-template-columns:1fr 1fr;max-width:640px}
-.blk{padding:14px 16px;font-weight:500;font-size:20px;line-height:1.25}
-.blk.o{background:var(--orange);color:var(--cream)}
-.blk.g{grid-column:1/3;background:var(--green);color:var(--cream);font-size:clamp(34px,8vw,58px);font-weight:700;letter-spacing:-1px;padding:18px 16px}
-.blk.o2{grid-column:2;background:var(--orange);color:var(--cream)}
-.sub{position:relative;z-index:2;margin-top:18px;max-width:560px;color:var(--blood);font-weight:500;font-size:15px;line-height:1.6}
-.card{background:var(--cream);padding:20px;margin-bottom:18px;border-radius:6px;position:relative}
-.tag{display:inline-flex;margin-bottom:16px;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
-.tag b{background:var(--orange);color:var(--cream);padding:6px 11px}
-.tag span{background:var(--green);color:var(--cream);padding:6px 14px}
-details.card summary{cursor:pointer;list-style:none;display:block}
-details.card summary::-webkit-details-marker{display:none}
-label.f{display:block;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--blood);margin:14px 0 6px}
-input[type=text],input[type=password],input[type=number],select,textarea{width:100%;background:var(--beige);border:0;border-bottom:2px solid var(--blood);color:var(--ink);border-radius:4px 4px 0 0;padding:12px;font-family:inherit;font-size:15px;outline:none}
-input:focus,select:focus,textarea:focus{border-bottom-color:var(--orange);background:#f1e3da}
-input[type=color]{width:100%;height:46px;border:0;border-bottom:2px solid var(--blood);background:var(--beige);padding:4px;border-radius:4px 4px 0 0;cursor:pointer}
-.mono{font-family:Consolas,Menlo,monospace}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-@media(max-width:520px){.row3{grid-template-columns:1fr 1fr}}
-.msg{font-size:13px;margin-top:10px;line-height:1.7;min-height:18px;font-weight:500}
-.msg.bad{color:var(--blood)}.msg.ok{color:var(--green)}.msg.warn{color:var(--orange)}
-.hint{font-size:12px;color:var(--mut);margin-top:8px;line-height:1.7}
-.hint a,.msg a{color:var(--orange);font-weight:600}
-code{background:var(--beige);padding:2px 6px;font-size:12px;border-radius:3px;font-family:Consolas,monospace}
-.sw{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 0;border-bottom:1px solid rgba(93,13,24,.14);cursor:pointer}
-.sw:last-child{border:0}
-.sw b{display:block;font-size:15px;font-weight:600}
-.sw small{display:block;font-size:12px;color:var(--mut);margin-top:2px;line-height:1.5}
-.sw input{appearance:none;-webkit-appearance:none;flex:none;width:48px;height:26px;background:var(--beige2);border-radius:99px;position:relative;cursor:pointer;transition:.2s;border:2px solid var(--blood)}
-.sw input::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:var(--blood);transition:.2s}
-.sw input:checked{background:var(--green);border-color:var(--green)}
-.sw input:checked::after{left:24px;background:var(--cream)}
-.btn{border:2px solid var(--blood);border-radius:4px;padding:12px 16px;font-family:inherit;font-weight:700;font-size:14px;cursor:pointer;color:var(--blood);background:transparent;text-decoration:none;display:inline-block;text-align:center;letter-spacing:.02em;transition:.15s}
-.btn:hover{background:var(--blood);color:var(--cream)}
-.btn.main{background:var(--blood);color:var(--cream);font-size:16px;padding:16px;flex:1;letter-spacing:.06em;text-transform:uppercase}
-.btn.main:hover{background:var(--orange);border-color:var(--orange)}
-.btn:disabled{opacity:.55;pointer-events:none}
-.btn.dl{background:var(--orange);border-color:var(--orange);color:var(--cream);font-size:18px;padding:18px;width:100%;display:block}
-.btn.dl:hover{background:var(--cream);color:var(--blood)}
-.btn.ghost-l{border-color:var(--cream);color:var(--cream)}
-.btn.ghost-l:hover{background:var(--cream);color:var(--blood)}
-.btn.sm{padding:9px 12px;font-size:12px}
-.iconrow{display:flex;gap:16px;align-items:center}
-#iconPrev{width:84px;height:84px;border-radius:18px;flex:none;box-shadow:0 0 0 2px var(--blood)}
-.drop{display:block;border:2px dashed var(--blood);border-radius:6px;padding:26px 16px;text-align:center;color:var(--blood);cursor:pointer;font-size:14px;line-height:1.8;font-weight:500;background:var(--beige)}
-.drop:hover{background:var(--beige2)}
-.vh{position:absolute;left:-9999px;top:0;width:1px;height:1px;opacity:0;overflow:hidden}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-.chip{background:var(--sage);color:var(--blood);padding:5px 12px;font-size:12px;display:flex;gap:10px;align-items:center;font-weight:600;border-radius:3px}
-.chip b{cursor:pointer}
-.tabs{display:flex;gap:0;margin:16px 0 10px}
-.tab{padding:10px 20px;background:var(--beige);color:var(--blood);cursor:pointer;font-weight:700;font-size:13px;letter-spacing:.06em}
-.tab.on{background:var(--green);color:var(--cream)}
-textarea.ed{height:300px;font-family:Consolas,Menlo,monospace;font-size:13px;line-height:1.6;resize:vertical;white-space:pre;tab-size:2}
-.pvwrap{display:flex;justify-content:center}
-.phone{width:280px;height:520px;border-radius:34px;border:10px solid var(--ink);background:#fff;overflow:hidden;box-shadow:0 18px 50px rgba(43,16,21,.3)}
-.phone.land{width:100%;max-width:540px;height:290px}
-.phone .bar{height:24px;background:#5D0D18}
-.phone iframe{width:100%;height:calc(100% - 24px);border:0;background:#fff}
-.hidden{display:none}
-.card.prog{background:var(--sage);color:var(--blood)}
-.card.prog .tag b{background:var(--blood)}
-.st{display:flex;gap:12px;padding:10px 0;align-items:center;font-size:15px;font-weight:600;opacity:.6}
-.st .ic{width:24px;height:24px;border:2px solid var(--blood);display:grid;place-items:center;font-size:13px;flex:none;border-radius:4px}
-.st.run{opacity:1}.st.run .ic{border-radius:50%;border-top-color:transparent;animation:sp 1s linear infinite}
-.st.ok{opacity:1}.st.ok .ic{background:var(--blood);color:var(--cream)}
-.st.err{opacity:1;color:#8a1020}.st.err .ic{background:var(--orange);border-color:var(--orange);color:var(--cream)}
-.st small{margin-left:auto;font-size:12px;font-weight:500}
-@keyframes sp{to{transform:rotate(360deg)}}
-.card.prog .msg.bad{color:var(--blood);background:var(--cream);padding:10px 12px;border-radius:4px}
-.card.res{background:var(--blood);color:var(--cream)}
-.card.res h3{font-size:30px;line-height:1.1;font-weight:700;margin-bottom:6px}
-.card.res p{color:#e8cfd2;font-size:14px;line-height:1.6;margin-bottom:16px}
-.card.res .hint{color:#d7b7bb}
-.card.res code{background:rgba(255,249,235,.12);color:var(--cream);word-break:break-all;display:block;margin-top:6px;padding:8px}
-.qrbox{background:var(--cream);padding:12px;display:inline-block;margin-top:14px;border-radius:4px}
-.qrwrap{display:flex;gap:18px;align-items:flex-end;flex-wrap:wrap}
-.hist{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid rgba(93,13,24,.14);font-size:15px;font-weight:600}
-.hist:last-child{border:0}.hist small{color:var(--mut);display:block;font-size:12px;font-weight:500}
-.bar-bottom{position:fixed;bottom:0;left:0;right:0;padding:12px 14px calc(12px + env(safe-area-inset-bottom));background:var(--beige);border-top:3px solid var(--blood);z-index:12}
-.bar-bottom .in{max-width:860px;margin:auto;display:flex;gap:10px}
-.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--cream);padding:12px 20px;border-radius:4px;font-size:14px;z-index:90;display:none;max-width:90%;font-weight:500}
-.foot{text-align:center;font-size:12px;color:var(--mut);padding:10px 0 4px;letter-spacing:.06em}
-.tokrow{display:flex;gap:8px;align-items:flex-end}
-.tokrow>div{flex:1}
-.ov{position:fixed;inset:0;background:rgba(43,16,21,.65);display:none;z-index:80;padding:12px;align-items:flex-start;justify-content:center;overflow:auto}
-.ov.on{display:flex}
-.gd{background:var(--cream);width:100%;max-width:760px;margin:20px auto;border-radius:8px;border:3px solid var(--blood);overflow:hidden}
-.gd-head{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--blood);color:var(--cream);padding:14px 16px;position:sticky;top:0;z-index:3}
-.gd-head h2{font-size:18px;letter-spacing:.04em}
-.gd-x{background:var(--orange);border:0;color:var(--cream);width:36px;height:36px;border-radius:4px;font-size:18px;cursor:pointer;font-weight:700}
-.gd-tabs{display:flex;background:var(--beige);border-bottom:2px solid var(--blood);position:sticky;top:64px;z-index:2}
-.gd-tabs button{flex:1;padding:13px;border:0;background:transparent;font-family:inherit;font-weight:700;font-size:15px;color:var(--blood);cursor:pointer}
-.gd-tabs button.on{background:var(--green);color:var(--cream)}
-.gd-body{padding:18px}
-.sec{display:none}.sec.on{display:block}
-.sec.ar{direction:rtl;text-align:right;font-family:'Tajawal',sans-serif}
-.sec.en{direction:ltr;text-align:left;font-family:'Space Grotesk',sans-serif}
-.jump{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
-.jump a{background:var(--beige);border:2px solid var(--blood);color:var(--blood);padding:7px 12px;font-size:13px;font-weight:700;text-decoration:none;border-radius:4px;cursor:pointer}
-.jump a:hover{background:var(--blood);color:var(--cream)}
-.sec h3{background:var(--green);color:var(--cream);padding:10px 14px;font-size:17px;margin:22px 0 12px}
-.sec h3:first-of-type{margin-top:0}
-.stp{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid rgba(93,13,24,.14);align-items:flex-start}
-.stp:last-child{border:0}
-.stp>i{font-style:normal;flex:none;width:30px;height:30px;background:var(--orange);color:var(--cream);display:grid;place-items:center;font-weight:700;font-size:14px;border-radius:4px}
-.stp>div{flex:1;font-size:15px;line-height:1.9;min-width:0}
-.sec.ar .stp>div{font-size:16px}
-.stp b.t{display:block;color:var(--blood);font-size:16px;margin-bottom:2px}
-.en-box{display:block;direction:ltr;text-align:left;background:var(--beige);border-left:4px solid var(--orange);padding:8px 12px;margin:6px 0;font-family:Consolas,Menlo,monospace;font-size:13px;line-height:1.6;word-break:break-all;color:var(--ink);unicode-bidi:isolate}
-.note{background:var(--sage);color:var(--blood);padding:12px 14px;margin:12px 0;font-size:14px;line-height:1.8;border-radius:4px}
-.warnbox{background:var(--blood);color:var(--cream);padding:12px 14px;margin:12px 0;font-size:14px;line-height:1.8;border-radius:4px}
-.gbtn{display:inline-block;background:var(--orange);color:var(--cream);padding:11px 16px;font-weight:700;font-size:14px;text-decoration:none;border-radius:4px;margin:6px 0;font-family:'Space Grotesk',sans-serif;direction:ltr;cursor:pointer;border:0}
-</style>
-</head>
-<body>
-<div class="wrap">
+:root{--ac:#1e5fa8;--bg:#f5f9ff;--cd:#ffffff;--cd2:#e6eef9;--ink:#0d2b4e;--mu:#6b86a8;--ln:#c8dcf2;--soft:#e6eef9;--red:#c0392b;--caramel:#4a90d9;--cream:#e6eef9;--success:#2DC76D;--warn:#F5A524;--sh:0 0.75rem 2rem rgba(0,0,0,.08);--z:1;--sp:cubic-bezier(.34,1.56,.64,1);--ea:cubic-bezier(.22,1,.36,1);--wall:url('https://imgdb.io/i/C50eAa0.jpg');box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root[data-palette="blue"]{--ac:#1e5fa8;--bg:#f5f9ff;--cd:#ffffff;--cd2:#e6eef9;--ink:#0d2b4e;--mu:#6b86a8;--ln:#c8dcf2;--cream:#e6eef9;--caramel:#4a90d9;--red:#c0392b}
+:root[data-palette="blue"][data-theme="dark"]{--bg:#0a1a2e;--cd:#12293f;--cd2:#1a3550;--ink:#e6eef9;--mu:#8aabcc;--ln:#2a4a6a;--cream:#1a3550;--caramel:#4a90d9;--ac:#4a90d9}
+:root[data-palette="coffee"]{--ac:#8b5a2b;--bg:#fdfaf6;--cd:#ffffff;--cd2:#f5ede4;--ink:#4a3b32;--mu:#9e8e82;--ln:#e8d5c4;--cream:#f5ede4;--caramel:#c49a6c;--red:#c0392b}
+:root[data-palette="coffee"][data-theme="dark"]{--bg:#2a1f18;--cd:#3a2b22;--cd2:#4a382d;--ink:#f5ede4;--mu:#c4a882;--ln:#5a4436;--cream:#4a382d;--caramel:#c49a6c;--ac:#c49a6c}
+:root[data-palette="green"]{--ac:#1a5c3a;--bg:#f5faf6;--cd:#ffffff;--cd2:#e8f2ec;--ink:#0d2b1c;--mu:#6b8a78;--ln:#c8ddd0;--cream:#e8f2ec;--caramel:#3a8c5f;--red:#c0392b}
+:root[data-palette="green"][data-theme="dark"]{--bg:#0d2b1c;--cd:#123a26;--cd2:#1a4a30;--ink:#e8f2ec;--mu:#8aab97;--ln:#2a5a3e;--cream:#1a4a30;--caramel:#3a8c5f;--ac:#3a8c5f}
+:root[data-palette="gray"]{--ac:#4a4a52;--bg:#f5f5f7;--cd:#ffffff;--cd2:#ececf0;--ink:#1c1c1e;--mu:#74747b;--ln:#d8d8dc;--cream:#ececf0;--caramel:#8a8a92;--red:#c0392b}
+:root[data-palette="gray"][data-theme="dark"]{--bg:#1c1c1e;--cd:#2a2a2e;--cd2:#3a3a3e;--ink:#f3f3f5;--mu:#98989f;--ln:#4a4a4e;--cream:#3a3a3e;--caramel:#8a8a92;--ac:#8a8a92}
+:root[data-palette="red"]{--ac:#c0392b;--bg:#f5f5f5;--cd:#ffffff;--cd2:#e8e8e8;--ink:#1a1a1a;--mu:#707070;--ln:#d0d0d0;--cream:#e8e8e8;--caramel:#8a8a8a;--red:#c0392b}
+:root[data-palette="red"][data-theme="dark"]{--bg:#0a0a0a;--cd:#1a1a1a;--cd2:#2a2a2a;--ink:#f5f5f5;--mu:#999999;--ln:#3a3a3a;--cream:#2a2a2a;--caramel:#8a8a8a;--ac:#e74c3c}
+html{font-size:calc(16px*var(--z));scroll-behavior:smooth;scroll-padding-top:env(safe-area-inset-top,0px);background-color:#f5f9ff}
+*{box-sizing:border-box}
+body{margin:0;background-color:transparent;min-height:100vh;color:var(--ink);font-family:"Poppins","Nunito","Segoe UI",system-ui,-apple-system,Roboto,"Noto Sans Arabic",sans-serif;font-size:.9rem;font-weight:600;line-height:1.35;overflow-x:hidden;-webkit-tap-highlight-color:transparent;transition:color .3s ease;position:relative}
+body::before{content:"";position:fixed;inset:0;z-index:-1;background:linear-gradient(rgba(245,249,255,0.88),rgba(245,249,255,0.88));pointer-events:none}
+body::after{content:"";position:fixed;inset:0;z-index:-2;background:var(--wall) center/cover fixed no-repeat;pointer-events:none}
+:root[data-theme="dark"] body::before{background:linear-gradient(rgba(10,20,35,0.90),rgba(10,20,35,0.90))}
+button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer;border:0;background:none;padding:0}
+svg.i{width:1.4rem;height:1.4rem;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.hd{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--ac) 88%,transparent);backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2);color:#fff;display:flex;align-items:center;gap:.6rem;padding:.8rem 1rem;border-bottom-left-radius:1.75rem;border-bottom-right-radius:1.75rem;box-shadow:0 .625rem 1.5rem rgba(0,0,0,.12);transition:background .3s ease}
+.ib{width:2.5rem;height:2.5rem;border-radius:50%;background:rgba(255,255,255,.2);color:#fff;display:grid;place-items:center;overflow:hidden;flex:none;transition:transform .4s var(--sp)}.ib:active{transform:scale(.86)}
+.ib svg.i{width:1.2rem;height:1.2rem}.ib img{width:100%;height:100%;object-fit:cover}
+.avw{position:relative;flex:none}.dot{position:absolute;right:-1px;bottom:-1px;width:.8rem;height:.8rem;border-radius:50%;border:0.125rem solid var(--ac);background:#EF4B4B;transition:background .4s}
+.dot.ok{background:#2DC76D}.dot.busy{background:#F5C518}[dir=rtl] .dot{right:auto;left:-1px}
+.cd{flex:1;min-width:0;background:rgba(255,255,255,.18);color:#fff;border-radius:.9rem;padding:.35rem .6rem;text-align:center;line-height:1.2;cursor:pointer;transition:transform .4s var(--sp)}.cd:active{transform:scale(.96)}
+.cd small{display:block;font-size:.62rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.9}.cd b{font-size:.95rem;font-weight:800;letter-spacing:.03em;font-variant-numeric:tabular-nums}
+.imp{background:color-mix(in srgb,var(--caramel) 90%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:#fff;padding:.5rem .9rem;display:flex;align-items:center;justify-content:space-between;gap:.5rem;font-weight:700;font-size:.8rem}
+.main{max-width:60rem;margin:0 auto;padding:1rem .9rem 6rem}
+.pg{animation:pg .55s var(--sp) both}@keyframes pg{from{opacity:0;transform:translateY(1.125rem) scale(.985)}to{opacity:1;transform:none}}
+h1{font-size:1.3rem;font-weight:800;margin:0 0 .15rem}h2{font-size:1rem;font-weight:800;margin:0}.sub{color:var(--mu);margin:0 0 1rem;font-size:.82rem}
+.bk{display:inline-flex;align-items:center;gap:.3rem;padding:.4rem .9rem .4rem .5rem;border-radius:6.1875rem;background:color-mix(in srgb,var(--cd) 85%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:var(--ink);font-weight:700;font-size:.8rem;margin-bottom:.9rem;transition:transform .4s var(--sp);box-shadow:var(--sh)}.bk:active{transform:scale(.9)}.bk svg.i{width:1.1rem;height:1.1rem}[dir=rtl] .bk svg{transform:scaleX(-1)}
+.card{background:color-mix(in srgb,var(--cd) 88%,transparent);backdrop-filter:blur(12px) saturate(1.15);-webkit-backdrop-filter:blur(12px) saturate(1.15);border-radius:1.5rem;box-shadow:var(--sh);border:1px solid color-mix(in srgb,var(--ln) 60%,transparent);transition:background .3s ease,border-color .3s ease}.pad{padding:1.1rem}
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.2rem;border-radius:6.1875rem;background:var(--ac);color:#fff;font-weight:700;font-size:.85rem;transition:transform .4s var(--sp),filter .2s,background .3s ease;box-shadow:0 .25rem .75rem rgba(0,0,0,.15)}.btn:active{transform:scale(.92)}.btn:hover{filter:brightness(1.08)}
+.btn.g{background:color-mix(in srgb,var(--cd2) 85%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:var(--ink);box-shadow:none}.btn.s{padding:.4rem .8rem;font-size:.75rem}.btn.r{background:var(--red)}
+.btn.wa{background:#25D366;color:#fff}
+.btn.gr{background:#2DC76D;color:#fff}
+.row{display:flex;align-items:center;gap:.6rem}.sp{justify-content:space-between}.wrap{flex-wrap:wrap}
+label.l{display:block;font-size:.75rem;font-weight:700;margin:.9rem 0 .35rem;color:var(--mu)}
+input,select,textarea{width:100%;padding:.75rem .9rem;border-radius:1rem;border:2px solid var(--ln);background:color-mix(in srgb,var(--bg) 85%,transparent);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);font-weight:600;outline:0;font-size:.9rem;transition:border-color .2s,background .3s ease,color .3s ease}input:focus,select:focus,textarea:focus{border-color:var(--ac)}
+.upl{position:relative;display:inline-flex}.upl input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;padding:0;border:0}
+.lnk{display:inline-flex;align-items:center;gap:.3rem;color:var(--mu);font-size:.75rem;font-weight:700}
+.li{display:flex;align-items:center;gap:.7rem;padding:.7rem 1rem;border-bottom:1px solid var(--ln);min-width:0}.li:last-child{border:0}.li .n{flex:1;min-width:0;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+button.li{width:100%;text-align:start}.li.hl{background:color-mix(in srgb,var(--cream) 80%,transparent)}
+.st{display:flex;gap:.35rem}.st button{width:2.1rem;height:2.1rem;border-radius:50%;background:color-mix(in srgb,var(--cd2) 80%,transparent);font-weight:800;font-size:.78rem;color:var(--mu);transition:transform .35s var(--sp),background .2s}.st button:active{transform:scale(.85)}
+.st .p.on{background:#2DC76D;color:#fff}.st .a.on{background:var(--red);color:#fff}.st .l.on{background:#F5A524;color:#fff}
+.st.locked button{opacity:.55;pointer-events:none;cursor:not-allowed}
+.chips{display:flex;gap:.35rem;flex-wrap:wrap}.chip{padding:.5rem .85rem;border-radius:6.1875rem;background:color-mix(in srgb,var(--cd2) 80%,transparent);font-weight:700;font-size:.78rem;color:var(--mu);transition:transform .35s var(--sp)}.chip:active{transform:scale(.9)}.chip.on{background:var(--ac);color:#fff}
+.empty{text-align:center;padding:2.5rem 1rem;color:var(--mu)}.empty svg.art{width:4.5rem;height:4.5rem;margin-bottom:.5rem}
+.art{stroke:currentColor;fill:none;stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round;color:var(--caramel)}
+.sq{min-width:1.8rem;height:1.8rem;padding:0 .5rem;border-radius:50%;background:color-mix(in srgb,var(--cd2) 80%,transparent);display:inline-grid;place-items:center;font-weight:800;font-size:.75rem;flex:none}
+.sq.p{background:#2DC76D;color:#fff}.sq.a{background:var(--red);color:#fff}.sq.l{background:#F5A524;color:#fff}
+.tg{padding:.25rem .7rem;border-radius:6.1875rem;background:color-mix(in srgb,var(--cd2) 80%,transparent);font-size:.7rem;font-weight:700;color:var(--mu);flex:none}.tg.p{background:#2DC76D;color:#fff}.tg.a{background:var(--red);color:#fff}.tg.l{background:#F5A524;color:#fff}
+.lay{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.35);backdrop-filter:blur(0.25rem);animation:fd .3s var(--ea) both}.lay.out{animation:fo .2s ease both}
+.lay.c{display:grid;place-items:center;padding:1rem;overflow:auto;background:rgba(0,0,0,.45);backdrop-filter:blur(1rem) saturate(1.2)}.lay.mod{z-index:60}
+@keyframes fd{from{opacity:0}to{opacity:1}}@keyframes fo{to{opacity:0}}
+.mp{position:absolute;top:calc(4.5rem + env(safe-area-inset-top,0px));inset-inline-start:.8rem;width:min(17rem,84vw);background:color-mix(in srgb,var(--cd) 90%,transparent);backdrop-filter:blur(16px) saturate(1.2);-webkit-backdrop-filter:blur(16px) saturate(1.2);border-radius:1.5rem;padding:.5rem;box-shadow:var(--sh);transform-origin:top left;animation:mi .5s var(--sp) both;max-height:calc(100vh - 5rem);overflow-y:auto}
+[dir=rtl] .mp{transform-origin:top right}.lay.out .mp{animation:mo .2s ease both}
+@keyframes mi{from{opacity:0;transform:scale(.55) translateY(-0.75rem)}to{opacity:1;transform:none}}@keyframes mo{to{opacity:0;transform:scale(.7) translateY(-0.5rem)}}
+.mr{display:flex;align-items:center;gap:.9rem;width:100%;padding:.85rem 1rem;border-radius:1.1rem;color:var(--ink);text-align:start;font-weight:600;font-size:.92rem;transition:background .2s,transform .35s var(--sp);opacity:0;transform:translateX(-1rem);animation:mrin .5s var(--sp) forwards}
+[dir=rtl] .mr{transform:translateX(1rem)}
+@keyframes mrin{to{opacity:1;transform:none}}
+.mr:active{transform:scale(.96)}
+.mr svg.i{width:1.35rem;height:1.35rem;color:var(--mu)}.mr.on{background:color-mix(in srgb,var(--cream) 80%,transparent)}.mr.on svg.i{color:var(--ac)}
+.mr small{display:block;color:var(--mu);font-weight:500;font-size:.66rem}
+.mr-soon{background:linear-gradient(135deg,#2DC76D,#25a85a)!important;color:#fff!important;margin-top:.4rem;cursor:default!important;pointer-events:none}
+.mr-soon svg.i{color:#fff!important}
+.mr-soon small{color:rgba(255,255,255,.9)!important}
+.mp-foot{padding:.85rem .9rem .55rem;margin-top:.5rem;border-top:1px dashed var(--ln);text-align:center;color:var(--mu);font-size:.68rem;line-height:1.6}
+.mp-foot b{color:var(--ac);display:block;font-size:.76rem;letter-spacing:.06em;margin-bottom:.15rem}
+.mp-foot .ver{display:inline-block;background:color-mix(in srgb,var(--cd2) 80%,transparent);color:var(--ink);padding:.15rem .55rem;border-radius:999px;font-weight:800;font-size:.65rem;margin:.15rem 0}
+.pc{width:min(19rem,88vw);background:color-mix(in srgb,var(--cd) 90%,transparent);backdrop-filter:blur(16px) saturate(1.2);-webkit-backdrop-filter:blur(16px) saturate(1.2);border-radius:2rem;padding:1.6rem;text-align:center;box-shadow:0 1.5rem 3.75rem rgba(0,0,0,.25);animation:pi .6s var(--sp) both}
+.lay.out .pc,.lay.out .box{animation:po .2s ease both}
+@keyframes pi{from{opacity:0;transform:scale(.6) translateY(1.5rem)}to{opacity:1;transform:none}}@keyframes po{to{opacity:0;transform:scale(.8)}}
+.big{width:6rem;height:6rem;margin:0 auto .6rem;border-radius:50%;border:0.25rem solid var(--ac);overflow:hidden;background:color-mix(in srgb,var(--cd2) 80%,transparent);display:grid;place-items:center}.big img{width:100%;height:100%;object-fit:cover}
+.pr{display:flex;align-items:center;justify-content:space-between;padding:.7rem 1rem;background:color-mix(in srgb,var(--cd2) 80%,transparent);border-radius:1rem;margin-top:.5rem;font-weight:700}
+.box{background:color-mix(in srgb,var(--cd) 90%,transparent);backdrop-filter:blur(16px) saturate(1.2);-webkit-backdrop-filter:blur(16px) saturate(1.2);border-radius:2rem;padding:1.5rem;width:100%;max-width:27rem;max-height:92vh;overflow:auto;animation:pi .55s var(--sp) both;box-shadow:0 1.5rem 3.75rem rgba(0,0,0,.25)}.box h2{margin:0 0 .2rem;font-size:1.1rem}
+.prev{width:100%;border-radius:1.2rem;margin-top:.6rem}
 
-<div class="hero">
-  <svg class="blobs" viewBox="0 0 340 300" xmlns="http://www.w3.org/2000/svg">
-    <path d="M340 0 L340 300 C300 290 285 250 262 238 C238 226 222 244 202 214 C182 184 214 170 190 140 C166 110 128 128 112 96 C96 64 126 38 150 20 C170 6 190 14 210 8 C240 0 300 6 340 0Z" fill="#9FB2AC"/>
-    <path d="M340 90 L340 300 C312 296 304 270 288 262 C270 252 258 262 246 240 C234 218 254 208 250 188 C246 168 270 160 286 140 C300 124 316 118 328 100 C334 94 338 92 340 90Z" fill="#5D0D18"/>
-    <ellipse cx="236" cy="168" rx="9" ry="13" fill="#5D0D18"/>
-  </svg>
-  <div class="topline">
-    <div style="position:relative">
-      <button type="button" class="kebab" id="menuBtn" aria-label="Menu"><i></i></button>
-      <div class="menu" id="menu">
-        <button type="button" class="mi" data-g="use"><span class="a">دليل الاستخدام</span><span class="e">Usage guide</span></button>
-        <button type="button" class="mi" data-g="token"><span class="a">كيفية إنشاء مفتاح GitHub</span><span class="e">How to create a GitHub token</span></button>
-        <button type="button" class="mi" data-g="fix"><span class="a">حل المشاكل</span><span class="e">Troubleshooting</span></button>
-        <button type="button" class="mi" id="miSetup"><span class="a">إعداد الاتصال</span><span class="e">GitHub connection</span></button>
-      </div>
-    </div>
-    <div class="logo">apk</div>
-    <div class="sp"></div>
-    <div class="pill" id="pill"><span id="pillText">Not connected</span><i class="arrow"></i></div>
-  </div>
-  <div class="stack">
-    <div class="blk o">Web code<br>to</div>
-    <div class="blk g">APK Studio</div>
-    <div class="blk o2">Android apps<br>in minutes</div>
-  </div>
-  <p class="sub">Write or upload HTML, CSS and JavaScript, tune the options, press one button and download a ready APK.</p>
-</div>
+/* ===== بطاقة أفقية مصغّرة (متمركزة) ===== */
+.stack{display:flex;flex-direction:column;gap:.55rem;max-width:34rem;margin:0 auto}
+.rowcard{display:flex;align-items:center;gap:.7rem;background:color-mix(in srgb,var(--cd) 88%,transparent);backdrop-filter:blur(12px) saturate(1.15);-webkit-backdrop-filter:blur(12px) saturate(1.15);border-radius:1.1rem;box-shadow:var(--sh);border:1px solid color-mix(in srgb,var(--ln) 60%,transparent);padding:.5rem .6rem;width:100%;text-align:start;transition:transform .35s var(--sp),box-shadow .2s}
+.rowcard:active{transform:scale(.98)}
+@media(hover:hover){.rowcard:hover{transform:translateY(-2px)}}
+.rowcard .rthumb{width:2.6rem;height:2.6rem;border-radius:.7rem;background:color-mix(in srgb,var(--cd2) 80%,transparent) center/cover;display:grid;place-items:center;flex:none;overflow:hidden}
+.rowcard .rthumb svg.art{width:1.4rem;height:1.4rem;stroke-width:1.4}
+.rowcard .rbody{flex:1;min-width:0;text-align:center}
+.rowcard .rtitle{font-weight:800;font-size:.85rem;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rowcard .rsub{color:var(--mu);font-size:.68rem;font-weight:600;margin-top:.1rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rowcard .rside{width:2.4rem;height:2.4rem;border-radius:50%;background:color-mix(in srgb,var(--cd2) 85%,transparent);color:var(--ink);display:grid;place-items:center;flex:none;transition:transform .35s var(--sp)}
+.rowcard .rside:active{transform:scale(.85)}
+.rowcard .rside svg.i{width:1.05rem;height:1.05rem}
 
-<details class="card" id="setupBox" open>
-  <summary><div class="tag"><b>01</b><span>GitHub connection</span></div></summary>
-  <div class="row">
-    <div><label class="f">Username</label><input type="text" id="ghUser" class="mono" autocapitalize="off" autocomplete="off"></div>
-    <div><label class="f">Repository</label><input type="text" id="ghRepo" class="mono" autocapitalize="off" autocomplete="off"></div>
-  </div>
-  <label class="f">Access token</label>
-  <div class="tokrow">
-    <div><input type="password" id="ghToken" class="mono" placeholder="ghp_..." autocomplete="off" autocapitalize="off" spellcheck="false"></div>
-    <button type="button" class="btn sm" id="showTok">Show</button>
-  </div>
-  <div class="hint">Paste your own token here. It is stored in this browser only and sent only to GitHub. Never put it inside your app files.</div>
-  <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
-    <button type="button" class="btn" id="saveCfg">Save &amp; test connection</button>
-    <button type="button" class="btn" id="tokHelp">How to create a token</button>
-  </div>
-  <div class="msg" id="cfgMsg"></div>
-</details>
-
-<div class="card">
-  <div class="tag"><b>02</b><span>App info</span></div>
-  <label class="f">App name</label>
-  <input type="text" id="appName" value="My App">
-  <label class="f">Package ID</label>
-  <input type="text" id="pkg" class="mono" value="com.mod.myapp" autocapitalize="off">
-  <div class="row3">
-    <div><label class="f">Version name</label><input type="text" id="verName" class="mono" value="1.0"></div>
-    <div><label class="f">Version code</label><input type="number" id="verCode" value="1" min="1"></div>
-    <div><label class="f">Min Android</label>
-      <select id="minSdk"><option value="21">5.0 (API 21)</option><option value="24">7.0 (API 24)</option><option value="26">8.0 (API 26)</option><option value="28">9.0 (API 28)</option></select>
-    </div>
-  </div>
-  <div class="hint">Version code goes up automatically after every successful build.</div>
-</div>
-
-<div class="card">
-  <div class="tag"><b>03</b><span>Branding</span></div>
-  <div class="iconrow">
-    <canvas id="iconPrev" width="168" height="168"></canvas>
-    <div>
-      <label class="btn" for="iconFile" id="iconBtn">Upload icon</label>
-      <input type="file" id="iconFile" accept="image/*" class="vh">
-      <div class="hint">Square image, 512×512 recommended. Without one, an icon is generated from the app name.</div>
-    </div>
-  </div>
-  <div class="row3">
-    <div><label class="f">Default icon</label><input type="color" id="iconColor" value="#E2692F"></div>
-    <div><label class="f">Status bar</label><input type="color" id="statusColor" value="#5D0D18"></div>
-    <div><label class="f">Navigation bar</label><input type="color" id="navColor" value="#5D0D18"></div>
-  </div>
-  <div class="row">
-    <div><label class="f">Loading background</label><input type="color" id="bgColor" value="#FFF9EB"></div>
-    <div></div>
-  </div>
-  <div class="sw" style="margin-top:6px"><label for="lightIcons" style="flex:1;cursor:pointer"><b>Dark status bar icons</b><small>Use when the status bar color is light.</small></label><input type="checkbox" id="lightIcons"></div>
-</div>
-
-<div class="card">
-  <div class="tag"><b>04</b><span>Behavior</span></div>
-  <label class="f">Screen orientation</label>
-  <select id="orient"><option value="unspecified">Auto</option><option value="portrait">Portrait</option><option value="landscape">Landscape</option></select>
-  <div style="margin-top:8px">
-    <div class="sw"><label for="fullscreen" style="flex:1;cursor:pointer"><b>Fullscreen</b><small>Hide the status bar.</small></label><input type="checkbox" id="fullscreen"></div>
-    <div class="sw"><label for="immersive" style="flex:1;cursor:pointer"><b>Immersive mode</b><small>Also hide the navigation bar (great for games).</small></label><input type="checkbox" id="immersive"></div>
-    <div class="sw"><label for="keepAwake" style="flex:1;cursor:pointer"><b>Keep screen awake</b><small>Screen never dims while the app is open.</small></label><input type="checkbox" id="keepAwake"></div>
-    <div class="sw"><label for="internet" style="flex:1;cursor:pointer"><b>Internet access</b><small>Needed for online fonts, images and APIs.</small></label><input type="checkbox" id="internet" checked></div>
-    <div class="sw"><label for="autoplay" style="flex:1;cursor:pointer"><b>Autoplay audio &amp; video</b><small>Allow media to start without a tap.</small></label><input type="checkbox" id="autoplay"></div>
-    <div class="sw"><label for="external" style="flex:1;cursor:pointer"><b>Open web links in browser</b><small>Links to websites open in Chrome instead of inside the app.</small></label><input type="checkbox" id="external" checked></div>
-    <div class="sw"><label for="noZoom" style="flex:1;cursor:pointer"><b>Disable pinch zoom</b><small>Makes the page feel like a native app.</small></label><input type="checkbox" id="noZoom"></div>
-    <div class="sw"><label for="noSelect" style="flex:1;cursor:pointer"><b>Disable long-press selection</b><small>Blocks text selection and the copy menu.</small></label><input type="checkbox" id="noSelect"></div>
-    <div class="sw"><label for="doubleBack" style="flex:1;cursor:pointer"><b>Press back twice to exit</b><small>Prevents closing the app by accident.</small></label><input type="checkbox" id="doubleBack" checked></div>
-  </div>
-</div>
-
-<div class="card">
-  <div class="tag"><b>05</b><span>Permissions</span></div>
-  <div class="sw"><label for="permCam" style="flex:1;cursor:pointer"><b>Camera</b><small>For pages that use the camera.</small></label><input type="checkbox" id="permCam"></div>
-  <div class="sw"><label for="permMic" style="flex:1;cursor:pointer"><b>Microphone</b><small>For voice input and recording (speech apps).</small></label><input type="checkbox" id="permMic"></div>
-  <div class="sw"><label for="permLoc" style="flex:1;cursor:pointer"><b>Location</b><small>For pages that use GPS.</small></label><input type="checkbox" id="permLoc"></div>
-  <div class="hint">Android will ask the user to allow each one the first time the app opens.</div>
-</div>
-
-<div class="card">
-  <div class="tag"><b>06</b><span>Files &amp; code</span></div>
-  <label class="drop" for="files" id="drop">Tap to choose files<br>HTML / CSS / JS / images / fonts &mdash; or one ZIP with your whole site</label>
-  <input type="file" id="files" class="vh" multiple>
-  <div class="chips" id="chips"></div>
-  <div class="tabs">
-    <div class="tab on" data-t="html">HTML</div>
-    <div class="tab" data-t="css">CSS</div>
-    <div class="tab" data-t="js">JavaScript</div>
-  </div>
-  <textarea class="ed" id="ed-html" spellcheck="false"></textarea>
-  <textarea class="ed hidden" id="ed-css" spellcheck="false"></textarea>
-  <textarea class="ed hidden" id="ed-js" spellcheck="false"></textarea>
-  <div class="hint">These boxes are for YOUR app code only. If your HTML does not link the CSS and JS files, links are added automatically. The main page is saved as <code>index.html</code>.</div>
-  <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
-    <button type="button" class="btn" id="zipBtn">Export project ZIP</button>
-    <button type="button" class="btn" id="resetBtn">Reset form</button>
-  </div>
-</div>
-
-<div class="card">
-  <div class="tag"><b>07</b><span>Live preview</span></div>
-  <div class="pvwrap"><div class="phone" id="phone"><div class="bar" id="sbar"></div><iframe id="pv" sandbox="allow-scripts allow-forms allow-modals"></iframe></div></div>
-</div>
-
-<div class="card prog hidden" id="progCard">
-  <div class="tag"><b>08</b><span>Build progress</span></div>
-  <div id="steps"></div>
-  <div class="msg" id="buildMsg"></div>
-</div>
-
-<div class="card res hidden" id="result"></div>
-
-<div class="card hidden" id="histCard">
-  <div class="tag"><b>09</b><span>Previous builds</span></div>
-  <div id="hist"></div>
-</div>
-
-<div class="foot">APK STUDIO &mdash; A1 &bull; B2 &bull; C3</div>
-</div>
-
-<div class="bar-bottom"><div class="in">
-  <button type="button" class="btn main" id="buildBtn">Build APK</button>
-</div></div>
-<div class="toast" id="toast"></div>
-
-<div class="ov" id="guide">
-  <div class="gd">
-    <div class="gd-head"><h2>APK Studio &mdash; Guide</h2><button type="button" class="gd-x" id="gClose">&#10005;</button></div>
-    <div class="gd-tabs">
-      <button type="button" id="tAr" class="on">العربية</button>
-      <button type="button" id="tEn">English</button>
-    </div>
-    <div class="gd-body">
-      <div class="sec ar on" id="secAr">
-        <div class="jump">
-          <a data-j="ar-token">إنشاء المفتاح</a>
-          <a data-j="ar-use">طريقة الاستخدام</a>
-          <a data-j="ar-fix">حل المشاكل</a>
-        </div>
-        <h3 id="ar-token">أولاً: كيف تنشئ مفتاح GitHub (Token)</h3>
-        <div class="note">المفتاح هو كلمة سر خاصة تسمح للأداة برفع ملفاتك إلى مستودعك على GitHub. تنشئه مرة واحدة فقط، وتلصقه في الأداة بنفسك.</div>
-        <div class="stp"><i>0</i><div><b class="t">تجهيز المستودع (إن لم يكن موجوداً)</b>
-          افتح هذا الرابط في المتصفح:
-          <span class="en-box">github.com/new</span>
-          في خانة اسم المستودع اكتب:
-          <span class="en-box">myapp</span>
-          اختر:
-          <span class="en-box">Public</span>
-          ثم اضغط:
-          <span class="en-box">Create repository</span>
-          المستودع يجب أن يحتوي ملفاً واحداً على الأقل. إن كان فارغاً أنشئ فيه أي ملف، مثل README.</div></div>
-        <div class="stp"><i>1</i><div><b class="t">سجّل الدخول إلى GitHub</b>
-          افتح الموقع وسجّل دخولك بحسابك.
-          <span class="en-box">github.com</span></div></div>
-        <div class="stp"><i>2</i><div><b class="t">افتح صفحة إنشاء المفتاح</b>
-          اضغط الزر التالي لفتحها في تبويب جديد:
-          <div><a class="gbtn" href="https://github.com/settings/tokens/new?scopes=repo,workflow&description=apk-studio" target="_blank" rel="noopener">Open token page</a></div>
-          وإن لم يفتح، افتح هذا الرابط:
-          <span class="en-box">github.com/settings/tokens</span>
-          ثم اضغط:
-          <span class="en-box">Generate new token</span>
-          واختر:
-          <span class="en-box">Generate new token (classic)</span>
-          لا تختر الخيار الأول (Fine-grained) لأنه لا يعمل مع الأداة. قد يطلب منك GitHub كلمة المرور، فأدخلها.</div></div>
-        <div class="stp"><i>3</i><div><b class="t">اكتب اسماً للمفتاح</b>
-          في خانة الاسم اكتب:
-          <span class="en-box">apk-studio</span>
-          الخانة اسمها:
-          <span class="en-box">Note</span></div></div>
-        <div class="stp"><i>4</i><div><b class="t">حدّد مدة الصلاحية</b>
-          في القائمة المنسدلة اختر:
-          <span class="en-box">90 days</span>
-          اسم القائمة:
-          <span class="en-box">Expiration</span>
-          بعد انتهاء المدة تنشئ مفتاحاً جديداً بنفس الخطوات.</div></div>
-        <div class="stp"><i>5</i><div><b class="t">فعّل صلاحيتين فقط</b>
-          ضع علامة صح على المربعين التاليين، ولا تفعّل غيرهما:
-          <span class="en-box">repo</span>
-          <span class="en-box">workflow</span>
-          عند تفعيل repo تتفعل المربعات الصغيرة تحته تلقائياً، وهذا طبيعي. أما workflow فمربع مستقل يقع بعده بقليل، فتأكد منه.</div></div>
-        <div class="stp"><i>6</i><div><b class="t">أنشئ المفتاح</b>
-          انزل إلى آخر الصفحة واضغط الزر الأخضر:
-          <span class="en-box">Generate token</span></div></div>
-        <div class="stp"><i>7</i><div><b class="t">انسخ المفتاح فوراً</b>
-          سيظهر نص أخضر طويل يبدأ بهذه الأحرف:
-          <span class="en-box">ghp_</span>
-          اضغط أيقونة النسخ بجانبه. <b>لا تغلق الصفحة قبل النسخ</b>، لأن GitHub لا يعرضه مرة ثانية.</div></div>
-        <div class="stp"><i>8</i><div><b class="t">الصقه في الأداة</b>
-          ارجع إلى الأداة وافتح الصندوق رقم 01. الصق المفتاح في الخانة:
-          <span class="en-box">Access token</span>
-          ثم اضغط:
-          <span class="en-box">Save &amp; test connection</span>
-          انتظر ثواني حتى تظهر رسالة خضراء تبدأ بـ:
-          <span class="en-box">Connected to</span>
-          وبعدها يظهر اسمك أعلى الصفحة وتصبح الأداة جاهزة.</div></div>
-        <div class="warnbox"><b>تنبيه أمني:</b> لا تكتب المفتاح داخل ملفات تطبيقك ولا ترسله لأحد ولا تنشره. إن تسرّب، احذفه فوراً من هذه الصفحة وأنشئ غيره:
-          <span class="en-box" style="background:rgba(255,249,235,.12);color:#FFF9EB;border-color:#E2692F">github.com/settings/tokens</span>
-          وإن وُجد مفتاح داخل الملفات، سيرفض GitHub رفعها، وتوقف الأداة البناء أيضاً.</div>
-        <h3 id="ar-use">ثانياً: طريقة استخدام الأداة</h3>
-        <div class="stp"><i>1</i><div><b class="t">الاتصال</b>
-          أكمل الصندوق 01 كما شرحنا أعلاه. اسم المستخدم والمستودع يجب أن يطابقا ما في GitHub.</div></div>
-        <div class="stp"><i>2</i><div><b class="t">معلومات التطبيق (02)</b>
-          اكتب اسم التطبيق الذي سيظهر تحت أيقونته. أما معرّف الحزمة فهو اسم فني فريد، مثل:
-          <span class="en-box">com.mod.myapp</span>
-          شروطه: حروف إنجليزية صغيرة وأرقام، بلا مسافات، وفيه نقطة واحدة على الأقل. رقم الإصدار يزداد وحده بعد كل بناء ناجح.</div></div>
-        <div class="stp"><i>3</i><div><b class="t">الهوية والألوان (03)</b>
-          ارفع أيقونة مربعة، أو اتركها فتُصنع أيقونة تلقائية بالحرف الأول. اختر لون شريط الحالة وشريط التنقل وخلفية التحميل.</div></div>
-        <div class="stp"><i>4</i><div><b class="t">السلوك (04)</b>
-          اختر اتجاه الشاشة، ثم فعّل ما تحتاجه: ملء الشاشة، الوضع الغامر للألعاب، إبقاء الشاشة مضاءة، الإنترنت، التشغيل التلقائي للصوت، فتح الروابط في المتصفح، منع التكبير، منع تحديد النص، والضغط مرتين على رجوع للخروج.</div></div>
-        <div class="stp"><i>5</i><div><b class="t">الصلاحيات (05)</b>
-          فعّل الكاميرا أو المايكروفون أو الموقع إن احتاجها تطبيقك. ألعاب النطق تحتاج المايكروفون. سيطلب أندرويد الموافقة من المستخدم عند أول فتح.</div></div>
-        <div class="stp"><i>6</i><div><b class="t">ملفات تطبيقك (06)</b>
-          لديك طريقتان: اضغط على مربع الرفع واختر ملفاتك (أو ملف ZIP فيه موقعك كاملاً)، أو الصق الكود في التبويبات الثلاثة. هذه الخانات لكود تطبيقك أنت فقط، وليست لكود الأداة. وإن امتلأت بالخطأ اضغط:
-          <span class="en-box">Reset form</span></div></div>
-        <div class="stp"><i>7</i><div><b class="t">المعاينة (07)</b>
-          تعرض شكل تطبيقك مباشرة. تأكد أنه يعمل قبل البناء.</div></div>
-        <div class="stp"><i>8</i><div><b class="t">ابنِ التطبيق</b>
-          اضغط الزر الثابت في الأسفل:
-          <span class="en-box">Build APK</span>
-          تظهر المراحل في الصندوق 08. المرحلة الخامسة تأخذ من 2 إلى 5 دقائق، <b>فلا تغلق الصفحة ولا تخرج من المتصفح</b> حتى تنتهي.</div></div>
-        <div class="stp"><i>9</i><div><b class="t">نزّل التطبيق وثبّته</b>
-          عند النجاح يظهر زر برتقالي:
-          <span class="en-box">Download APK</span>
-          اضغط عليه، ثم افتح الملف من التنزيلات ووافق على التثبيت من مصدر غير معروف إن طلب الهاتف. يمكنك أيضاً مسح رمز QR لتنزيله على هاتف آخر.</div></div>
-        <div class="stp"><i>10</i><div><b class="t">البناءات السابقة (09)</b>
-          تحفظ الأداة آخر 10 تطبيقات بنيتها لتنزلها لاحقاً. وكل بناء جديد يستبدل ملفات المشروع في المستودع، فلتطبيقات منفصلة استخدم لكل تطبيق مستودعاً مستقلاً.</div></div>
-        <h3 id="ar-fix">ثالثاً: حل المشاكل الشائعة</h3>
-        <div class="stp"><i>!</i><div><b class="t">المفتاح غير صحيح أو منتهي</b>
-          أنشئ مفتاحاً جديداً بالخطوات أعلاه، وتأكد أنك لصقته كاملاً بلا مسافات.</div></div>
-        <div class="stp"><i>!</i><div><b class="t">المستودع غير موجود</b>
-          تحقق من اسم المستخدم واسم المستودع، ومن تفعيل صلاحية:
-          <span class="en-box">repo</span></div></div>
-        <div class="stp"><i>!</i><div><b class="t">المستودع فارغ</b>
-          أضف إليه أي ملف واحد (مثل README) من موقع GitHub ثم أعد المحاولة.</div></div>
-        <div class="stp"><i>!</i><div><b class="t">اكتشاف مفتاح داخل الملفات</b>
-          يعني أن ملفاتك تحتوي نصاً يشبه المفتاح. احذفه من الكود، واضغط
-          <span class="en-box">Reset form</span>
-          ثم الصق كود تطبيقك الصحيح فقط.</div></div>
-        <div class="stp"><i>!</i><div><b class="t">فشل البناء</b>
-          افتح رابط سجل البناء الذي يظهر تحت الرسالة، وأرسل صورة الخطأ لتحليله. تأكد أيضاً أن الصلاحية التالية مفعّلة في المفتاح:
-          <span class="en-box">workflow</span></div></div>
-        <div class="stp"><i>!</i><div><b class="t">لم يبدأ البناء</b>
-          افتح تبويب Actions في مستودعك على GitHub وتأكد أنه مفعّل.</div></div>
-      </div>
-
-      <div class="sec en" id="secEn">
-        <div class="jump">
-          <a data-j="en-token">Create token</a>
-          <a data-j="en-use">How to use</a>
-          <a data-j="en-fix">Troubleshooting</a>
-        </div>
-        <h3 id="en-token">Part 1: How to create a GitHub token</h3>
-        <div class="note">The token is a private password that lets this tool upload your files to your GitHub repository. You create it once and paste it into the tool yourself.</div>
-        <div class="stp"><i>0</i><div><b class="t">Prepare the repository (if you do not have one)</b>
-          Open:
-          <span class="en-box">github.com/new</span>
-          Repository name:
-          <span class="en-box">myapp</span>
-          Choose:
-          <span class="en-box">Public</span>
-          Then press:
-          <span class="en-box">Create repository</span>
-          The repository must contain at least one file. If it is empty, add any file such as README.</div></div>
-        <div class="stp"><i>1</i><div><b class="t">Sign in to GitHub</b>
-          Open the website and sign in.
-          <span class="en-box">github.com</span></div></div>
-        <div class="stp"><i>2</i><div><b class="t">Open the token page</b>
-          Press this button to open it in a new tab:
-          <div><a class="gbtn" href="https://github.com/settings/tokens/new?scopes=repo,workflow&description=apk-studio" target="_blank" rel="noopener">Open token page</a></div>
-          If it does not open, go to:
-          <span class="en-box">github.com/settings/tokens</span>
-          Press:
-          <span class="en-box">Generate new token</span>
-          Then choose:
-          <span class="en-box">Generate new token (classic)</span>
-          Do not choose the first option (Fine-grained); it does not work with this tool. GitHub may ask for your password.</div></div>
-        <div class="stp"><i>3</i><div><b class="t">Name the token</b>
-          In the field called:
-          <span class="en-box">Note</span>
-          type:
-          <span class="en-box">apk-studio</span></div></div>
-        <div class="stp"><i>4</i><div><b class="t">Set the expiration</b>
-          In the dropdown called:
-          <span class="en-box">Expiration</span>
-          choose:
-          <span class="en-box">90 days</span>
-          When it expires, create a new one with the same steps.</div></div>
-        <div class="stp"><i>5</i><div><b class="t">Enable exactly two scopes</b>
-          Tick these two boxes and nothing else:
-          <span class="en-box">repo</span>
-          <span class="en-box">workflow</span>
-          Ticking repo automatically ticks the small boxes under it; that is normal. workflow is a separate box a little lower, so double-check it.</div></div>
-        <div class="stp"><i>6</i><div><b class="t">Generate the token</b>
-          Scroll to the bottom and press the green button:
-          <span class="en-box">Generate token</span></div></div>
-        <div class="stp"><i>7</i><div><b class="t">Copy it immediately</b>
-          A long green text appears, starting with:
-          <span class="en-box">ghp_</span>
-          Tap the copy icon next to it. <b>Do not close the page before copying</b>; GitHub never shows it again.</div></div>
-        <div class="stp"><i>8</i><div><b class="t">Paste it into the tool</b>
-          Come back to the tool and open box 01. Paste the token into:
-          <span class="en-box">Access token</span>
-          Then press:
-          <span class="en-box">Save &amp; test connection</span>
-          After a few seconds you should see a green message starting with:
-          <span class="en-box">Connected to</span>
-          Your username then appears at the top and the tool is ready.</div></div>
-        <div class="warnbox"><b>Security:</b> never write the token inside your app files, never send it to anyone and never post it. If it leaks, delete it right away on this page and create a new one:
-          <span class="en-box" style="background:rgba(255,249,235,.12);color:#FFF9EB;border-color:#E2692F">github.com/settings/tokens</span>
-          If a token is found inside the files, GitHub rejects the upload and this tool stops the build too.</div>
-        <h3 id="en-use">Part 2: How to use the tool</h3>
-        <div class="stp"><i>1</i><div><b class="t">Connection</b>
-          Complete box 01 as described above. The username and repository must match GitHub exactly.</div></div>
-        <div class="stp"><i>2</i><div><b class="t">App info (02)</b>
-          Type the app name shown under its icon. The package ID is a unique technical name, for example:
-          <span class="en-box">com.mod.myapp</span>
-          Rules: lowercase letters and digits, no spaces, at least one dot. The version code increases by itself after each successful build.</div></div>
-        <div class="stp"><i>3</i><div><b class="t">Branding (03)</b>
-          Upload a square icon, or leave it empty and an icon is generated from the first letter. Pick the status bar, navigation bar and loading background colors.</div></div>
-        <div class="stp"><i>4</i><div><b class="t">Behavior (04)</b>
-          Choose the screen orientation, then switch on what you need: fullscreen, immersive mode for games, keep screen awake, internet, autoplay media, open links in browser, disable zoom, disable text selection and double back to exit.</div></div>
-        <div class="stp"><i>5</i><div><b class="t">Permissions (05)</b>
-          Enable camera, microphone or location if your app needs them. Speech games need the microphone. Android asks the user to allow each one on first launch.</div></div>
-        <div class="stp"><i>6</i><div><b class="t">Your app files (06)</b>
-          Two ways: tap the upload area and choose your files (or one ZIP with the whole site), or paste code into the three tabs. These boxes are for YOUR app code only, not the tool's code. If they are filled by mistake, press:
-          <span class="en-box">Reset form</span></div></div>
-        <div class="stp"><i>7</i><div><b class="t">Preview (07)</b>
-          Shows your app live. Check that it works before building.</div></div>
-        <div class="stp"><i>8</i><div><b class="t">Build the app</b>
-          Press the fixed button at the bottom:
-          <span class="en-box">Build APK</span>
-          Progress appears in box 08. Step five takes 2 to 5 minutes, <b>so do not close the page or leave the browser</b> until it finishes.</div></div>
-        <div class="stp"><i>9</i><div><b class="t">Download and install</b>
-          On success an orange button appears:
-          <span class="en-box">Download APK</span>
-          Tap it, open the file from Downloads and allow installing from unknown sources if the phone asks. You can also scan the QR code to download on another phone.</div></div>
-        <div class="stp"><i>10</i><div><b class="t">Previous builds (09)</b>
-          The tool keeps your last 10 builds for later download. Every new build replaces the project files in the repository, so for separate apps use a separate repository for each.</div></div>
-        <h3 id="en-fix">Part 3: Troubleshooting</h3>
-        <div class="stp"><i>!</i><div><b class="t">Token invalid or expired</b>
-          Create a new token with the steps above and make sure you pasted it whole, without spaces.</div></div>
-        <div class="stp"><i>!</i><div><b class="t">Repository not found</b>
-          Check the username and repository name, and that this scope is enabled:
-          <span class="en-box">repo</span></div></div>
-        <div class="stp"><i>!</i><div><b class="t">Repository is empty</b>
-          Add any single file (such as README) on the GitHub website, then try again.</div></div>
-        <div class="stp"><i>!</i><div><b class="t">Token found inside files</b>
-          Your files contain text that looks like a token. Remove it from the code, press
-          <span class="en-box">Reset form</span>
-          and paste only your real app code.</div></div>
-        <div class="stp"><i>!</i><div><b class="t">Build failed</b>
-          Open the build log link shown under the message and send me the error screenshot. Also make sure this scope is enabled on your token:
-          <span class="en-box">workflow</span></div></div>
-        <div class="stp"><i>!</i><div><b class="t">Build did not start</b>
-          Open the Actions tab of your repository on GitHub and make sure it is enabled.</div></div>
-      </div>
-
-    </div>
-  </div>
-</div>
-
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(9rem,1fr));gap:.9rem}
+.ct{background:color-mix(in srgb,var(--cd) 88%,transparent);backdrop-filter:blur(12px) saturate(1.15);-webkit-backdrop-filter:blur(12px) saturate(1.15);border-radius:1.5rem;overflow:hidden;text-align:start;display:block;width:100%;transition:transform .4s var(--sp),box-shadow .2s;box-shadow:var(--sh);border:1px solid color-mix(in srgb,var(--ln) 60%,transparent)}.ct:active{transform:scale(.94)}
+@media(hover:hover){.ct:hover{transform:translateY(-3px)}}
+.ci{aspect-ratio:4/3;background:color-mix(in srgb,var(--cd2) 80%,transparent) center/cover;display:grid;place-items:center;color:var(--caramel)}.ci svg.art{width:2.8rem;height:2.8rem;stroke-width:1.3}
+.cn{padding:.7rem .85rem;font-weight:700;font-size:.85rem;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere;min-height:2.9rem}
+.ban{height:8rem;border-radius:1.5rem;background:color-mix(in srgb,var(--cd2) 80%,transparent) center/cover;display:grid;place-items:center}.ban svg.art{width:3rem;height:3rem}
+.sbar{position:sticky;bottom:.8rem;background:color-mix(in srgb,var(--cd) 90%,transparent);backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2);padding:.6rem;border-radius:6.1875rem;box-shadow:var(--sh);justify-content:center;margin-top:1rem;z-index:5;border:1px solid var(--ln)}
+.cal{padding:1rem;margin-bottom:.7rem;background:color-mix(in srgb,var(--cd) 88%,transparent);backdrop-filter:blur(12px) saturate(1.15);-webkit-backdrop-filter:blur(12px) saturate(1.15);border-radius:1.5rem;box-shadow:var(--sh);border:1px solid color-mix(in srgb,var(--ln) 60%,transparent)}
+.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:.7rem}.ch b{font-size:.95rem;color:var(--ac)}
+.ch .nx svg{transform:scaleX(-1)}[dir=rtl] .ch svg{transform:scaleX(-1)}[dir=rtl] .ch .nx svg{transform:none}
+.cw,.cg{display:grid;grid-template-columns:repeat(7,1fr);gap:.3rem;text-align:center}.cw span{font-size:.65rem;color:var(--mu);font-weight:700;padding:.3rem 0}
+.cg button{aspect-ratio:1;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.12rem;font-weight:600;font-size:.8rem;color:var(--ink);transition:transform .35s var(--sp),background .2s;min-width:0;position:relative}
+.cg button:active{transform:scale(.82)}.cg button.o{pointer-events:none}.cg button.t{box-shadow:inset 0 0 0 2px var(--ac);color:var(--ac);font-weight:800}.cg button.sel{background:var(--ac);color:#fff}
+.cg .dt{width:.4rem;height:.4rem;border-radius:50%;background:var(--caramel);position:absolute;bottom:.15rem}.cg button.sel .dt{background:#fff}.dt.s{background:transparent;box-shadow:inset 0 0 0 1.5px var(--mu)}
+.cg button.p{background:color-mix(in srgb,#2DC76D 30%,transparent)}.cg button.a{background:color-mix(in srgb,#c0392b 30%,transparent)}.cg button.l{background:color-mix(in srgb,#F5A524 30%,transparent)}.cg button.sel{background:var(--ac)}
+.seg{display:flex;gap:.4rem;margin-top:.6rem}.seg button{flex:1;padding:.65rem;border-radius:1rem;background:color-mix(in srgb,var(--cd2) 80%,transparent);font-weight:700;font-size:.82rem;transition:transform .35s var(--sp),background .2s}.seg button:active{transform:scale(.94)}.seg button.on{background:var(--ac);color:#fff}
+.cnt{display:flex;align-items:center;gap:.7rem}.cnt button{width:2.3rem;height:2.3rem;border-radius:50%;background:var(--ac);color:#fff;font-size:1.2rem;font-weight:800;transition:transform .35s var(--sp)}.cnt button:active{transform:scale(.8)}.cnt span{min-width:3rem;text-align:center;font-weight:800}
+.sw{display:flex;gap:.7rem;margin-top:.7rem;flex-wrap:wrap}.sw button{width:2.6rem;height:2.6rem;border-radius:50%;border:0.1875rem solid color-mix(in srgb,var(--cd) 80%,transparent);box-shadow:0 0 0 0.125rem var(--ln);transition:transform .35s var(--sp)}.sw button:active{transform:scale(.8)}.sw button.on{box-shadow:0 0 0 0.1875rem var(--ink);transform:scale(1.1)}
+.per{padding:.55rem 0;border-top:1px solid var(--ln)}
+details{border-top:1px solid var(--ln);padding:.7rem 0;margin-top:.8rem}summary{cursor:pointer;font-weight:700;font-size:.85rem}
+.login{min-height:100vh;display:grid;place-items:center;padding:1.2rem;background:transparent}.lg{width:min(21rem,100%);animation:pg .7s var(--sp) both}
+.logo{width:4rem;height:4rem;border-radius:1.5rem;background:var(--ac);color:#fff;display:grid;place-items:center;margin:0 auto 1rem;box-shadow:0 .75rem 1.5rem rgba(0,0,0,.2)}.logo svg.i{width:2rem;height:2rem;stroke-width:2.4}
+.lk{display:flex;justify-content:center;gap:.7rem;margin-top:1.2rem;font-size:.8rem;color:var(--mu)}.lk button{color:var(--mu);font-weight:700}.lk button.on{color:var(--ink);text-decoration:underline;text-underline-offset:.25rem}
+.hp{display:block;text-align:center;margin-top:.8rem;color:var(--mu);font-size:.8rem;font-weight:700;text-decoration:none}
+@keyframes tin{from{opacity:0;transform:translateY(1.25rem) scale(.9)}to{opacity:1;transform:none}}
+*::-webkit-scrollbar{width:.4rem}*::-webkit-scrollbar-thumb{background:var(--ln);border-radius:0.5625rem}
+:focus-visible{outline:0.125rem solid var(--ac);outline-offset:0.125rem}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+.intro{position:fixed;inset:0;z-index:200;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:grid;place-items:center;animation:introOut .5s ease 2.4s forwards}
+@keyframes introOut{to{opacity:0;visibility:hidden}}
+.intro-line-wrap{position:relative;width:70vw;max-width:340px;height:80px;display:grid;place-items:center}
+.intro-line{position:absolute;top:50%;left:0;width:100%;height:4px;background:#c0392b;border-radius:4px;transform:translateY(-50%);transition:background .6s ease .8s}
+.intro-line.done{background:#2DC76D}
+.intro-check{position:absolute;top:50%;left:0;transform:translate(-50%,-50%);width:64px;height:64px;opacity:0}
+.intro-check svg{width:100%;height:100%}
+.intro-check path{stroke:#2DC76D;stroke-width:5;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:60;stroke-dashoffset:60}
+.intro-check.go{animation:checkMove 1.4s cubic-bezier(.22,1,.36,1) .3s forwards}
+@keyframes checkMove{0%{opacity:0;left:0;transform:translate(-50%,-50%) scale(.3)}15%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:1;left:100%;transform:translate(-50%,-50%) scale(1)}}
+.intro-check.go path{animation:drawCheck .4s ease 1.5s forwards}
+@keyframes drawCheck{to{stroke-dashoffset:0}}
+.intro-logo{position:absolute;top:-90px;left:50%;transform:translateX(-50%);width:56px;height:56px;border-radius:1rem;background:var(--ac);color:#fff;display:grid;place-items:center;opacity:0;animation:fadeLogo .5s ease 2s forwards}
+@keyframes fadeLogo{to{opacity:1}}
+.pill{padding:.3rem .7rem;border-radius:6.1875rem;font-size:.65rem;font-weight:800;background:color-mix(in srgb,var(--cd2) 80%,transparent);color:var(--mu);transition:background .2s;margin-inline-start:.3rem}
+.pill.pending{background:#F5C518;color:#1a1a1a}
+.pill.saved{background:#2DC76D;color:#fff}
+.pill.error{background:var(--red);color:#fff}
+.adv-sec{margin-top:1rem;padding-top:.9rem;border-top:1px dashed var(--ln)}
+.adv-badge{display:inline-block;padding:.2rem .6rem;border-radius:999px;background:var(--ac);color:#fff;font-size:.65rem;font-weight:800;letter-spacing:.03em}
+.proxy-box{background:linear-gradient(135deg,var(--ac),var(--caramel));color:#fff;border-radius:1.2rem;padding:1rem;margin-top:.8rem;position:relative;overflow:hidden}
+.proxy-box::after{content:"";position:absolute;right:-30px;top:-30px;width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.15)}
+.proxy-box b{font-size:.95rem}
+.proxy-box p{margin:.4rem 0 0;font-size:.75rem;opacity:.95}
+.proxy-line{display:flex;align-items:center;gap:.5rem;margin-top:.6rem;font-size:.78rem;background:rgba(0,0,0,.18);padding:.5rem .7rem;border-radius:.8rem;word-break:break-all}
+.proxy-dot{width:.55rem;height:.55rem;border-radius:50%;background:#2DC76D;flex:none;box-shadow:0 0 0 3px rgba(45,199,109,.3)}
+.sig{margin-top:1.4rem;text-align:center;color:var(--mu);font-size:.72rem;line-height:1.6}
+.sig b{color:var(--ac);font-weight:800;letter-spacing:.04em}
+.sig .ver{display:inline-block;padding:.15rem .55rem;border-radius:999px;background:color-mix(in srgb,var(--cd2) 80%,transparent);font-weight:800;color:var(--ink);font-size:.68rem;margin-bottom:.25rem}
+.tut-head{display:flex;align-items:center;gap:.7rem;margin-bottom:.8rem}
+.tut-ic{width:2.6rem;height:2.6rem;border-radius:1rem;background:linear-gradient(135deg,var(--ac),var(--caramel));color:#fff;display:grid;place-items:center;flex:none}
+.tut-step{display:flex;gap:.7rem;padding:.8rem 0;border-bottom:1px dashed var(--ln)}
+.tut-step:last-child{border-bottom:0}
+.tut-num{width:1.9rem;height:1.9rem;border-radius:50%;background:var(--ac);color:#fff;display:grid;place-items:center;font-weight:800;font-size:.85rem;flex:none}
+.tut-step b{display:block;margin-bottom:.15rem}
+.tut-step p{margin:0;color:var(--mu);font-size:.78rem;font-weight:600;line-height:1.5}
+.switch{position:relative;display:inline-block;width:3rem;height:1.7rem;flex:none}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;cursor:pointer;inset:0;background:var(--ln);border-radius:999px;transition:.3s}
+.slider:before{content:"";position:absolute;height:1.25rem;width:1.25rem;left:.22rem;bottom:.22rem;background:#fff;border-radius:50%;transition:.3s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.switch input:checked+.slider{background:#2DC76D}
+.switch input:checked+.slider:before{transform:translateX(1.3rem)}
+[dir=rtl] .switch input:checked+.slider:before{transform:translateX(-1.3rem)}
+.mr-more{background:linear-gradient(135deg,#2DC76D,#25a85a)!important;color:#fff!important;margin-top:.4rem;cursor:default!important;pointer-events:none;position:relative;overflow:hidden}
+.mr-more::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);transform:translateX(-100%);animation:shine 2.5s infinite}
+@keyframes shine{100%{transform:translateX(100%)}}
+.mr-more svg.i{color:#fff!important}
+.mr-more small{color:rgba(255,255,255,.9)!important}
+.locked-note{display:flex;align-items:center;gap:.4rem;background:color-mix(in srgb,#FFF4E0 90%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#8a5a00;border:1px solid #F5A524;padding:.55rem .8rem;border-radius:1rem;font-size:.75rem;font-weight:700;margin:.3rem 0 .7rem}
+.locked-note svg{width:.95rem;height:.95rem;flex:none}
+.wall-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(4.5rem,1fr));gap:.55rem;margin-top:.6rem}
+.wall-opt{aspect-ratio:1;border-radius:.9rem;background:var(--cd2) center/cover;border:2px solid var(--ln);position:relative;overflow:hidden;transition:transform .35s var(--sp),border-color .2s}
+.wall-opt:active{transform:scale(.9)}
+.wall-opt.on{border-color:var(--ac);box-shadow:0 0 0 2px var(--ac)}
+.wall-opt.none{display:grid;place-items:center;color:var(--mu);font-size:.7rem;font-weight:800}
+</style></head><body><div id="root"></div>
 <script>
-var $=function(s){return document.querySelector(s)},$$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
-var ls={get:function(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set:function(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},del:function(k){try{localStorage.removeItem(k)}catch(e){}}};
-var sleep=function(ms){return new Promise(function(r){setTimeout(r,ms)})};
-var extra={},extraText={},extraURL={},iconImg=null,busy=false,curStep=-1,lastRunUrl='';
+const P={
+menu:'<path d="M4 7h16M4 12h16M4 17h16"/>',plus:'<path d="M12 5v14M5 12h14"/>',
+del:'<path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13h9l1-13M10 11v6M14 11v6"/>',
+edit:'<path d="M4 20l1-4L16.5 4.5a2 2 0 0 1 3 3L8 19z"/><path d="M14.5 6.5l3 3"/>',
+img:'<rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><circle cx="9" cy="10" r="1.7"/><path d="M20.5 16l-5-5-8 8"/>',
+out:'<path d="M9 20H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h3M15 16l4-4-4-4M19 12H9"/>',
+save:'<path d="M5 4h11l3 3v13H5z"/><path d="M8 4v5h7V4M8 20v-6h8v6"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',
+down:'<path d="M12 4v11M7.5 11L12 15.5 16.5 11M5 20h14"/>',back:'<path d="M14.5 5.5L8 12l6.5 6.5"/>',
+user:'<circle cx="12" cy="8" r="4" fill="currentColor" stroke="none"/><path d="M4 21c0-4.2 3.6-6.5 8-6.5s8 2.3 8 6.5z" fill="currentColor" stroke="none"/>',
+people:'<circle cx="9" cy="8.5" r="3.5"/><path d="M2.8 20c0-3.6 2.8-6 6.2-6s6.2 2.4 6.2 6M16 5.2a3.5 3.5 0 0 1 0 6.6M17.5 14.3c2.5.6 3.9 2.6 3.9 5.2"/>',
+cam:'<path d="M3.5 8h4l1.5-2.5h6L16.5 8h4v11h-17z"/><circle cx="12" cy="13" r="3.5"/>',
+shield:'<path d="M12 3l7.5 2.8v5.7c0 4.6-3.2 8-7.5 9.5-4.3-1.5-7.5-4.9-7.5-9.5V5.8z"/><path d="M8.8 12l2.2 2.2 4.2-4.4"/>',
+grid:'<rect x="4" y="4" width="6.5" height="6.5" rx="1.6"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.6"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.6"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.6"/>',
+cal:'<rect x="4" y="5.5" width="16" height="14.5" rx="2.5"/><path d="M8 3.5v4M16 3.5v4M4 10.5h16"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 17h.01M12 17h.01" stroke-width="2.4"/>',
+gear:'<circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="6.6"/><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7"/>',
+home:'<path d="M4 11l8-7 8 7v8.5a1 1 0 0 1-1 1h-4.5v-6h-5v6H5a1 1 0 0 1-1-1z"/>',
+search:'<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>',list:'<path d="M8 6.5h12M8 12h12M8 17.5h12M4 6.5h.01M4 12h.01M4 17.5h.01" />',
+check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+cup:'<path d="M6 8h12v6a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4z"/><path d="M18 9h2a2 2 0 0 1 0 4h-2M8 3v2M12 3v2M16 3v2"/>',
+book:'<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H20v3H6.5A2.5 2.5 0 0 1 4 20.5z"/>',
+chat:'<path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/>',
+bell:'<path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>',
+lock:'<rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/>',
+star:'<path d="M12 3l2.7 5.7 6.3.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2L3 9.6l6.3-.9z"/>'};
+const ic=(n,s)=>`<svg class="i" viewBox="0 0 24 24"${s?` style="width:${s/16}rem;height:${s/16}rem"`:''}>${P[n]}</svg>`;
+const AM={rooms:'grid',classes:'grid',teo:'user',meo:'shield',hist:'cal',settings:'gear',acc:'people',gen:'list',dates:'cal',find:'search',stu:'people',tutorial:'book'};
+const art=(n,w)=>`<svg class="art" viewBox="0 0 24 24"${w?` style="width:${w/16}rem"`:''}>${P[AM[n]||n]}</svg>`;
+const ava=`<svg class="i" viewBox="0 0 24 24" style="width:60%;height:60%;color:var(--mu)">${P.user}</svg>`;
+const DE=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],DA=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'],D=[...DE];
+const DS=()=>S.set.lang=='ar'?['ح','ن','ث','ر','خ','ج','س']:['S','M','T','W','T','F','S'];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad=n=>String(n).padStart(2,'0'),dstr=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()),ym=d=>d.getFullYear()+'-'+pad(d.getMonth()+1);
+const uid=()=>Math.random().toString(36).slice(2,9);
+const fmt=s=>new Date(s+'T00:00:00').toLocaleDateString(loc(),{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+const DEV_WA='9647819274539';
+const DEFAULT_WALL='https://imgdb.io/i/C50eAa0.jpg';
+let S={mv:'',ms:'',q:'',back:null,st:[],hm:ym(new Date()),hf:'',sd:'',sx:null,anim:0,ln:'',le:'',user:null,view:'home',cid:'',date:dstr(new Date()),work:{},modal:'',db:null,mem:{},drawer:false,pop:false,adm:false,saveState:'',notif:false};
+const sg=k=>{try{return localStorage.getItem(k)}catch(e){return S.mem[k]||null}},ss=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){S.mem[k]=v}};
+const CLOUD_URL='https://mod12-3ca85-default-rtdb.firebaseio.com';
+const emp=()=>({rooms:[],classes:[],students:[],att:{},pic:'',t:0});
+const ar_=x=>Array.isArray(x)?x.filter(Boolean):Object.values(x||{});
+const norm=d=>{d=d||{};const rm=ar_(d.rooms);return{rooms:rm,classes:ar_(d.classes).map(c=>({...c,days:ar_(c.days),img:c.img||(rm.find(r=>r.id==c.room)||{}).img||''})),students:ar_(d.students),att:Object.fromEntries(Object.entries(d.att||{}).map(([k,r])=>[k,{...r,marks:r.marks||{}}])),pic:d.pic||'',t:d.t||0}};
+const ldb=e=>{const r=sg('ap_db_'+e);return r?norm(JSON.parse(r)):emp()};
+try{const u=sg('ap_user');if(u){S.user=JSON.parse(u);S.db=ldb(S.user.email)}}catch(e){}
+S.sync='off';
+S.set=Object.assign({z:100,lang:'en',theme:'light',ac:'#1e5fa8',palette:'blue',cloud:'',notif:false,wall:DEFAULT_WALL},JSON.parse(sg('ap_set')||'{}'));
+if(S.set.v!=11){Object.assign(S.set,{v:11,theme:'light',palette:'blue',z:100,notif:false,wall:DEFAULT_WALL});ss('ap_set',JSON.stringify(S.set))}
+const loc=()=>S.set.lang=='ar'?'ar':'en-GB';
 
-var DEFAULTS={user:'MOD-hube',repo:'myapp',token:''};
-var saved=ls.get('apk_cfg')||{};
-var cfg={user:saved.user||DEFAULTS.user,repo:saved.repo||DEFAULTS.repo,token:saved.token||''};
-
-var defHTML='<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<title>My App</title>\n</head>\n<body>\n  <h1>Hello 👋</h1>\n  <p>This is your app running inside Android.</p>\n  <button id="btn">Count: 0</button>\n</body>\n</html>';
-var defCSS='body{font-family:sans-serif;background:#FFF9EB;display:grid;place-items:center;min-height:100vh;margin:0;text-align:center}\nh1{color:#5D0D18}\nbutton{background:#5D0D18;color:#FFF9EB;border:0;border-radius:10px;padding:14px 28px;font-size:18px}';
-var defJS="let n=0;\ndocument.getElementById('btn').onclick=function(){n++;this.textContent='Count: '+n;};";
-
-var WORKFLOW=[
-'name: Build APK',
-'on:',
-'  push:',
-'  workflow_dispatch:',
-'permissions:',
-'  contents: write',
-'jobs:',
-'  build:',
-'    runs-on: ubuntu-latest',
-'    steps:',
-'      - uses: actions/checkout@v4',
-'      - uses: actions/setup-java@v4',
-'        with:',
-'          distribution: temurin',
-'          java-version: 17',
-'      - uses: gradle/actions/setup-gradle@v4',
-'        with:',
-'          gradle-version: 8.4',
-'      - name: Build debug APK',
-'        run: gradle assembleDebug --no-daemon',
-'      - name: Publish release',
-'        env:',
-'          GH_TOKEN: ${{ github.token }}',
-'        run: |',
-'          cp app/build/outputs/apk/debug/app-debug.apk app.apk',
-'          gh release create "build-${{ github.run_number }}" app.apk --title "Build ${{ github.run_number }}" --notes "APK build" --target "${{ github.sha }}"',
-''].join('\n');
-
-var FIELDS=['appName','pkg','verName','verCode','minSdk','iconColor','statusColor','navColor','bgColor','orient'];
-var CHECKS=['fullscreen','immersive','keepAwake','internet','autoplay','external','noZoom','noSelect','doubleBack','lightIcons','permCam','permMic','permLoc'];
-
-function toast(m){var t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(function(){t.style.display='none'},2800)}
-
-function load(){
-  var d=ls.get('apk_form')||{};
-  FIELDS.forEach(function(k){if(d[k]!=null)$('#'+k).value=d[k]});
-  CHECKS.forEach(function(k){if(d[k]!=null)$('#'+k).checked=d[k]});
-  $('#ed-html').value=d.html||defHTML;$('#ed-css').value=d.css||defCSS;$('#ed-js').value=d.js||defJS;
-  $('#ghUser').value=cfg.user||'';$('#ghRepo').value=cfg.repo||'';$('#ghToken').value=cfg.token||'';
-  if(cfg.token){$('#setupBox').open=false;verifySilent()}
-  else{$('#setupBox').open=true;setPill('','Not connected')}
-  renderHist();
+function applyWall(){
+  const w=S.set.wall||DEFAULT_WALL;
+  if(w){document.documentElement.style.setProperty('--wall',`url('${w}')`)}
+  else{document.documentElement.style.setProperty('--wall','none')}
 }
+function applySet(){const q=S.set,r=document.documentElement;r.setAttribute('data-theme',q.theme);r.setAttribute('data-palette',q.palette);r.style.setProperty('--z',q.z/100);r.dir=q.lang=='ar'?'rtl':'ltr';r.lang=q.lang;D.splice(0,7,...(q.lang=='ar'?DA:DE));applyWall()}
+function setv(k,v,re){S.set[k]=v;ss('ap_set',JSON.stringify(S.set));if(k==='palette'||k==='theme'){applySet();if(!re)partialThemeUpdate();return}applySet();if(re)render()}
+function partialThemeUpdate(){document.querySelectorAll('[data-palette-btn]').forEach(b=>b.classList.toggle('on',b.dataset.paletteBtn===S.set.palette));document.querySelectorAll('[data-theme-btn]').forEach(b=>b.classList.toggle('on',b.dataset.themeBtn===S.set.theme))}
+function step(k,d,mn,mx){setv(k,Math.min(mx,Math.max(mn,S.set[k]+d)),true)}
+
+const AR={Menu:'القائمة',Rooms:'القاعات',Classes:'الكلاسات',History:'السجل',Settings:'الإعدادات',Administration:'الإدارة','Teacher panel':'لوحة المدرس','Add & edit rooms':'إضافة وتعديل القاعات','Classes & students':'الكلاسات والطلاب','Past attendance records':'سجلات الحضور السابقة','Language, theme, sizes':'اللغة والمظهر والأحجام','Sign out':'تسجيل الخروج','Change photo':'تغيير الصورة','Sessions / week':'حصص / أسبوع',Students:'الطلاب','Tap a room to see its classes.':'اضغط على قاعة لعرض كلاساتها.','No rooms yet. Open the menu → Rooms to add one.':'لا توجد قاعات. افتح القائمة ← القاعات لإضافة قاعة.',Back:'رجوع','Classes in this room':'كلاسات هذه القاعة','No classes in this room yet.':'لا توجد كلاسات في هذه القاعة.','Weekly timetable':'الجدول الأسبوعي','Add room':'إضافة قاعة','Add rooms, name them and set a photo from your gallery.':'أضف قاعات وسمّها وضع لها صورة من المعرض.','No rooms yet.':'لا توجد قاعات.','Add class':'إضافة كلاس','Create classes, set schedule, and manage students inside each class.':'أنشئ الكلاسات وحدد جدولها وأدر الطلاب داخل كل كلاس.','No classes yet. Add a room first, then a class.':'لا توجد كلاسات. أضف قاعة ثم كلاساً.',Edit:'تعديل','Add students':'إضافة طلاب','Attendance date':'تاريخ الحضور','All present':'الجميع حاضر','Save attendance':'حفظ الحضور','No students yet. Tap "Add students".':'لا يوجد طلاب. اضغط «إضافة طلاب».','Every saved day, per class, with full attendance.':'كل يوم محفوظ لكل كلاس مع الحضور الكامل.','No saved attendance yet.':'لا يوجد حضور محفوظ.','Copy / Download':'نسخة / تحميل','Download image':'تحميل الصورة',Save:'حفظ',Cancel:'إلغاء',Yes:'نعم','Delete this item?':'حذف هذا العنصر؟','Delete this record?':'حذف هذا السجل؟','New room':'قاعة جديدة','Edit room':'تعديل القاعة','Room name':'اسم القاعة','Photo from gallery':'صورة من المعرض','Choose from gallery':'اختر من المعرض','New class':'كلاس جديد','Edit class':'تعديل الكلاس','Class name':'اسم الكلاس',Room:'القاعة','No room':'بدون قاعة','Weekly schedule':'الجدول الأسبوعي',Time:'الوقت',Add:'إضافة',Names:'الأسماء',Close:'إغلاق','Export attendance':'تصدير الحضور','Save the image to your phone.':'احفظ الصورة على هاتفك.','No upcoming lecture':'لا توجد محاضرة قادمة','Continue with Google':'المتابعة عبر Google','Sign in':'دخول','Google account name':'اسم حساب Google','Google email':'بريد Google','Sign in to manage rooms, classes and attendance.':'سجّل الدخول لإدارة القاعات والكلاسات والحضور.','First-time setup: register the manager.':'الإعداد الأول: سجّل المدير.','Manager name':'اسم المدير','Manager phone number':'رقم هاتف المدير','Secret code (min 4 characters)':'الرمز السري (4 أحرف على الأقل)','Create manager account':'إنشاء حساب المدير','Enter the manager code.':'أدخل رمز المدير.','Secret code':'الرمز السري',Unlock:'فتح',Lock:'قفل',Accounts:'الحسابات','General accounts':'الحسابات العامة',Dates:'التواريخ','Single search':'البحث المفرد','Open any teacher account':'افتح أي حساب مدرس','Every teacher\'s sessions & times':'حصص ومواعيد كل مدرس','Attendance record dates':'تواريخ سجلات الحضور','Find a student':'ابحث عن طالب','Open account':'فتح الحساب',Teachers:'المدرسون',Records:'السجلات','Change manager phone':'تغيير هاتف المدير','Current phone number':'رقم الهاتف الحالي','New phone number':'رقم الهاتف الجديد','Update phone':'تحديث الرقم','Type the full student name':'اكتب الاسم الثلاثي للطالب','Full name…':'الاسم الثلاثي…',Weeks:'الأسابيع',Months:'الأشهر','This week':'هذا الأسبوع','Last week':'الأسبوع الماضي','This month':'هذا الشهر','Last month':'الشهر الماضي','No matching students.':'لا يوجد طلاب مطابقون.','No teachers registered yet.':'لا يوجد مدرسون مسجلون.','Viewing account:':'تصفح حساب:','Back to MEO':'العودة إلى MEO',Language:'اللغة',Theme:'المظهر',Light:'فاتح',Dark:'داكن','Text size':'حجم النص','Box size':'حجم الخانات','Accent color':'اللون الرئيسي','Present':'حاضر','Absent':'غائب','Late':'متأخر','Attendance saved':'تم حفظ الحضور','Saved':'تم الحفظ','None':'لا شيء','Not scheduled on':'غير مجدول يوم','Enter a room name':'أدخل اسم القاعة','Enter a class name':'أدخل اسم الكلاس','Wrong code':'الرمز غير صحيح','Phone updated':'تم تحديث الرقم','All students':'كل الطلاب',Hello:'مرحباً','On':'يوم','At':'في الساعة',Palette:'النمط اللوني',Coffee:'قهوي',Green:'أخضر',Gray:'رصاصي',Red:'أحمر',Blue:'أزرق',Saving:'جارٍ الحفظ...',SavedOk:'تم الحفظ','Save failed':'فشل الحفظ','Delete teacher?':'حذف المدرس؟','Delete account':'حذف الحساب','Edit account':'تعديل الحساب',Tutorial:'الدليل التعليمي','Chat with Developers':'محادثة المطورين','Learn how to use AttendPro step by step.':'تعلّم كيفية استخدام AttendPro خطوة بخطوة.','More coming soon':'المزيد قادم قريباً','Notifications':'الإشعارات','Enable notifications':'تفعيل الإشعارات','Attendance editing locked':'تعديل الحضور مقفل','You can manage classes & students, but attendance is locked.':'يمكنك إدارة الصفوف والطلاب، لكن الحضور مقفل.','Developer Support':'دعم المطورين','Background':'الخلفية','App background':'خلفية التطبيق','Upload from gallery':'رفع من الاستوديو','Use image link':'استخدام رابط صورة','Remove background':'حذف الخلفية','Choose preset':'اختر خلفية جاهزة','Image link':'رابط الصورة','Apply':'تطبيق','Background updated':'تم تحديث الخلفية','Background removed':'تم حذف الخلفية','Default':'افتراضية'};
+const AP=[[/^(\d+) classes$/,'$1 كلاس'],[/^(\d+) weeks ago$/,'قبل $1 أسابيع'],[/^(\d+) months ago$/,'قبل $1 أشهر'],[/^(\d+) sessions \/ week$/,'$1 حصة / أسبوع'],[/^(\d+) sessions$/,'$1 جلسة'],[/^(\d+)% attendance · (\d+) sessions$/,'حضور $1% · $2 جلسة'],[/^Next: /,'القادمة: '],[/^(\d+) students · /,'$1 طالب · '],[/^Administration — /,'الإدارة — '],[/^To: (.*)\. One name per line\.$/,'إلى: $1. اسم في كل سطر.'],[/^(\d+) stu$/,'$1 طالب'],[/^(\d+)\/wk$/,'$1/أسبوع'],[/^Classes \((\d+)\)$/,'الكلاسات ($1)'],[/^Attendance records \((\d+)\)$/,'سجلات الحضور ($1)'],[/^No upcoming lecture$/,'لا توجد محاضرة قادمة']];
+function T(x){if(S.set.lang!='ar')return x;const k=x.trim();if(!k)return x;if(AR[k])return x.replace(k,AR[k]);for(const[r,v]of AP)if(r.test(k))return x.replace(k,k.replace(r,v));return x}
+function trDom(el){const w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);let n;while(n=w.nextNode())n.nodeValue=T(n.nodeValue);el.querySelectorAll('[placeholder]').forEach(e=>e.placeholder=T(e.placeholder))}
+
+const $=id=>document.getElementById(id);
+const clsOf=id=>S.db.classes.find(c=>c.id==id);
+const stuIn=(c,d)=>(d||S.db).students.filter(s=>s.cls==c).sort((a,b)=>a.name.localeCompare(b.name));
+const ct=(m,k)=>Object.values(m||{}).filter(v=>v==k).length;
+const ns=d=>d.students.length;
+function pushNav(){S.st.push({v:S.view,cid:S.cid,mv:S.mv,ms:S.ms,sx:S.sx,hm:S.hm})}
+function go(v,x,top){if(v=='home')S.st=[];else if(top)S.st=[{v:'home'}];else pushNav();S.view=v;S.drawer=S.pop=false;S.modal='';if(v=='class')S.cid=x;if(v=='meo'){S.mv='';S.ms='';S.admL=0}if(v=='history'){S.hm=ym(new Date());S.hf=''}S.anim=1;render();scrollTo(0,0)}
+function back(){const p=S.st.pop()||{v:'home'};S.view=p.v;if(p.cid)S.cid=p.cid;S.mv=p.mv||'';S.ms=p.ms||'';if(p.sx)S.sx=p.sx;if(p.hm)S.hm=p.hm;S.modal='';S.anim=1;render();scrollTo(0,0)}
+function mvg(k,ms){pushNav();S.mv=k;S.ms=ms||'';S.hf='';S.hm=ym(new Date());S.anim=1;render();scrollTo(0,0)}
+function closeL(k,cb){const e=document.querySelector('.lay.'+k),f=()=>{S[k]=false;cb?cb():render()};if(e){e.classList.add('out');setTimeout(f,200)}else f()}
+function nav(v,x){closeL('drawer',()=>go(v,x,1))}
+function chatDev(){setTimeout(()=>{window.open('https://wa.me/'+DEV_WA+'?text='+encodeURIComponent('Hello AttendPro Developers 👋'),'_blank');},100)}
+function toast(t){const e=document.createElement('div');e.style.cssText='position:fixed;left:0;right:0;margin:0 auto;width:max-content;max-width:90vw;bottom:5rem;background:var(--ac);color:#fff;padding:.75rem 1.2rem;border-radius:6.1875rem;z-index:99;font-weight:700;font-size:.85rem;animation:tin .45s var(--sp) both;box-shadow:0 .5rem 1.5rem rgba(0,0,0,.25)';e.textContent=T(t);document.body.appendChild(e);setTimeout(()=>e.remove(),2000)}
+let ASK=null;function ask(m,f){ASK=f;mod(`<h2>${m}</h2><div class="row" style="margin-top:1.1rem"><button class="btn r" onclick="ASK();mc()">Yes</button><button class="btn g" onclick="mc()">Cancel</button></div>`)}
+function mod(h){S.modal=`<div class="lay c mod" onclick="if(event.target==this)mc()"><div class="box">${h}</div></div>`;render()}
+const mc=()=>{const e=document.querySelector('.lay.mod');if(e){e.classList.add('out');setTimeout(()=>{S.modal='';render()},200)}else{S.modal='';render()}};
+
+/* NOTIFICATIONS */
+async function requestNotif(){
+  if(!('Notification' in window)){toast('Notifications not supported');return false}
+  try{
+    const perm=await Notification.requestPermission();
+    if(perm==='granted'){
+      S.set.notif=true;ss('ap_set',JSON.stringify(S.set));
+      try{new Notification('AttendPro',{body:'Notifications enabled ✓',icon:'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%231e5fa8%27/%3E%3Cpath d=%27M18 33l10 10 19-22%27 stroke=%27white%27 stroke-width=%278%27 fill=%27none%27/%3E%3C/svg%3E'})}catch(e){}
+      return true
+    }else{S.set.notif=false;ss('ap_set',JSON.stringify(S.set));return false}
+  }catch(e){return false}
+}
+function sendNotif(title,body){
+  if(!S.set.notif)return;
+  if(!('Notification' in window))return;
+  if(Notification.permission!=='granted')return;
+  try{new Notification(title,{body:body,icon:'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27%231e5fa8%27/%3E%3Cpath d=%27M18 33l10 10 19-22%27 stroke=%27white%27 stroke-width=%278%27 fill=%27none%27/%3E%3C/svg%3E'})}catch(e){}
+}
+
+/* AUDIO */
+let AC=null;
+function tone(freq,dur,type,vol,when){try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();const t=AC.currentTime+(when||0);const o=AC.createOscillator(),g=AC.createGain(),f=AC.createBiquadFilter();o.type=type||'sine';o.frequency.value=freq;f.type='lowpass';f.frequency.value=1800;f.Q.value=0.7;o.connect(f);f.connect(g);g.connect(AC.destination);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol||.08,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.start(t);o.stop(t+dur+.05)}catch(e){}}
+function sfxSuccess(){tone(392,.35,'sine',.09,0);tone(523,.4,'sine',.08,.12);tone(659,.6,'sine',.07,.28);tone(784,.9,'sine',.05,.45)}
+function sfxPop(){tone(600,.08,'sine',.05)}
+function sfxTheme(){tone(523,.15,'sine',.06,0);tone(659,.2,'sine',.05,.08)}
+
+/* INTRO */
+function intro(cb){const el=document.createElement('div');el.className='intro';el.innerHTML=`<div class="intro-logo">${ic('cup',26)}</div><div class="intro-line-wrap"><div class="intro-line" id="iline"></div><div class="intro-check" id="icheck"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div></div>`;document.body.appendChild(el);setTimeout(()=>{const c=$('icheck');if(c)c.classList.add('go');const l=$('iline');if(l)l.classList.add('done');sfxSuccess()},200);setTimeout(()=>{el.remove();cb&&cb()},2900)}
+
+/* CLOUD */
+const cloudBase=()=>((S.set.cloud||CLOUD_URL||'').trim().replace(/\/+$/,''));
+const kEmail=e=>e.toLowerCase().replace(/[^a-z0-9]/g,'_');
+async function cf(path,method,body){const b=cloudBase();if(!b)throw new Error('nocloud');const r=await fetch(b+'/'+path+'.json',{method:method||'GET',headers:body?{'Content-Type':'application/json'}:undefined,body:body?JSON.stringify(body):undefined});if(!r.ok)throw new Error('http'+r.status);return r.json()}
+
 function save(){
-  var d={html:$('#ed-html').value,css:$('#ed-css').value,js:$('#ed-js').value};
-  FIELDS.forEach(function(k){d[k]=$('#'+k).value});CHECKS.forEach(function(k){d[k]=$('#'+k).checked});
-  ls.set('apk_form',d);
-}
-function setPill(state,text){var p=$('#pill');p.className='pill'+(state?' '+state:'');$('#pillText').textContent=text}
-
-async function gh(path,opt){
-  opt=opt||{};
-  var headers={'Authorization':'Bearer '+cfg.token,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
-  if(opt.body)headers['Content-Type']='application/json';
-  var r=await fetch('https://api.github.com'+path,{method:opt.method||'GET',headers:headers,body:opt.body?JSON.stringify(opt.body):undefined});
-  if(!r.ok){var m='';try{m=(await r.json()).message||''}catch(e){}var er=new Error(m||('HTTP '+r.status));er.status=r.status;throw er}
-  return r.status===204?null:r.json();
-}
-function friendly(e){
-  var msg=String(e&&e.message||e);
-  if(msg.indexOf('SECRET')===0){return 'A token was found inside this file: '+msg.split('|')[1]+'. Remove it from your code (or press Reset form) and try again.'}
-  if(msg==='NORUN')return 'The build did not start within 90 seconds. Open the Actions tab of the repository and make sure Actions is enabled.';
-  if(msg==='TIMEOUT')return 'The build is taking too long. Check the Actions tab of the repository.';
-  if(msg==='NOREL')return 'The build finished but the APK was not found. Check the Releases page of the repository.';
-  if(msg.indexOf('BUILDFAIL')===0){var p=msg.split('|');return 'Build failed at step: '+(p[1]||'unknown')+'. Open the build log below.'}
-  if(e.status===401)return 'The token is invalid or expired. Create a new token (menu: How to create a GitHub token).';
-  if(e.status===404)return 'Repository not found or the token has no access. Check the username, repository name and the repo scope.';
-  if(e.status===403)return 'Request refused: '+msg+' (the token needs repo and workflow scopes).';
-  if(e.status===422&&/workflow/i.test(msg))return 'The token needs the workflow scope. Create a new token with it enabled.';
-  if(e.status===409)return 'The repository is empty. Add any file to it, then try again.';
-  if(e instanceof TypeError)return 'No internet connection.';
-  return msg;
-}
-
-async function verifySilent(){
-  try{
-    var resp=await fetch('https://api.github.com/user',{headers:{Authorization:'Bearer '+cfg.token,Accept:'application/vnd.github+json'}});
-    if(resp.ok){var u=await resp.json();setPill('ok','Connected: '+u.login)}
-    else setPill('bad','Token invalid');
-  }catch(e){setPill('','Offline')}
-}
-async function saveConfig(){
-  var u=$('#ghUser').value.trim(),r=$('#ghRepo').value.trim(),t=$('#ghToken').value.trim();
-  var m=$('#cfgMsg');m.className='msg';
-  if(!u||!r||!t){m.className='msg bad';m.textContent='Fill in all three fields. Need a token? Open the menu (three dots, top left).';return}
-  cfg={user:u,repo:r,token:t};m.textContent='Testing...';
-  try{
-    var resp=await fetch('https://api.github.com/user',{headers:{Authorization:'Bearer '+t,Accept:'application/vnd.github+json'}});
-    if(!resp.ok){var er=new Error('bad');er.status=resp.status;throw er}
-    var scopes=resp.headers.get('x-oauth-scopes');
-    var repo=await gh('/repos/'+u+'/'+r);
-    if(repo.permissions&&!repo.permissions.push){var e2=new Error('You do not have write access to this repository');e2.status=403;throw e2}
-    ls.set('apk_cfg',cfg);setPill('ok','Connected: '+u);
-    if(scopes!==null&&scopes.indexOf('workflow')<0){m.className='msg warn';m.textContent='Connected, but the token has no workflow scope and the build may fail. Create a new token with it enabled.'}
-    else{m.className='msg ok';m.textContent='Connected to '+repo.full_name;setTimeout(function(){$('#setupBox').open=false},1200)}
-  }catch(e){setPill('bad','Not connected');m.className='msg bad';m.textContent=friendly(e)}
-}
-
-function assemble(inline){
-  var h=$('#ed-html').value,c=$('#ed-css').value.trim(),j=$('#ed-js').value.trim();
-  var inject=function(src,tag,before){var re=new RegExp(before,'i');return re.test(src)?src.replace(re,function(m){return tag+'\n'+m}):src+'\n'+tag};
-  var CS='<'+'/style>',CC='<'+'/script>';
-  if(c&&(inline||!/style\.css/i.test(h)))h=inject(h,inline?'<style>'+c+CS:'<link rel="stylesheet" href="style.css">','<'+'/head>');
-  if(j&&(inline||!/script\.js/i.test(h)))h=inject(h,inline?'<script>'+j+CC:'<script src="script.js">'+CC,'<'+'/body>');
-  return h;
-}
-function previewHTML(){
-  var h=assemble(true);
-  var CS='<'+'/style>',CC='<'+'/script>';
-  Object.keys(extra).forEach(function(p){
-    var e=p.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-    if(/\.css$/i.test(p)&&extraText[p]!=null)h=h.replace(new RegExp('<link[^>]*href=["\']\\.?/?'+e+'["\'][^>]*>','gi'),function(){return '<style>'+extraText[p]+CS});
-    else if(/\.js$/i.test(p)&&extraText[p]!=null)h=h.replace(new RegExp('<script[^>]*src=["\']\\.?/?'+e+'["\'][^>]*>\\s*<'+'\\/script>','gi'),function(){return '<script>'+extraText[p]+CC});
-    else{if(!extraURL[p])extraURL[p]=URL.createObjectURL(extra[p]);h=h.split(p).join(extraURL[p])}
-  });
-  return h;
-}
-var pt;
-function preview(){
-  clearTimeout(pt);pt=setTimeout(function(){
-    try{
-      $('#pv').srcdoc=previewHTML();
-      $('#sbar').style.background=$('#statusColor').value;
-      $('#sbar').style.display=$('#fullscreen').checked||$('#immersive').checked?'none':'block';
-      $('#phone').classList.toggle('land',$('#orient').value==='landscape');
-      drawIcon($('#iconPrev'),168);save();
-    }catch(e){}
-  },300);
-}
-
-function drawIcon(cv,size){
-  cv.width=cv.height=size;var x=cv.getContext('2d');x.clearRect(0,0,size,size);
-  x.save();x.beginPath();
-  if(x.roundRect)x.roundRect(0,0,size,size,size*.22);else x.rect(0,0,size,size);
-  x.clip();
-  if(iconImg){var s=Math.min(iconImg.width,iconImg.height);x.drawImage(iconImg,(iconImg.width-s)/2,(iconImg.height-s)/2,s,s,0,0,size,size)}
-  else{
-    var g=x.createLinearGradient(0,0,size,size);g.addColorStop(0,$('#iconColor').value);g.addColorStop(1,'#3E6A4B');
-    x.fillStyle=g;x.fillRect(0,0,size,size);
-    x.fillStyle='#FFF9EB';x.font='bold '+(size*.5)+'px sans-serif';x.textAlign='center';x.textBaseline='middle';
-    x.fillText(($('#appName').value.trim()[0]||'A').toUpperCase(),size/2,size/2+size*.03);
-  }
-  x.restore();
-}
-function iconBlob(size){return new Promise(function(r){var c=document.createElement('canvas');drawIcon(c,size);c.toBlob(r,'image/png')})}
-
-async function addOne(path,blob,st){
-  var low=path.toLowerCase(),top=path.indexOf('/')<0,isHtml=/\.html?$/.test(low);
-  if(top&&isHtml){
-    if(low==='index.html'||!st.html){$('#ed-html').value=await blob.text();st.html=true;return}
-  }
-  extra[path]=blob;
-  if(/\.(css|js|html?|json|svg|txt)$/.test(low))extraText[path]=await blob.text();
-}
-async function addZip(file){
-  var z=await JSZip.loadAsync(file);
-  var names=Object.keys(z.files).filter(function(n){return !z.files[n].dir&&!n.startsWith('__MACOSX')&&!/(^|\/)\.DS_Store$/.test(n)});
-  var first=names[0]?names[0].split('/')[0]:'';
-  var strip=names.length&&names.every(function(n){return n.indexOf('/')>0&&n.split('/')[0]===first});
-  var st={html:false};
-  for(var i=0;i<names.length;i++){var n=names[i];await addOne(strip?n.slice(first.length+1):n,await z.files[n].async('blob'),st)}
-}
-async function addFiles(list){
-  var st={html:false};
-  try{
-    for(var i=0;i<list.length;i++){
-      var f=list[i];
-      if(/\.zip$/i.test(f.name))await addZip(f);else await addOne(f.name,f,st);
-    }
-    renderChips();preview();toast('Files added');
-  }catch(e){toast('Could not read files: '+e.message)}
-}
-function renderChips(){
-  var k=Object.keys(extra);
-  $('#chips').innerHTML=k.map(function(n,i){return '<div class="chip">'+n.replace(/</g,'&lt;')+'<b data-i="'+i+'">✕</b></div>'}).join('');
-  $$('#chips b').forEach(function(b){b.onclick=function(){var n=k[b.dataset.i];delete extra[n];delete extraText[n];renderChips();preview()}});
-}
-
-var xml=function(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'\\"').replace(/'/g,"\\'")};
-var hex=function(id,def){var v=$('#'+id).value;return /^#[0-9a-fA-F]{6}$/.test(v)?v:def};
-
-async function projectFiles(){
-  var pkg=$('#pkg').value.trim(),name=$('#appName').value.trim()||'App';
-  var vName=$('#verName').value.trim()||'1.0',vCode=parseInt($('#verCode').value)||1,minSdk=parseInt($('#minSdk').value)||21;
-  var cStatus=hex('statusColor','#5D0D18'),cNav=hex('navColor','#5D0D18'),cBg=hex('bgColor','#FFF9EB');
-  var on=function(id){return $('#'+id).checked};
-  var fs=on('fullscreen'),imm=on('immersive'),keep=on('keepAwake'),net=on('internet'),auto=on('autoplay'),ext=on('external');
-  var noZoom=on('noZoom'),noSel=on('noSelect'),dbl=on('doubleBack'),light=on('lightIcons');
-  var cam=on('permCam'),mic=on('permMic'),loc=on('permLoc'),orient=$('#orient').value;
-  var anyPerm=cam||mic||loc;
-  var F=[],add=function(path,content){F.push({path:path,content:content})};
-
-  add('settings.gradle','pluginManagement {\n    repositories { google(); mavenCentral(); gradlePluginPortal() }\n}\ndependencyResolutionManagement {\n    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)\n    repositories { google(); mavenCentral() }\n}\nrootProject.name = "WebApp"\ninclude \':app\'\n');
-  add('build.gradle',"plugins {\n    id 'com.android.application' version '8.1.4' apply false\n}\n");
-  add('gradle.properties','org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8\nandroid.useAndroidX=false\nandroid.nonTransitiveRClass=true\n');
-  add('app/build.gradle',`plugins {
-    id 'com.android.application'
-}
-android {
-    namespace '${pkg}'
-    compileSdk 34
-    defaultConfig {
-        applicationId '${pkg}'
-        minSdk ${minSdk}
-        targetSdk 34
-        versionCode ${vCode}
-        versionName '${vName}'
-    }
-    buildTypes {
-        release { minifyEnabled false }
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
-    }
-}
-`);
-
-  var perms='';
-  if(net)perms+='    <uses-permission android:name="android.permission.INTERNET" />\n';
-  if(cam)perms+='    <uses-permission android:name="android.permission.CAMERA" />\n    <uses-feature android:name="android.hardware.camera" android:required="false" />\n';
-  if(mic)perms+='    <uses-permission android:name="android.permission.RECORD_AUDIO" />\n    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />\n';
-  if(loc)perms+='    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n';
-
-  add('app/src/main/AndroidManifest.xml',`<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-${perms}    <application
-        android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:theme="@android:style/Theme.DeviceDefault.NoActionBar"
-        android:usesCleartextTraffic="true">
-        <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:screenOrientation="${orient}"
-            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-    </application>
-</manifest>
-`);
-  add('app/src/main/res/values/strings.xml','<resources>\n    <string name="app_name">'+xml(name)+'</string>\n</resources>\n');
-
-  var bFS=fs?'        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);\n':'';
-  var bKeep=keep?'        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);\n':'';
-  var bLight=light?'        if (Build.VERSION.SDK_INT >= 23) {\n            View dv = getWindow().getDecorView();\n            dv.setSystemUiVisibility(dv.getSystemUiVisibility() | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);\n        }\n':'';
-  var bImm=imm?'        applyImmersive();\n':'';
-  var mImm=imm?`
-    private void applyImmersive() {
-        getWindow().getDecorView().setSystemUiVisibility(
-            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-            | View.SYSTEM_UI_FLAG_FULLSCREEN
-            | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-    }
-
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        if (hasFocus) applyImmersive();
-    }
-`:'';
-  var bZoom=noZoom?'        s.setSupportZoom(false);\n        s.setBuiltInZoomControls(false);\n':'';
-  var bLoc=loc?'        s.setGeolocationEnabled(true);\n':'';
-  var bSel=noSel?'        web.setLongClickable(false);\n        web.setOnLongClickListener(new View.OnLongClickListener() {\n            @Override\n            public boolean onLongClick(View v) { return true; }\n        });\n':'';
-
-  /* -------- File chooser (fixes image & file upload buttons) -------- */
-  var chromeBody=`
-            @Override
-            public boolean onShowFileChooser(WebView view, ValueCallback<Uri[]> callback, WebChromeClient.FileChooserParams params) {
-                if (filePathCallback != null) {
-                    filePathCallback.onReceiveValue(null);
-                }
-                filePathCallback = callback;
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("*/*");
-                if (params.getMode() == WebChromeClient.FileChooserParams.MODE_OPEN_MULTIPLE) {
-                    intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-                }
-                ArrayList<String> mimes = new ArrayList<String>();
-                String[] accept = params.getAcceptTypes();
-                if (accept != null) {
-                    for (int i = 0; i < accept.length; i++) {
-                        if (accept[i] == null) continue;
-                        String[] parts = accept[i].split(",");
-                        for (int j = 0; j < parts.length; j++) {
-                            String p = parts[j].trim();
-                            if (p.length() == 0) continue;
-                            if (p.startsWith(".")) {
-                                String m = MimeTypeMap.getSingleton().getMimeTypeFromExtension(p.substring(1).toLowerCase());
-                                if (m != null) mimes.add(m);
-                            } else if (p.indexOf("/") >= 0) {
-                                mimes.add(p);
-                            }
-                        }
-                    }
-                }
-                if (!mimes.isEmpty()) {
-                    intent.putExtra(Intent.EXTRA_MIME_TYPES, mimes.toArray(new String[0]));
-                    if (mimes.size() == 1) intent.setType(mimes.get(0));
-                }
-                try {
-                    startActivityForResult(Intent.createChooser(intent, "Select file"), FILE_CHOOSER_REQ);
-                } catch (Exception e) {
-                    filePathCallback = null;
-                    return false;
-                }
-                return true;
-            }
-`;
-  if(anyPerm){
-    chromeBody+=`
-            @Override
-            public void onPermissionRequest(final PermissionRequest request) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() { request.grant(request.getResources()); }
-                });
-            }
-
-            @Override
-            public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
-                callback.invoke(origin, true, false);
-            }
-        `;
-  } else {
-    chromeBody += `\n        `;
-  }
-
-  /* -------- onActivityResult handler -------- */
-  var mFile=`
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == FILE_CHOOSER_REQ) {
-            if (filePathCallback == null) return;
-            Uri[] results = null;
-            if (resultCode == Activity.RESULT_OK && data != null) {
-                if (data.getClipData() != null) {
-                    int count = data.getClipData().getItemCount();
-                    results = new Uri[count];
-                    for (int i = 0; i < count; i++) {
-                        results[i] = data.getClipData().getItemAt(i).getUri();
-                    }
-                } else if (data.getData() != null) {
-                    results = new Uri[]{ data.getData() };
-                }
-            }
-            filePathCallback.onReceiveValue(results);
-            filePathCallback = null;
-            return;
-        }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-`;
-
-  var permArr=[];
-  if(cam)permArr.push('"android.permission.CAMERA"');
-  if(mic)permArr.push('"android.permission.RECORD_AUDIO"');
-  if(loc){permArr.push('"android.permission.ACCESS_FINE_LOCATION"');permArr.push('"android.permission.ACCESS_COARSE_LOCATION"')}
-  var bReq=anyPerm?'        if (Build.VERSION.SDK_INT >= 23) {\n            requestPermissions(new String[]{'+permArr.join(', ')+'}, 1);\n        }\n':'';
-  var bLink=ext
-    ?'                if (u.startsWith("http")) {\n                    try { startActivity(new Intent(Intent.ACTION_VIEW, r.getUrl())); } catch (Exception e) { }\n                    return true;\n                }\n'
-    :'                if (u.startsWith("http")) return false;\n';
-  var bBack=dbl
-    ?'        if (System.currentTimeMillis() - lastBack < 2000) {\n            super.onBackPressed();\n        } else {\n            lastBack = System.currentTimeMillis();\n            Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show();\n        }\n'
-    :'        super.onBackPressed();\n';
-
-  add('app/src/main/java/'+pkg.replace(/\./g,'/')+'/MainActivity.java',`package ${pkg};
-
-import android.app.Activity;
-import android.content.Intent;
-import android.graphics.Color;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.view.View;
-import android.view.WindowManager;
-import android.webkit.GeolocationPermissions;
-import android.webkit.MimeTypeMap;
-import android.webkit.PermissionRequest;
-import android.webkit.ValueCallback;
-import android.webkit.WebChromeClient;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.Toast;
-import java.util.ArrayList;
-
-public class MainActivity extends Activity {
-    private WebView web;
-    private long lastBack = 0;
-    private ValueCallback<Uri[]> filePathCallback;
-    private static final int FILE_CHOOSER_REQ = 4321;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-${bFS}${bKeep}        getWindow().setStatusBarColor(Color.parseColor("${cStatus}"));
-        getWindow().setNavigationBarColor(Color.parseColor("${cNav}"));
-${bLight}${bImm}
-        web = new WebView(this);
-        web.setBackgroundColor(Color.parseColor("${cBg}"));
-        setContentView(web);
-
-        WebSettings s = web.getSettings();
-        s.setJavaScriptEnabled(true);
-        s.setDomStorageEnabled(true);
-        s.setAllowFileAccess(true);
-        s.setUseWideViewPort(true);
-        s.setLoadWithOverviewMode(true);
-        s.setMediaPlaybackRequiresUserGesture(${auto?'false':'true'});
-${bZoom}${bLoc}
-        web.setWebChromeClient(new WebChromeClient() {${chromeBody}});
-        web.setWebViewClient(new WebViewClient() {
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest r) {
-                String u = r.getUrl().toString();
-                if (u.startsWith("file:")) return false;
-${bLink}                try { startActivity(new Intent(Intent.ACTION_VIEW, r.getUrl())); } catch (Exception e) { }
-                return true;
-            }
-        });
-${bSel}${bReq}        web.loadUrl("file:///android_asset/index.html");
-    }
-${mImm}${mFile}
-    @Override
-    public void onBackPressed() {
-        if (web.canGoBack()) {
-            web.goBack();
-            return;
-        }
-${bBack}    }
-}
-`);
-  var dens={mdpi:48,hdpi:72,xhdpi:96,xxhdpi:144,xxxhdpi:192};
-  for(var d in dens)add('app/src/main/res/mipmap-'+d+'/ic_launcher.png',await iconBlob(dens[d]));
-  var A='app/src/main/assets/';
-  add(A+'index.html',assemble(false));
-  if($('#ed-css').value.trim())add(A+'style.css',$('#ed-css').value);
-  if($('#ed-js').value.trim())add(A+'script.js',$('#ed-js').value);
-  Object.keys(extra).forEach(function(n){add(A+n,extra[n])});
-  add('.github/workflows/build.yml',WORKFLOW);
-  return F;
-}
-async function toB64(c){
-  var buf=typeof c==='string'?new TextEncoder().encode(c):new Uint8Array(await c.arrayBuffer());
-  var s='';for(var i=0;i<buf.length;i+=0x8000)s+=String.fromCharCode.apply(null,buf.subarray(i,i+0x8000));
-  return btoa(s);
-}
-var SECRET_RE=/(ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|gho_[A-Za-z0-9]{20,}|ghs_[A-Za-z0-9]{20,})/;
-async function scanSecrets(files){
-  for(var i=0;i<files.length;i++){
-    var f=files[i],c=f.content;
-    if(typeof c==='string'){if(SECRET_RE.test(c))throw new Error('SECRET|'+f.path)}
-    else if(c&&/\.(html?|css|js|json|txt|svg|xml|md)$/i.test(f.path)){
-      var t=await c.text();if(SECRET_RE.test(t))throw new Error('SECRET|'+f.path);
-    }
+  if(!S.user)return;
+  const email=S.user.email;
+  S.db.t=Date.now();
+  ss('ap_db_'+email,JSON.stringify(S.db));
+  setSaveState('pending');
+  if(cloudBase()){
+    clearTimeout(pushT);
+    pushT=setTimeout(async()=>{
+      try{
+        const k=kEmail(email);
+        const payload={name:S.user.name,email:S.user.email,t:S.db.t,db:S.db};
+        await cf('users/'+k,'PUT',payload);
+        await cf('idx/'+k,'PUT',{name:S.user.name,email:S.user.email,t:S.db.t});
+        setSaveState('saved');
+        setSync('ok');
+      }catch(e){
+        setSaveState('error');
+        setSync('err');
+        console.error(e);
+      }
+    },300);
   }
 }
-
-var STEPS=['Prepare app files','Connect to repository','Upload files','Start build','Build app (2-5 min)','Prepare download link'];
-function initSteps(){
-  $('#steps').innerHTML=STEPS.map(function(s,i){return '<div class="st" id="st'+i+'"><div class="ic"></div><span>'+s+'</span><small></small></div>'}).join('');
-  $('#progCard').classList.remove('hidden');$('#result').classList.add('hidden');$('#buildMsg').textContent='';$('#buildMsg').className='msg';
+function setSaveState(st){
+  S.saveState=st;
+  const p=$('saveState');
+  if(p){p.className='pill '+st;p.textContent=st==='pending'?T('Saving'):st==='saved'?T('SavedOk'):T('Save failed')}
+  if(st==='saved')setTimeout(()=>{S.saveState='';const q=$('saveState');if(q)q.className='pill';},1500);
 }
-function step(i,state,note){
-  curStep=i;var el=$('#st'+i);if(!el)return;
-  el.className='st '+state;el.querySelector('.ic').textContent=state==='ok'?'✓':state==='err'?'✕':'';
-  if(note!=null)el.querySelector('small').textContent=note;
-}
-var fmt=function(ms){var s=Math.floor(ms/1000);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
+let pushT=null;
 
-async function build(){
-  if(busy)return;
-  if(!cfg.token){$('#setupBox').open=true;window.scrollTo({top:0,behavior:'smooth'});toast('Paste your GitHub token first (menu: How to create a token)');return}
-  var pkg=$('#pkg').value.trim();
-  if(!/^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$/.test(pkg)){toast('Invalid package ID, e.g. com.mod.myapp');$('#pkg').focus();return}
-  busy=true;$('#buildBtn').disabled=true;$('#buildBtn').textContent='Building...';
-  initSteps();$('#progCard').scrollIntoView({behavior:'smooth'});
-  var R=cfg.user+'/'+cfg.repo;
+async function pullMe(force){if(!cloudBase()||!S.user||S.back)return false;const k=kEmail(S.user.email);try{const ct=await cf('users/'+k+'/t');setSync('ok');if(ct==null){S.db.t=S.db.t||Date.now();save();return false}
+ if(S.idxDone!=k){S.idxDone=k;cf('idx/'+k,'PUT',{name:S.user.name,email:S.user.email,t:ct}).catch(()=>{})}
+ const lt=S.db.t||0;if(!force&&ct==lt)return false;if(!force&&ct<lt){save();return false}
+ const r=await cf('users/'+k);if(r&&r.db){const d=norm(r.db);S.db=d;ss('ap_db_'+S.user.email,JSON.stringify(d));return true}return false}catch(e){setSync('err');return false}}
+
+async function sha(t){try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('ap|'+t));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}catch(e){let h=5381;for(const c of 'ap|'+t)h=(h*33)^c.charCodeAt(0);return 'x'+(h>>>0).toString(16)}}
+async function loadAdm(){S.admCfg=JSON.parse(sg('ap_admin')||'null');if(cloudBase()){try{S.admCfg=await cf('admin');if(S.admCfg)ss('ap_admin',JSON.stringify(S.admCfg));const r=await cf('users');S.cu=r||{};setSync('ok')}catch(e){setSync('err');toast('Cloud error — try again')}}}
+function tchs(){const m={},l=JSON.parse(sg('ap_users')||'{}');for(const e in l)m[e]={name:l[e].name,email:e,d:ldb(e)};if(S.cu)for(const k in S.cu){const c=S.cu[k];if(!c||!c.email)continue;const e=c.email.toLowerCase(),cd=norm(c.db||{});if(!m[e]||cd.t>=(m[e].d.t||0))m[e]={name:c.name||e,email:e,d:cd};else m[e].name=c.name||m[e].name}return Object.values(m).sort((a,b)=>a.name.localeCompare(b.name))}
+let polling=0;
+async function poll(){if(polling||!cloudBase()||!S.user||S.back||(typeof document!=='undefined'&&document.hidden))return;polling=1;try{let ch=await pullMe();if(S.view=='meo'&&S.adm&&!S.back){const ix=(await cf('idx'))||{};for(const k in ix){const have=S.cu&&S.cu[k]&&S.cu[k].t;if(!have||ix[k].t!=have){const r=await cf('users/'+k);if(r){(S.cu=S.cu||{})[k]=r;ch=true}}}}
+ if(ch&&!S.modal&&!S.drawer&&!S.pop&&!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||'')){if(S.view=='meo'&&S.mv=='find')doFind();else render()}}catch(e){setSync('err')}polling=0}
+function startSync(){setSync(cloudBase()?'busy':'off');if(S.user&&cloudBase())pullMe().then(c=>{if(c)render()});setInterval(poll,8000);
+ addEventListener('offline',()=>{setSync('err');toast('You are offline')});addEventListener('online',()=>poll());addEventListener('keydown',e=>{if(e.key=='Escape'&&S.modal)mc()})}
+async function saveCloud(){S.set.cloud=$('cu').value.trim();ss('ap_set',JSON.stringify(S.set));if(!cloudBase()){setSync('off');toast('Offline mode — data stays on this device.');return render()}
+ try{setSync('busy');await cf('ping','PUT',{t:Date.now()});toast('Connected');await pullMe();if(S.user)save();setSync('ok')}catch(e){setSync('err');toast('Connection failed')}render()}
+const cloudCard=()=>`<div class="card pad" style="margin-top:0.75rem"><b>Online sync</b><p class="sub" style="margin:0.25rem 0 0.5rem;font-size:0.75rem;overflow-wrap:anywhere">${cloudBase()?esc(cloudBase()):'Offline mode — data stays on this device.'}</p><input id="cu" placeholder="https://your-project-default-rtdb.firebaseio.com" value="${esc(S.set.cloud||'')}"><button class="btn" style="margin-top:0.625rem" onclick="saveCloud()">Save & test connection</button><details><summary>How to set up (2 minutes)</summary><ol style="font-size:0.75rem;padding-inline-start:1.125rem;line-height:1.7"><li>Firebase console → create a free project.</li><li>Build → Realtime Database → Create database (start in test mode).</li><li>Copy the URL that looks like https://xxxx-default-rtdb.firebaseio.com</li><li>Paste it above on every device, or put it in CLOUD_URL at the top of the script before hosting.</li></ol></details></div>`;
+function setSync(x){S.sync=x;const e=$('sy');if(e)e.className='dot '+(x=='ok'?'ok':x=='busy'?'busy':'err')}
+const head=(t,s,b)=>`<div class="row sp" style="align-items:flex-start"><div style="min-width:0"><h1>${t}</h1>${s?`<p class="sub">${s}</p>`:''}</div>${b||''}</div>`;
+const empty=(a,t)=>`<div class="empty">${art(a)}<div>${t}</div></div>`;
+const stack=l=>`<div class="stack">${l.join('')}</div>`;
+const grid=l=>`<div class="grid">${l.join('')}</div>`;
+
+/* ===== بطاقة أفقية مصغّرة (صورة يسار — النص وسط — إعدادات يمين) ===== */
+const clsCard=c=>`<div class="rowcard">
+  <div class="rthumb" ${c.img?`style="background-image:url(${c.img})"`:''}>${c.img?'':art('classes')}</div>
+  <button class="rbody" onclick="go('class','${c.id}')" style="background:none;border:0;padding:0;cursor:pointer">
+    <div class="rtitle">${esc(c.name)}</div>
+    <div class="rsub">${c.days.map(d=>D[d]).join(' · ')||'—'}${c.time?' · '+esc(c.time):''}${stuIn(c.id).length?' · '+stuIn(c.id).length+' '+T('Students'):''}</div>
+  </button>
+  <button class="rside" onclick="event.stopPropagation();fCls('${c.id}')" title="Edit">${ic('edit',17)}</button>
+</div>`;
+const tile=(k,t,fn,sub)=>`<div class="rowcard">
+  <div class="rthumb">${art(k)}</div>
+  <button class="rbody" onclick="${fn}" style="background:none;border:0;padding:0;cursor:pointer">
+    <div class="rtitle">${t}</div>
+    ${sub?`<div class="rsub">${sub}</div>`:''}
+  </button>
+  <div class="rside" style="opacity:0;pointer-events:none">${ic('back')}</div>
+</div>`;
+const dOf=ctx=>ctx?((tchs().find(t=>t.email==ctx)||{d:S.db}).d):S.db;
+
+const isViewing=()=>!!S.back;
+const canManage=()=>true;
+const canEditAtt=()=>!isViewing();
+
+/* CALENDAR */
+function cal(ymv,f,tap,sel){
+  const[y,m]=ymv.split('-').map(Number),ws=S.set.lang=='ar'?6:0;
+  const off=(new Date(y,m-1,1).getDay()-ws+7)%7,dim=new Date(y,m,0).getDate(),td=dstr(new Date());
+  let cells='';for(let i=0;i<off;i++)cells+='<button class="o"></button>';
+  for(let d=1;d<=dim;d++){const ds=ymv+'-'+pad(d),r=f(ds)||{};cells+=`<button class="${r.cls||''} ${ds==td?'t':''} ${ds==sel?'sel':''}" onclick="${tap(ds)}"><span>${d}</span>${r.dot!=null?`<i class="dt ${r.dot}"></i>`:''}</button>`}
+  return `<div class="cal"><div class="ch"><button class="ib" style="background:var(--cd2);color:var(--ink);width:2.1rem;height:2.1rem" onclick="calNav(-1)">${ic('back',18)}</button><b>${new Date(y,m-1,1).toLocaleDateString(loc(),{month:'long',year:'numeric'})}</b><button class="ib nx" style="background:var(--cd2);color:var(--ink);width:2.1rem;height:2.1rem" onclick="calNav(1)">${ic('back',18)}</button></div><div class="cw">${[...Array(7)].map((_,i)=>`<span>${DS()[(ws+i)%7]}</span>`).join('')}</div><div class="cg">${cells}</div></div>`;
+}
+function calNav(n){const[y,m]=S.hm.split('-').map(Number);S.hm=ym(new Date(y,m-1+n,1));render()}
+function histSel(d){return d.classes.length?`<select style="margin-bottom:.8rem" onchange="S.hf=this.value;render()"><option value="">All classes</option>${d.classes.map(c=>`<option value="${c.id}" ${c.id==S.hf?'selected':''}>${esc(c.name)}</option>`).join('')}</select>`:''}
+function calHist(d,ctx){const by={};Object.entries(d.att).filter(([k,r])=>!S.hf||r.cls==S.hf).forEach(([k,r])=>by[r.date]=(by[r.date]||0)+1);const td=dstr(new Date());
+ return histSel(d)+cal(S.hm,ds=>{const dw=new Date(ds+'T00:00:00').getDay(),sc=d.classes.some(c=>(!S.hf||c.id==S.hf)&&c.days.includes(dw));return{dot:by[ds]?'':(sc&&ds<=td?'s':null)}},ds=>`dayTap('${ctx}','${ds}')`)}
+function dayTap(ctx,ds){const d=dOf(ctx),ks=Object.entries(d.att).filter(([k,r])=>r.date==ds&&(!S.hf||r.cls==S.hf)).map(x=>x[0]);if(!ks.length)return toast('No attendance saved for this day');if(ks.length==1)return exp(ks[0],ctx);
+ mod(`<h2>${fmt(ds)}</h2><div class="card" style="margin-top:.8rem;box-shadow:none;background:var(--cd2)">${ks.map(k=>`<button class="li" onclick="mc();setTimeout(()=>exp('${k}','${ctx}'),230)"><div class="n">${esc((d.classes.find(c=>c.id==d.att[k].cls)||{}).name||'—')}</div></button>`).join('')}</div>`)}
+function openStu(ctx,sid,m){pushNav();S.sx={ctx,sid};S.sd=dstr(new Date());S.hm=ym(new Date());if(m)S.mv='stu';else S.view='stu';S.anim=1;render();scrollTo(0,0)}
+function selDay(ds){S.sd=ds;render()}
+function stuView(){const sx=S.sx||{},d=dOf(sx.ctx||''),s=d.students.find(x=>x.id==sx.sid);if(!s)return empty('people','No matching students.');
+ const c=d.classes.find(x=>x.id==s.cls),mp={};Object.values(d.att).filter(r=>r.cls==s.cls&&r.marks[s.id]).forEach(r=>mp[r.date]=r.marks[s.id]);
+ const cn=k=>Object.keys(mp).filter(x=>x.startsWith(S.hm)&&mp[x]==k).length,sel=S.sd,nm={P:'Present',A:'Absent',L:'Late'};let wk='';
+ if(sel){const dt=new Date(sel+'T00:00:00'),w0=S.set.lang=='ar'?6:0,st=new Date(dt);st.setDate(dt.getDate()-((dt.getDay()-w0+7)%7));wk=`<h2 style="margin:1rem 0 .6rem">Week</h2><div class="card">${[...Array(7)].map((_,i)=>{const x=new Date(st);x.setDate(st.getDate()+i);const ds=dstr(x),m=mp[ds];return `<div class="li${ds==sel?' hl':''}"><div class="n">${D[x.getDay()]} · ${x.getDate()}</div>${m?`<span class="tg ${m.toLowerCase()}">${nm[m]}</span>`:'<span class="tg">—</span>'}</div>`}).join('')}</div>`}
+ return `<h1 style="overflow-wrap:anywhere">${esc(s.name)}</h1><p class="sub">${esc((c||{}).name||'')}</p><div class="row" style="margin-bottom:.7rem"><span class="sq p">P ${cn('P')}</span><span class="sq a">A ${cn('A')}</span><span class="sq l">L ${cn('L')}</span></div>`+cal(S.hm,ds=>({cls:(mp[ds]||'').toLowerCase()}),ds=>`selDay('${ds}')`,sel)+wk}
+
+function render(){
+ if(!S.user){$('root').innerHTML=`<div class="login"><div class="lg"><div class="logo">${ic('cup',32)}</div><h1 style="text-align:center">AttendPro</h1><p class="sub" style="text-align:center">Sign in to manage classes and attendance.</p><label class="l">Name</label><input id="gn" placeholder="Full name" value="${esc(S.ln)}"><label class="l">Email</label><input id="ge" type="email" placeholder="you@gmail.com" value="${esc(S.le)}"><button class="btn" style="width:100%;justify-content:center;margin-top:1.1rem" onclick="gok()">Sign in</button><div class="lk"><button class="${S.set.lang=='en'?'on':''}" onclick="keepL();setv('lang','en',true)">English</button><span>·</span><button class="${S.set.lang=='ar'?'on':''}" onclick="keepL();setv('lang','ar',true)">العربية</button></div><a class="hp" href="https://wa.me/9647819274539" target="_blank" rel="noopener">Help</a><div class="sig"><span class="ver">Version pre1.1</span><br>All rights reserved © 2025</div></div></div>`;if(S.set.lang=='ar')trDom($('root'));return}
+ const pic=S.db.pic?`<img src="${S.db.pic}">`:ini(S.user.name);
+ const mr=(k,i,t,idx)=>`<button class="mr ${S.view==k?'on':''}" style="animation-delay:${(idx||0)*70}ms" onclick="nav('${k}')">${ic(i)}<span>${t}</span></button>`;
+ const dr=S.drawer?`<div class="lay drawer" onclick="if(event.target==this)closeL('drawer')"><div class="mp">
+   ${mr('home','home','Home',0)}
+   ${mr('meo','shield','MEO',1)}
+   ${mr('teo','user','TEO',2)}
+   ${mr('classes','grid','Classes',3)}
+   ${mr('history','cal','History',4)}
+   ${mr('settings','gear','Settings',5)}
+   ${mr('tutorial','book','Tutorial',6)}
+   <button class="mr mr-more">${ic('star')}<span>More coming soon<small>Stay tuned ✨</small></span></button>
+   <div class="mp-foot"><b>AttendPro</b><span class="ver">Version pre1.1</span><br>All rights reserved © 2025</div>
+ </div></div>`:'';
+ const pp=S.pop?`<div class="lay c pop" onclick="if(event.target==this)closeL('pop')"><div class="pc"><div class="big">${pic}</div><div class="upl"><span class="lnk">${ic('cam',14)}Change photo</span><input type="file" accept="image/*" onchange="pickImg(this,d=>{S.db.pic=d;save();render()},240,true)"></div><h2 style="margin-top:.6rem;overflow-wrap:anywhere">${esc(S.user.name)}</h2><small style="color:var(--mu);overflow-wrap:anywhere">${esc(S.user.email)}</small><div class="pr"><span>Classes</span><span class="sq">${S.db.classes.length}</span></div><div class="pr"><span>Students</span><span class="sq">${ns(S.db)}</span></div><button class="btn r" style="width:100%;justify-content:center;margin-top:1rem" onclick="out()">${ic('out',16)}Sign out</button></div></div>`:'';
+ const bn=S.back?`<div class="imp"><span>Viewing: ${esc(S.user.name)}</span><button class="btn s" style="background:rgba(255,255,255,.25);color:#fff" onclick="backMeo()">Back to MEO</button></div>`:'';
+ const sv=S.saveState?`<span class="pill ${S.saveState}" id="saveState">${S.saveState==='pending'?T('Saving'):S.saveState==='saved'?T('SavedOk'):T('Save failed')}</span>`:`<span class="pill" id="saveState"></span>`;
+ $('root').innerHTML=`<header class="hd"><button class="ib" onclick="S.drawer=true;render()">${ic('menu')}</button><div class="cd" onclick="nav('teo')"><small id="cdn"></small><b id="cdt"></b></div><div class="avw"><button class="ib" onclick="S.pop=true;render()">${pic}</button><i id="sy" class="dot"></i></div></header>${bn}<main class="main ${S.anim?'pg':''}">${S.view!='home'?`<button class="bk" onclick="back()">${ic('back')}<span>Back</span> ${sv}</button>`:''}${V[S.view]()}</main>${dr}${pp}${S.modal}`;S.anim=0;
+ if(S.set.lang=='ar')trDom($('root'));setSync(S.sync);tick();if(S.view=='meo'&&S.mv=='find'&&$('q'))doFind();
+}
+function keepL(){S.ln=($('gn')||{}).value||'';S.le=($('ge')||{}).value||''}
+async function gok(){const n=$('gn').value.trim(),e=$('ge').value.trim().toLowerCase();if(!n||!/.+@.+\..+/.test(e))return toast('Enter your name and a valid email');S.user={name:n,email:e};ss('ap_user',JSON.stringify(S.user));let u=JSON.parse(sg('ap_users')||'{}');u[e]={name:n,email:e};ss('ap_users',JSON.stringify(u));S.db=ldb(e);S.view='home';S.st=[];S.adm=false;S.anim=1;if(cloudBase()){setSync('busy');await pullMe()}intro(()=>render())}
+function out(){closeL('pop',()=>{S.back=null;ss('ap_user','');S.user=null;S.db=null;S.adm=false;S.st=[];S.view='home';render()})}
+function openAcc(e){const u=tchs().find(x=>x.email==e);if(!u)return;if(S.back){backMeo();return}
+  S.back={user:JSON.parse(JSON.stringify(S.user)),db:S.db,email:S.user.email};
+  S.user={name:u.name,email:u.email};
+  S.db=JSON.parse(JSON.stringify(u.d));
+  sfxSuccess();S.view='home';S.st=[];S.anim=1;render();scrollTo(0,0)}
+function backMeo(){if(!S.back)return;S.db=S.back.db;S.user=S.back.user;S.back=null;S.view='meo';S.mv='acc';S.st=[{v:'meo',mv:''}];S.anim=1;render()}
+
+const V={
+home(){const c=S.db.classes;return head('Classes')+(c.length?stack(c.map(clsCard)):empty('classes','No classes yet. Open the menu → Classes to add one.'))},
+classes(){const c=S.db.classes;return head('Classes','',`<button class="ib" style="background:var(--ac)" onclick="fCls()">${ic('edit')}</button>`)+(c.length?stack(c.map(clsCard)):empty('classes','No classes yet. Open the menu → Classes to add one.'))},
+class(){const c=clsOf(S.cid);if(!c)return V.home();const key=S.date+'|'+c.id,sv=S.db.att[key];if(!S.work[key])S.work[key]={...(sv?.marks||{})};const w=S.work[key],l=stuIn(c.id),dw=new Date(S.date+'T00:00:00').getDay(),ok=c.days.includes(dw),attLocked=!canEditAtt();
+ return `<div class="ban" ${c.img?`style="background-image:url(${c.img})"`:''}>${c.img?'':art('classes')}</div><div class="row sp" style="margin:.8rem 0 .3rem"><div style="min-width:0"><h1 style="overflow-wrap:anywhere">${esc(c.name)}</h1><p class="sub" style="margin:0">${c.days.map(d=>D[d]).join(' · ')||'—'} · ${esc(c.time||'--:--')}</p></div><div class="row" style="gap:.4rem"><button class="ib" style="background:var(--cd2);color:var(--ink)" onclick="fCls('${c.id}')">${ic('edit')}</button><button class="ib" style="background:var(--cd2);color:var(--red)" onclick="del('classes','${c.id}')">${ic('del')}</button></div></div>
+ <div class="row sp wrap" style="margin:.8rem 0"><input type="date" style="flex:1;min-width:9rem" value="${S.date}" onchange="S.date=this.value;render()"><button class="btn" onclick="fStu()">${ic('plus',16)}Add students</button></div>`
+ +(attLocked?`<div class="locked-note">${ic('lock',15)} <span>${T('Attendance editing locked')} — ${T('You can manage classes & students, but attendance is locked.')}</span></div>`:'')
+ +(ok?'':`<p style="color:var(--red);font-weight:700;font-size:.8rem">Not scheduled on ${D[dw]}.</p>`)+
+ (l.length?`<div class="card"><div class="li"><span class="sq p">P ${ct(w,'P')}</span><span class="sq a">A ${ct(w,'A')}</span><span class="sq l">L ${ct(w,'L')}</span><div class="n"></div>${attLocked?'':`<button class="btn g s" onclick="allP()">All present</button>`}</div>${l.map(s=>`<div class="li"><div class="ib" style="background:var(--cream);color:var(--ac);font-weight:800;cursor:pointer" onclick="openStu('','${s.id}',0)">${esc(s.name.charAt(0))}</div><div class="n" onclick="openStu('','${s.id}',0)" style="cursor:pointer">${esc(s.name)}</div><div class="st${attLocked?' locked':''}">${['P','A','L'].map(k=>`<button class="${k.toLowerCase()} ${w[s.id]==k?'on':''}" onclick="mark('${key}','${s.id}','${k}')">${k}</button>`).join('')}</div><button class="ib" style="width:2rem;height:2rem;background:var(--cd2);color:var(--red)" onclick="del('students','${s.id}')">${ic('del',15)}</button></div>`).join('')}</div><div class="row sbar"><button class="btn" onclick="${attLocked?'':`saveAtt()`}" ${attLocked?'disabled style="opacity:.5;pointer-events:none;cursor:not-allowed"':''}>${ic('save',16)}Save attendance</button><button class="btn g" onclick="exp('${key}')">${ic('down',16)}Export</button></div>`:empty('stu','No students yet. Tap "Add students".'))},
+history(){return head('History')+calHist(S.db,'')},
+stu(){return stuView()},
+teo(){const n=nextLec(S.db);return `<div class="row" style="gap:.9rem;margin-bottom:1.1rem"><div class="ib" style="width:4rem;height:4rem;background:var(--cd2);color:var(--ac)">${S.db.pic?`<img src="${S.db.pic}">`:ava}</div><div style="min-width:0"><h1 style="overflow-wrap:anywhere">${esc(S.user.name)}</h1><p class="sub" style="margin:0;color:var(--ac);font-weight:700">${n?esc(n.c.name)+' · '+n.t.toLocaleDateString(loc(),{weekday:'long',day:'numeric',month:'short'})+' · '+pad(n.t.getHours())+':'+pad(n.t.getMinutes()):'No upcoming lecture'}</p></div></div><h2 style="margin-bottom:.6rem">Weekly timetable</h2>`+D.map((d,i)=>{const l=S.db.classes.filter(c=>c.days.includes(i)).sort((a,b)=>(a.time||'').localeCompare(b.time||''));return l.length?`<div class="card" style="margin-bottom:.7rem"><div class="li"><b class="n" style="color:var(--ac)">${d}</b></div>${l.map(c=>`<button class="li" onclick="go('class','${c.id}')"><span class="sq">${esc(c.time||'--:--')}</span><div class="n">${esc(c.name)}</div></button>`).join('')}</div>`:''}).join('')},
+
+settings(){const q=S.set,sm=(k,t,o)=>`<div class="card pad" style="margin-bottom:.7rem"><b>${t}</b><div class="seg">${o.map(([v,l])=>`<button class="${q[k]==v?'on':''}" onclick="setv('${k}','${v}',true)">${l}</button>`).join('')}</div></div>`;
+ const presets=[
+   [DEFAULT_WALL,'Default'],
+   ['','None'],
+   ['https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600','Nature'],
+   ['https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1600','Mountains'],
+   ['https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1600','Fog'],
+   ['https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1600','Forest'],
+   ['https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=1600','Purple']
+ ];
+ const curWall=q.wall||'';
+ return head('Settings')
+  +sm('lang','Language',[['en','English'],['ar','العربية']])
+  +sm('theme','Theme',[['light','Light'],['dark','Dark']])
+  +`<div class="card pad" style="margin-bottom:.7rem"><b>${T('Palette')}</b><div class="sw">${[['blue','#1e5fa8',T('Blue')],['coffee','#8b5a2b',T('Coffee')],['green','#1a5c3a',T('Green')],['gray','#4a4a52',T('Gray')],['red','#c0392b',T('Red')]].map(([k,c,n])=>`<button data-palette-btn="${k}" class="${q.palette==k?'on':''}" style="background:${c}" title="${n}" onclick="setv('palette','${k}',false);sfxTheme()"></button>`).join('')}</div></div>`
+  +`<div class="card pad" style="margin-bottom:.7rem">
+      <b>${T('App background')}</b>
+      <p class="sub" style="margin:.25rem 0 .5rem;font-size:.72rem">${T('Background')}</p>
+      <div class="row wrap" style="gap:.5rem;margin-bottom:.6rem">
+        <div class="upl"><span class="btn g s">${ic('img',16)}${T('Upload from gallery')}</span><input type="file" accept="image/*" onchange="setWallFile(this)"></div>
+        <button class="btn g s" onclick="setWallLink()">${ic('list',16)}${T('Use image link')}</button>
+        ${curWall!==DEFAULT_WALL?`<button class="btn r s" onclick="clearWall()">${ic('x',16)}${T('Remove background')}</button>`:''}
+      </div>
+      <label class="l" style="margin-top:.4rem">${T('Choose preset')}</label>
+      <div class="wall-grid">
+        ${presets.map(([u,n])=>`<button class="wall-opt ${curWall==u?'on':''} ${u?'':'none'}" ${u?`style="background-image:url('${u}')"`:''} onclick="setv('wall','${u}',true)" title="${n}">${u?'':ic('x',18)}</button>`).join('')}
+      </div>
+    </div>`
+  +`<div class="card pad row sp" style="margin-bottom:.7rem"><b>App size</b><div class="cnt"><button onclick="step('z',-5,60,130)">−</button><span>${q.z}%</span><button onclick="step('z',5,60,130)">+</button></div></div>`
+  +`<div class="card pad row sp" style="margin-bottom:.7rem"><div style="min-width:0"><b>${T('Notifications')}</b><p class="sub" style="margin:.15rem 0 0;font-size:.72rem">${T('Enable notifications')}</p></div><label class="switch"><input type="checkbox" ${q.notif?'checked':''} onchange="if(this.checked){requestNotif().then(ok=>{if(!ok)this.checked=false;render()})}else{S.set.notif=false;ss('ap_set',JSON.stringify(S.set));render()}"><span class="slider"></span></label></div>`
+  +cloudCard()
+  +`<div class="card pad" style="margin-top:.7rem;text-align:center">
+      <b style="display:block;margin-bottom:.3rem">${T('Developer Support')}</b>
+      <p class="sub" style="margin:0 0 .8rem">${T('Chat with Developers')}</p>
+      <button class="btn wa" style="justify-content:center;width:100%" onclick="chatDev()">${ic('chat',16)} ${T('Chat with Developers')}</button>
+    </div>
+    <div class="proxy-box">
+      <b>⚡ Smart Proxy</b>
+      <p>Connection routed through secure proxy layer (visual preview only)</p>
+      <div class="proxy-line"><i class="proxy-dot"></i><span>proxy.attendpro.io:443 · TLS 1.3 · 0ms</span></div>
+    </div>
+    <div class="sig"><span class="ver">Version pre1.1</span><br>All rights reserved © 2025</div>`
+ },
+tutorial(){const step=(n,t,d)=>`<div class="tut-step"><div class="tut-num">${n}</div><div><b>${t}</b><p>${d}</p></div></div>`;
+ return head('Tutorial','Learn how to use AttendPro step by step.')
+  +`<div class="card pad">
+      <div class="tut-head"><div class="tut-ic">${ic('book',22)}</div><div><b style="font-size:1rem">Getting started</b><p class="sub" style="margin:.15rem 0 0">Follow these steps to master AttendPro</p></div></div>
+      ${step(1,'Sign in','Enter your name and email to create your personal workspace. Everything is saved on this device and synced to the cloud if configured.')}
+      ${step(2,'Add a class','Open the menu → Classes, then tap the + button. Give the class a name, pick a photo, select the weekly days, and set the time.')}
+      ${step(3,'Add students','Open the class and tap "Add students". Type one student name per line. Names are added instantly to that class.')}
+      ${step(4,'Take attendance','In the class page, pick a date and tap P (Present), A (Absent), or L (Late) for each student. Tap "All present" for quick marking.')}
+      ${step(5,'Save & export','Tap "Save attendance" to store the day. Tap "Export" to generate a beautiful image of the full attendance record and save it to your phone.')}
+      ${step(6,'Track history','Open the menu → History to see all saved days on a calendar. Tap any day to view or export its records.')}
+      ${step(7,'Student profile','Tap any student name inside a class to view their personal attendance calendar, weekly breakdown, and totals.')}
+      ${step(8,'MEO – Manager panel','Open the menu → MEO. Register your manager name, phone and a secret code. Inside you can view teacher accounts (attendance is read-only when viewing a teacher, but you can still manage their classes & students).')}
+      ${step(9,'TEO – Your panel','Open the menu → TEO to see your weekly timetable, your photo, and the countdown to your next lecture.')}
+      ${step(10,'Settings & themes','Customize language, theme, color palette, text size, notifications, and app background from the Settings page.')}
+    </div>`
+ },
+meo(){if(!S.admL){if(!S.admBusy){S.admBusy=1;loadAdm().then(()=>{S.admBusy=0;S.admL=1;render()})}return head('MEO','Loading…')}const a=S.admCfg;
+ if(!a)return head('MEO','First-time setup: register the manager.')+`<div class="card pad" style="max-width:27rem"><label class="l">Manager name</label><input id="an"><label class="l">Manager phone number</label><input id="ap" type="tel" inputmode="tel"><label class="l">Secret code (min 4 characters)</label><input id="ac" type="password"><button class="btn" style="margin-top:1rem" onclick="aSet()">${ic('save',16)}Create manager account</button></div>`;
+ if(!S.adm)return head('MEO','Enter the manager code.')+`<div class="card pad" style="max-width:27rem"><p style="margin:0"><b>${esc(a.name)}</b></p><label class="l">Secret code</label><input id="ac" type="password"><button class="btn" style="margin-top:1rem" onclick="aIn()">Unlock</button></div>`;
+ const us=tchs(),mv=S.mv,pc=u=>u.d.pic?`<img src="${u.d.pic}">`:ini(u.name),none=empty('people','No teachers registered yet.');
+ const trow=(u,fn)=>`<div class="rowcard" style="padding:0"><button class="li" style="padding:.7rem .8rem;border:0;flex:1" onclick="${fn}"><div class="ib" style="background:var(--cream);color:var(--ac);font-weight:800">${pc(u)}</div><div class="n">${esc(u.name)}<div style="color:var(--mu);font-size:.68rem;font-weight:500;overflow:hidden;text-overflow:ellipsis">${esc(u.email)}</div></div></button><button class="ib" style="width:2.2rem;height:2.2rem;background:var(--cd2);color:var(--red);margin-inline-end:.5rem" onclick="delTeacher('${esc(u.email)}')">${ic('del',15)}</button></div>`;
+ if(mv=='stu')return stuView();
+ if(!mv)return head('MEO',esc(a.name),`<button class="btn g s" onclick="S.adm=false;render()">Lock</button>`)+stack([
+   tile('acc','Accounts',"mvg('acc')",'Open any teacher account'),
+   tile('gen','General accounts',"mvg('gen')",'Every teacher\'s sessions & times'),
+   tile('dates','Dates',"mvg('dates')",'Attendance record dates'),
+   tile('find','Single search',"mvg('find')",'Find a student')
+ ])+`<details><summary>Change manager phone</summary><label class="l">Current phone number</label><input id="op" type="tel"><label class="l">New phone number</label><input id="np" type="tel"><button class="btn" style="margin-top:.8rem" onclick="aPh()">Update phone</button></details>`;
+ if(mv=='acc')return head('Accounts')+(us.length?stack(us.map(u=>trow(u,`openAcc('${esc(u.email)}')`))):none);
+ if(mv=='gen')return head('General accounts')+(us.length?us.map(u=>`<div class="card pad" style="margin-bottom:.7rem"><div class="row" style="margin-bottom:.4rem"><div class="ib" style="background:var(--cream);color:var(--ac);font-weight:800">${pc(u)}</div><b>${esc(u.name)}</b></div>${u.d.classes.map(c=>`<div class="per row sp"><span style="min-width:0;overflow-wrap:anywhere">${esc(c.name)}</span><span class="row" style="gap:.25rem;flex:none;flex-wrap:wrap;justify-content:flex-end">${c.days.map(d=>`<span class="sq">${D[d].slice(0,3)}</span>`).join('')}<span class="sq">${esc(c.time||'--:--')}</span></span></div>`).join('')||'<p class="sub">None</p>'}</div>`).join(''):none);
+ if(mv=='dates'){if(!S.ms)return head('Dates')+(us.length?stack(us.map(u=>trow(u,`mvg('dates','${esc(u.email)}')`))):none);const t=us.find(x=>x.email==S.ms);return head(esc(t?t.name:''))+(t?calHist(t.d,t.email):none)}
+ return head('Single search')+`<input id="q" placeholder="Full name…" value="${esc(S.q||'')}" oninput="doFind()" style="margin-bottom:.8rem"><div id="res"></div>`}};
+function doFind(){const el=$('res');if(!el)return;S.q=$('q').value;const tk=S.q.toLowerCase().split(/\s+/).filter(Boolean);if(!tk.length){el.innerHTML='';return}
+ const rows=[];tchs().forEach(u=>u.d.students.filter(s=>tk.every(t=>s.name.toLowerCase().includes(t))).forEach(s=>rows.push(`<button class="li" onclick="openStu('${esc(u.email)}','${s.id}',1)"><div class="n">${esc(s.name)}</div></button>`)));
+ el.innerHTML=rows.length?`<div class="card">${rows.join('')}</div>`:'<div class="empty">No matching students.</div>';if(S.set.lang=='ar')trDom(el)}
+async function aSet(){const n=$('an').value.trim(),p=$('ap').value.trim(),c=$('ac').value;if(!n||p.length<6||c.length<4)return toast('Fill all fields (code min 4)');const cfg={name:n,ph:await sha(p),ch:await sha(c)};try{if(cloudBase())await cf('admin','PUT',cfg)}catch(e){return toast('Cloud error — try again')}ss('ap_admin',JSON.stringify(cfg));S.admCfg=cfg;S.adm=true;render()}
+async function aIn(){const a=S.admCfg,v=$('ac').value,ok=a.ch?(await sha(v))===a.ch:v===a.code;if(ok){S.adm=true;render()}else toast('Wrong code')}
+async function aPh(){const a={...S.admCfg},np=$('np').value.trim(),op=$('op').value.trim(),ok=a.ph?(await sha(op))===a.ph:op===a.phone;if(!ok)return toast('Current phone does not match');if(np.length<6)return toast('Enter a valid new phone');a.ph=await sha(np);delete a.phone;if(a.code&&!a.ch){a.ch=await sha(a.code);delete a.code}try{if(cloudBase())await cf('admin','PUT',a)}catch(e){return toast('Cloud error — try again')}ss('ap_admin',JSON.stringify(a));S.admCfg=a;toast('Phone updated');render()}
+function delTeacher(email){ask('Delete teacher?',async()=>{
+  const k=kEmail(email);
   try{
-    step(0,'run');var files=await projectFiles();await scanSecrets(files);step(0,'ok',files.length+' files');
-
-    step(1,'run');
-    var repo=await gh('/repos/'+R);var br=repo.default_branch;
-    var ref=await gh('/repos/'+R+'/git/ref/heads/'+br);var parent=ref.object.sha;
-    var pc=await gh('/repos/'+R+'/git/commits/'+parent);var baseTree=pc.tree.sha;
-    step(1,'ok');
-
-    step(2,'run');
-    var tree=[];
-    for(var i=0;i<files.length;i+=4){
-      var part=files.slice(i,i+4);
-      var res=await Promise.all(part.map(async function(f){
-        var b=await gh('/repos/'+R+'/git/blobs',{method:'POST',body:{content:await toB64(f.content),encoding:'base64'}});
-        return {path:f.path,mode:'100644',type:'blob',sha:b.sha};
-      }));
-      tree=tree.concat(res);
-      step(2,'run',Math.min(i+4,files.length)+'/'+files.length);
+    if(cloudBase()){
+      await cf('users/'+k,'DELETE');
+      await cf('idx/'+k,'DELETE');
     }
-    var keep={};files.forEach(function(f){keep[f.path]=1});
-    var old=await gh('/repos/'+R+'/git/trees/'+baseTree+'?recursive=1');
-    (old.tree||[]).forEach(function(t){
-      if(t.type==='blob'&&(t.path.indexOf('app/src/main/assets/')===0||t.path.indexOf('app/src/main/java/')===0)&&!keep[t.path])
-        tree.push({path:t.path,mode:'100644',type:'blob',sha:null});
-    });
-    var nt=await gh('/repos/'+R+'/git/trees',{method:'POST',body:{base_tree:baseTree,tree:tree}});
-    var cm=await gh('/repos/'+R+'/git/commits',{method:'POST',body:{message:'Build: '+($('#appName').value.trim()||'App'),tree:nt.sha,parents:[parent]}});
-    await gh('/repos/'+R+'/git/refs/heads/'+br,{method:'PATCH',body:{sha:cm.sha}});
-    step(2,'ok');
+    delete (S.cu||{})[k];
+    const l=JSON.parse(sg('ap_users')||'{}');delete l[email];ss('ap_users',JSON.stringify(l));
+    ss('ap_db_'+email,'');
+    toast('Deleted');render();
+  }catch(e){toast('Cloud error')}
+})}
+function mark(k,s,v){if(!canEditAtt()){toast('Attendance editing locked');return}const w=S.work[k];if(w[s]==v)delete w[s];else w[s]=v;sfxPop();render()}
+function allP(){if(!canEditAtt())return;const k=S.date+'|'+S.cid;stuIn(S.cid).forEach(s=>S.work[k][s.id]='P');render()}
+function saveAtt(){if(!canEditAtt()){toast('Attendance editing locked');return}const k=S.date+'|'+S.cid;S.db.att[k]={date:S.date,cls:S.cid,marks:{...S.work[k]}};save();sfxSuccess();toast('Attendance saved');sendNotif('Attendance saved',(clsOf(S.cid)||{}).name||'Class')}
+function del(t,id){ask(t=='classes'?'Delete this class?':'Delete this item?',()=>{S.db[t]=S.db[t].filter(x=>x.id!=id);if(t=='classes'){S.db.students=S.db.students.filter(s=>s.cls!=id);if(S.view=='class'){S.view='home';S.st=[]}}save();render()})}
+let dImg='';
+function fCls(id){const c=clsOf(id)||{days:[]};dImg=c.img||'';mod(`<h2>${id?'Edit class':'New class'}</h2><label class="l">Class name</label><input id="f1" value="${esc(c.name||'')}" placeholder="e.g. Math – Grade 5"><label class="l">Class photo</label><div class="upl"><span class="btn g s">${ic('img',16)}Choose from gallery</span><input type="file" accept="image/*" onchange="pickImg(this,d=>{dImg=d;$('pv').innerHTML='<img class=prev src='+d+'>'},640)"></div><div id="pv">${dImg?`<img class="prev" src="${dImg}">`:''}</div><label class="l">Weekly schedule</label><div class="chips" id="dy">${D.map((n,i)=>`<button type="button" class="chip ${c.days.includes(i)?'on':''}" data-d="${i}" onclick="this.classList.toggle('on')">${n}</button>`).join('')}</div><label class="l">Time</label><input id="f3" type="time" value="${esc(c.time||'')}"><div class="row" style="margin-top:1.1rem"><button class="btn" onclick="sCls('${id||''}')">${ic('save',16)}Save</button><button class="btn g" onclick="mc()">Cancel</button></div>`)}
+function sCls(id){const n=$('f1').value.trim();if(!n)return toast('Enter a class name');const o={name:n,img:dImg,days:[...document.querySelectorAll('#dy .on')].map(e=>+e.dataset.d),time:$('f3').value};if(id)Object.assign(clsOf(id),o);else S.db.classes.push({id:uid(),...o});save();mc()}
+let EX={};
+function exp(key,ctx){const d=dOf(ctx||''),r=d.att[key]||{date:S.date,cls:S.cid,marks:S.work[key]||{}},c=d.classes.find(x=>x.id==r.cls),l=stuIn(r.cls,d),W=720,H=170+l.length*54+30,cv=document.createElement('canvas');cv.width=W;cv.height=H;const g=cv.getContext('2d');
+ g.fillStyle='#fff';g.fillRect(0,0,W,H);g.fillStyle='#1e5fa8';g.fillRect(0,0,W,130);g.fillStyle='#4a90d9';g.fillRect(0,126,W,4);g.fillStyle='#fff';g.font='800 32px sans-serif';g.fillText((c&&c.name)||'Class',30,55);g.font='600 18px sans-serif';g.fillText(fmt(r.date),30,88);g.fillText(`Present ${ct(r.marks,'P')}   Absent ${ct(r.marks,'A')}   Late ${ct(r.marks,'L')}`,30,115);
+ const col={P:'#2DC76D',A:'#c0392b',L:'#F5A524'},nm={P:'Present',A:'Absent',L:'Late'};
+ l.forEach((s,i)=>{const y=145+i*54;if(i%2){g.fillStyle='#e6eef9';g.fillRect(0,y,W,54)}g.fillStyle='#0d2b4e';g.font='700 19px sans-serif';g.fillText(`${i+1}. ${s.name}`.slice(0,34),30,y+34);const m=r.marks[s.id];g.fillStyle=m?col[m]:'#c8dcf2';g.beginPath();g.roundRect(W-170,y+11,140,32,16);g.fill();g.fillStyle='#fff';g.font='800 15px sans-serif';g.textAlign='center';g.fillText(m?nm[m]:'Not marked',W-100,y+33);g.textAlign='left'});
+ EX={url:cv.toDataURL('image/png'),cv,name:`attendance-${((c&&c.name)||'class').replace(/\W+/g,'-')}-${r.date}.png`};
+ mod(`<h2>${esc((c&&c.name)||'')} · ${fmt(r.date)}</h2><img class="prev" src="${EX.url}"><div class="row" style="margin-top:1rem"><button class="btn" onclick="dl()">${ic('down',16)}Download image</button><button class="btn g" onclick="mc()">Close</button></div>`)}
 
-    step(3,'run');
-    var run=null;var t0=Date.now();
-    while(!run&&Date.now()-t0<90000){
-      await sleep(4000);
-      var r=await gh('/repos/'+R+'/actions/runs?head_sha='+cm.sha+'&per_page=5');
-      run=(r.workflow_runs||[])[0]||null;
-    }
-    if(!run)throw new Error('NORUN');
-    lastRunUrl=run.html_url;step(3,'ok');
-
-    step(4,'run');var t1=Date.now();
-    for(;;){
-      run=await gh('/repos/'+R+'/actions/runs/'+run.id);
-      step(4,'run',fmt(Date.now()-t1));
-      if(run.status==='completed')break;
-      if(Date.now()-t1>900000)throw new Error('TIMEOUT');
-      await sleep(5000);
-    }
-    if(run.conclusion!=='success'){
-      var fs2='';
-      try{var j=await gh('/repos/'+R+'/actions/runs/'+run.id+'/jobs');var st=((j.jobs||[])[0]||{}).steps||[];var bad=st.find(function(s){return s.conclusion==='failure'});fs2=bad?bad.name:''}catch(e){}
-      throw new Error('BUILDFAIL|'+fs2);
-    }
-    step(4,'ok',fmt(Date.now()-t1));
-
-    step(5,'run');
-    var rel=null;
-    for(var k=0;k<8&&!rel;k++){
-      try{rel=await gh('/repos/'+R+'/releases/tags/build-'+run.run_number)}catch(e){await sleep(2500)}
-    }
-    if(!rel||!rel.assets||!rel.assets.length)throw new Error('NOREL');
-    var url=rel.assets[0].browser_download_url;
-    step(5,'ok');
-
-    var name=$('#appName').value.trim()||'App';
-    var h=ls.get('apk_hist')||[];
-    h.unshift({name:name,ver:$('#verName').value.trim(),url:url,page:rel.html_url,date:new Date().toLocaleString('en-GB')});
-    ls.set('apk_hist',h.slice(0,10));
-    $('#verCode').value=(parseInt($('#verCode').value)||1)+1;save();
-    showResult(url,rel.html_url,name);renderHist();
-  }catch(e){
-    if(curStep>=0)step(curStep,'err');
-    var m=$('#buildMsg');m.className='msg bad';
-    m.innerHTML=friendly(e).replace(/</g,'&lt;')+(lastRunUrl&&/BUILDFAIL|TIMEOUT/.test(String(e.message))?' <a href="'+lastRunUrl+'" target="_blank">Open build log</a>':'');
-  }
-  busy=false;$('#buildBtn').disabled=false;$('#buildBtn').textContent='Build APK';
+/* ===== رفع صورة (يعمل على الاستوديو) ===== */
+function pickImg(i,cb,max,sq){
+  const f=i.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas'),g=c.getContext('2d');if(sq){const m=Math.min(im.width,im.height);c.width=c.height=max;g.drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,max,max)}else{const k=Math.min(1,max/im.width);c.width=im.width*k;c.height=im.height*k;g.drawImage(im,0,0,c.width,c.height)}cb(c.toDataURL('image/jpeg',.75))};im.onerror=()=>toast('Failed to load image');im.src=r.result};
+  r.onerror=()=>toast('Failed to read file');
+  r.readAsDataURL(f);
+  i.value='';
 }
 
-function showResult(url,page,name){
-  var r=$('#result');r.classList.remove('hidden');
-  r.innerHTML='<h3>'+name.replace(/</g,'&lt;')+'<br>is ready.</h3>'+
-  '<p>Install the APK on your phone. If Android asks, allow installing from this source.</p>'+
-  '<a class="btn dl" href="'+url+'" target="_blank" rel="noopener">Download APK</a>'+
-  '<div class="qrwrap"><div><div class="qrbox" id="qr"></div></div><div style="flex:1;min-width:200px"><div class="hint">Scan the code to download on another phone, or copy the direct link:</div><code>'+url+'</code></div></div>'+
-  '<div style="margin-top:16px;display:flex;gap:10px"><button type="button" class="btn ghost-l" style="flex:1" id="cpy">Copy link</button><a class="btn ghost-l" style="flex:1" href="'+page+'" target="_blank">Release page</a></div>';
-  try{if(typeof QRCode!=='undefined')new QRCode($('#qr'),{text:url,width:132,height:132,colorDark:'#5D0D18',colorLight:'#FFF9EB'});else $('#qr').parentNode.style.display='none'}catch(e){}
-  $('#cpy').onclick=function(){if(navigator.clipboard)navigator.clipboard.writeText(url).then(function(){toast('Link copied')})};
-  r.scrollIntoView({behavior:'smooth'});
+/* ===== خلفية التطبيق ===== */
+function setWallFile(i){
+  const f=i.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    const im=new Image();
+    im.onload=()=>{
+      const c=document.createElement('canvas'),g=c.getContext('2d');
+      const k=Math.min(1,1920/im.width);
+      c.width=im.width*k;c.height=im.height*k;
+      g.drawImage(im,0,0,c.width,c.height);
+      setv('wall',c.toDataURL('image/jpeg',.78),true);
+      toast('Background updated');
+    };
+    im.onerror=()=>toast('Failed to load image');
+    im.src=r.result;
+  };
+  r.onerror=()=>toast('Failed to read file');
+  r.readAsDataURL(f);
+  i.value='';
 }
-function renderHist(){
-  var h=ls.get('apk_hist')||[];
-  $('#histCard').classList.toggle('hidden',!h.length);
-  $('#hist').innerHTML=h.map(function(x){return '<div class="hist"><div>'+String(x.name).replace(/</g,'&lt;')+' <small>v'+String(x.ver).replace(/</g,'&lt;')+' &bull; '+x.date+'</small></div><a class="btn" href="'+x.url+'" target="_blank" rel="noopener">Download</a></div>'}).join('');
+function setWallLink(){
+  mod(`<h2>${T('Image link')}</h2><label class="l">URL</label><input id="wl" placeholder="https://..."><div class="row" style="margin-top:1rem"><button class="btn" onclick="applyWallLink()">${ic('check',16)}${T('Apply')}</button><button class="btn g" onclick="mc()">${T('Cancel')}</button></div>`);
 }
+function applyWallLink(){const u=$('wl').value.trim();if(!u)return;setv('wall',u,true);toast('Background updated')}
+function clearWall(){setv('wall',DEFAULT_WALL,true);toast('Background updated')}
+function fStu(){mod(`<h2>Add students</h2><p class="sub" style="margin:0">To: ${esc(clsOf(S.cid)?.name||'')}. One name per line.</p><label class="l">Names</label><textarea id="f1" rows="7" placeholder="Ali Hassan&#10;Mona Said"></textarea><div class="row" style="margin-top:1.125rem"><button class="btn" onclick="sStu()">${ic('save')}Add</button><button class="btn g" onclick="mc()">Cancel</button></div>`)}
+function sStu(){$('f1').value.split('\n').map(x=>x.trim()).filter(Boolean).forEach(n=>S.db.students.push({id:uid(),name:n,cls:S.cid}));save();mc()}
+function dl(){EX.cv.toBlob(async b=>{try{if(typeof claude!='undefined'){const d=await claude.use('downloads');if(d){await d.save({filename:EX.name,data:b});return}}}catch(e){if(e&&e.code=='declined')return}
+const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=EX.name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);toast('Saved')},'image/png')}
+{const u=JSON.parse(sg('ap_users')||'{}');if(S.user&&!u[S.user.email]){u[S.user.email]=S.user;ss('ap_users',JSON.stringify(u))}}
 
-async function exportZip(){
-  var pkg=$('#pkg').value.trim();
-  if(!/^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$/.test(pkg)){toast('Invalid package ID, e.g. com.mod.myapp');return}
-  try{
-    var files=await projectFiles();await scanSecrets(files);var z=new JSZip();
-    files.forEach(function(f){z.file(f.path,f.content)});
-    var blob=await z.generateAsync({type:'blob'});
-    var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=pkg.split('.').pop()+'-android-project.zip';a.click();
-    toast('Project ZIP exported');
-  }catch(e){toast(friendly(e))}
-}
+/* TIME */
+function nextLec(d){const n=new Date();let best=null;for(let o=0;o<8;o++){const dt=new Date(n.getFullYear(),n.getMonth(),n.getDate()+o);d.classes.forEach(c=>{if(!c.days.includes(dt.getDay()))return;const[h,m]=(c.time||'08:00').split(':');const t=new Date(dt);t.setHours(+h,+m,0,0);if(t>n&&(!best||t<best.t))best={c,t}})}return best}
+function tick(){const e=$('cdt');if(!e||!S.db)return;const n=nextLec(S.db);if(!n){e.textContent='--:--:--';$('cdn').textContent=T('No upcoming lecture');return}let s=Math.floor((n.t-new Date())/1e3);const d=Math.floor(s/86400);s%=86400;e.textContent=(d?d+'d ':'')+pad(Math.floor(s/3600))+':'+pad(Math.floor(s%3600/60))+':'+pad(s%60);$('cdn').textContent=n.c.name+' · '+n.t.toLocaleDateString(loc(),{weekday:'short',day:'numeric',month:'short'})+' · '+pad(n.t.getHours())+':'+pad(n.t.getMinutes())}
+setInterval(tick,1000);
+const ini=n=>`<span style="font-weight:800;font-size:1.125rem">${esc((n||'?')[0]).toUpperCase()}</span>`;
 
-function setLang(l){
-  $('#tAr').classList.toggle('on',l==='ar');$('#tEn').classList.toggle('on',l==='en');
-  $('#secAr').classList.toggle('on',l==='ar');$('#secEn').classList.toggle('on',l==='en');
-}
-function openGuide(sec,lang){
-  $('#menu').classList.remove('on');
-  setLang(lang||($('#tEn').classList.contains('on')?'en':'ar'));
-  $('#guide').classList.add('on');
-  document.body.style.overflow='hidden';
-  var l=$('#tEn').classList.contains('on')?'en':'ar';
-  setTimeout(function(){
-    var el=$('#'+l+'-'+sec);
-    if(el&&sec!=='top')el.scrollIntoView({behavior:'smooth',block:'start'});
-    else $('#guide').scrollTop=0;
-  },60);
-}
-function closeGuide(){$('#guide').classList.remove('on');document.body.style.overflow=''}
-$('#menuBtn').addEventListener('click',function(e){e.stopPropagation();$('#menu').classList.toggle('on')});
-document.addEventListener('click',function(e){if(!$('#menu').contains(e.target))$('#menu').classList.remove('on')});
-$$('.mi[data-g]').forEach(function(b){b.addEventListener('click',function(){openGuide(b.dataset.g==='use'?'use':b.dataset.g)})});
-$('#miSetup').addEventListener('click',function(){$('#menu').classList.remove('on');$('#setupBox').open=true;$('#setupBox').scrollIntoView({behavior:'smooth'})});
-$('#gClose').addEventListener('click',closeGuide);
-$('#guide').addEventListener('click',function(e){if(e.target===$('#guide'))closeGuide()});
-$('#tAr').addEventListener('click',function(){setLang('ar');$('#guide').scrollTop=0});
-$('#tEn').addEventListener('click',function(){setLang('en');$('#guide').scrollTop=0});
-$$('.jump a').forEach(function(a){a.addEventListener('click',function(){var el=$('#'+a.dataset.j);if(el)el.scrollIntoView({behavior:'smooth',block:'start'})})});
-$('#tokHelp').addEventListener('click',function(){openGuide('token')});
-$('#showTok').addEventListener('click',function(){var i=$('#ghToken');var show=i.type==='password';i.type=show?'text':'password';this.textContent=show?'Hide':'Show'});
-
-$('#saveCfg').addEventListener('click',saveConfig);
-$('#buildBtn').addEventListener('click',build);
-$('#zipBtn').addEventListener('click',exportZip);
-$('#resetBtn').addEventListener('click',function(){if(confirm('Reset all fields and code to defaults?')){ls.del('apk_form');location.reload()}});
-$('#iconFile').addEventListener('change',function(e){var f=e.target.files[0];if(!f)return;var im=new Image();im.onload=function(){iconImg=im;preview()};im.src=URL.createObjectURL(f);e.target.value=''});
-$('#files').addEventListener('change',function(e){addFiles(Array.prototype.slice.call(e.target.files));e.target.value=''});
-$$('.tab').forEach(function(t){t.addEventListener('click',function(){
-  $$('.tab').forEach(function(x){x.classList.toggle('on',x===t)});
-  ['html','css','js'].forEach(function(k){$('#ed-'+k).classList.toggle('hidden',k!==t.dataset.t)});
-})});
-['html','css','js'].forEach(function(k){
-  var el=$('#ed-'+k);el.addEventListener('input',preview);
-  el.addEventListener('keydown',function(e){if(e.key==='Tab'){e.preventDefault();el.setRangeText('  ',el.selectionStart,el.selectionEnd,'end');preview()}});
-});
-FIELDS.concat(CHECKS).forEach(function(k){$('#'+k).addEventListener('input',preview);$('#'+k).addEventListener('change',preview)});
-
-load();preview();
-</script>
-</body>
-</html>
+applySet();render();startSync();
+</script><script src="script.js"></script>
+</body></html>

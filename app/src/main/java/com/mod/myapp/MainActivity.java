@@ -29,8 +29,9 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setStatusBarColor(Color.parseColor("#5d0d18"));
-        getWindow().setNavigationBarColor(Color.parseColor("#5d0d18"));
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        getWindow().setStatusBarColor(Color.parseColor("#000000"));
+        getWindow().setNavigationBarColor(Color.parseColor("#000000"));
 
         web = new WebView(this);
         web.setBackgroundColor(Color.parseColor("#fff9eb"));
@@ -42,7 +43,8 @@ public class MainActivity extends Activity {
         s.setAllowFileAccess(true);
         s.setUseWideViewPort(true);
         s.setLoadWithOverviewMode(true);
-        s.setMediaPlaybackRequiresUserGesture(true);
+        s.setMediaPlaybackRequiresUserGesture(false);
+        s.setGeolocationEnabled(true);
 
         web.setWebChromeClient(new WebChromeClient() {
             @Override
@@ -88,6 +90,18 @@ public class MainActivity extends Activity {
                 return true;
             }
 
+            @Override
+            public void onPermissionRequest(final PermissionRequest request) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() { request.grant(request.getResources()); }
+                });
+            }
+
+            @Override
+            public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+                callback.invoke(origin, true, false);
+            }
         });
         web.setWebViewClient(new WebViewClient() {
             @Override
@@ -102,6 +116,9 @@ public class MainActivity extends Activity {
                 return true;
             }
         });
+        if (Build.VERSION.SDK_INT >= 23) {
+            requestPermissions(new String[]{"android.permission.RECORD_AUDIO", "android.permission.ACCESS_FINE_LOCATION", "android.permission.ACCESS_COARSE_LOCATION"}, 1);
+        }
         web.loadUrl("file:///android_asset/index.html");
     }
 
