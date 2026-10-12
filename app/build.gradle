@@ -2,13 +2,13 @@ plugins {
     id 'com.android.application'
 }
 android {
-    namespace 'com.mod.myapp'
+    namespace 'com.myapps.apcreatorr4ep1'
     compileSdk 34
     defaultConfig {
-        applicationId 'com.mod.myapp'
+        applicationId 'com.myapps.apcreatorr4ep1'
         minSdk 21
         targetSdk 34
-        versionCode 2
+        versionCode 1
         versionName '1.0'
     }
     buildTypes {
