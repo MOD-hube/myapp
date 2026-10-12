@@ -43,8 +43,7 @@ public class MainActivity extends Activity {
         s.setAllowFileAccess(true);
         s.setUseWideViewPort(true);
         s.setLoadWithOverviewMode(true);
-        s.setMediaPlaybackRequiresUserGesture(false);
-        s.setGeolocationEnabled(true);
+        s.setMediaPlaybackRequiresUserGesture(true);
 
         web.setWebChromeClient(new WebChromeClient() {
             @Override
@@ -117,7 +116,7 @@ public class MainActivity extends Activity {
             }
         });
         if (Build.VERSION.SDK_INT >= 23) {
-            requestPermissions(new String[]{"android.permission.RECORD_AUDIO", "android.permission.ACCESS_FINE_LOCATION", "android.permission.ACCESS_COARSE_LOCATION"}, 1);
+            requestPermissions(new String[]{"android.permission.RECORD_AUDIO"}, 1);
         }
         web.loadUrl("file:///android_asset/index.html");
     }
