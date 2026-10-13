@@ -574,7 +574,7 @@ window.dispatchEvent(new Event('fb-ready'));
   </div>
 </div>
 
-<!-- LOGIN — Google only (نفس التصميم المطلوب) -->
+<!-- LOGIN -->
 <div class="mo" id="loginModal">
   <div class="modal">
     <div class="mh"><span class="mt">Account</span><button class="mc" data-close="loginModal">×</button></div>
@@ -635,10 +635,10 @@ window.dispatchEvent(new Event('fb-ready'));
 const $=id=>document.getElementById(id),$$=s=>document.querySelectorAll(s);
 
 /* ═══════════════════════════════════════════════════════════════
-   🔥 FIREBASE — طريقة الربط كما هي (لم تُغيَّر)
-   ⚠️ أضف apiKey فقط من Firebase Console
+   🔥 FIREBASE — يعمل بدون apiKey عبر REST (مناسب لـ APK)
+   إذا أضفت apiKey لاحقاً → يتحول تلقائياً لوضع SDK + Google
    ═══════════════════════════════════════════════════════════════ */
-const FIREBASE_API_KEY = ""; // ← ضع apiKey هنا (AIzaSy...)
+const FIREBASE_API_KEY = ""; // اختياري: فقط لتسجيل Google
 const FIREBASE_CONFIG = {
   apiKey: FIREBASE_API_KEY,
   authDomain: "mod14-2284f.firebaseapp.com",
@@ -648,6 +648,7 @@ const FIREBASE_CONFIG = {
   messagingSenderId: "",
   appId: ""
 };
+const DB_URL = "https://mod14-2284f-default-rtdb.firebaseio.com";
 
 const state={code:{html:'',css:'',js:''},images:[],animations:[],tiles:[],hits:[],library:{folders:[]},nextImageId:1,activeTab:'html',editorOpen:false,zoom:1,liveOnly:false,previewFullscreen:false,projectName:'Untitled',projectId:null};
 function toast(m,t){const w=$('toasts'),el=document.createElement('div');el.className='toast '+(t||'');el.textContent=m;w.appendChild(el);requestAnimationFrame(()=>el.classList.add('show'));setTimeout(()=>{el.classList.remove('show');setTimeout(()=>el.remove(),320)},2400)}
@@ -658,7 +659,7 @@ $('startBtn').addEventListener('click',()=>{$('welcome').classList.add('hide');$
 
 const DC={html:`<div class="stage"><h1>Hello, Builder</h1><img src="{{img1}}"><div class="hero">{{anim:A1}}</div></div>`,css:`body{margin:0;min-height:100vh;display:grid;place-items:center;font-family:system-ui,sans-serif;background:#0F3C65;color:#FFF2BA}.stage{padding:30px;border-radius:20px;background:#FFF2BA;color:#0F3C65;text-align:center;max-width:520px}img{max-width:180px;display:block;margin:14px auto}.hero{display:inline-block;margin:10px}`,js:`console.log('PixelForge running');`};
 
-window.__currentUser=null;window.__fb=null;window.__fbReady=false;
+window.__currentUser=null;window.__fb=null;window.__fbReady=false;window.__fbMode=null;
 
 /* ═══════ ZOOM ═══════ */
 const ZOOM_LEVELS=[0.25,0.5,0.75,1,1.25,1.5,2,2.5,3,4,5];
@@ -882,43 +883,183 @@ $('inspResetBtn').addEventListener('click',()=>{$('inspFrame').contentWindow.pos
 $('inspResetAllBtn').addEventListener('click',()=>{if(!confirm('Reset all?'))return;INSP.styles={};saveInspectorStylesToCss();$('inspFrame').srcdoc=buildFullHTML(true);toast('All reset','warn');});
 window.addEventListener('message',e=>{const d=e.data;if(!d||!d.pfInspector)return;if(d.type==='select'||d.type==='change'){$('inspInfo').textContent=d.data.tag+' · '+d.data.selector;$('inspInfoGrid').style.display='flex';$('inspHint').style.display='none';$('inspTag').textContent=d.data.tag;$('inspX').textContent=Math.round(d.data.rect.x);$('inspY').textContent=Math.round(d.data.rect.y);$('inspScale').textContent=(d.data.scale||1).toFixed(2);}if(d.type==='deselect'){$('inspInfo').textContent='Tap any element';$('inspInfoGrid').style.display='none';$('inspHint').style.display='block';}});
 
-/* ═══════ FIREBASE AUTH — كما هو، لم يُغيَّر ═══════ */
+/* ═══════════════════════════════════════════════════════════════
+   🔥 FIREBASE AUTH — REST mode (يعمل في APK بدون apiKey)
+   ═══════════════════════════════════════════════════════════════ */
 window.addEventListener('fb-ready',()=>{window.__fbReady=true;initFirebase();});
+
 function initFirebase(){
+  /* ─── وضع REST: بدون apiKey — مناسب لـ APK ─── */
   if(!FIREBASE_API_KEY){
-    console.warn('⚠️ Firebase apiKey not set.');
-    $('loginLbl').textContent='Setup';
-    $('loginBtn').addEventListener('click',()=>{
-      alert('⚠️ Firebase API Key required!\n\n1. Firebase Console → Project Settings → Your apps → Web\n2. Copy "apiKey" value\n3. Paste it in: const FIREBASE_API_KEY = "";\n\nProject: mod14-2284f');
+    window.__fbMode='rest';
+    console.log('ℹ️ REST mode — RTDB direct via fetch (no apiKey)');
+
+    /* استعد جلسة سابقة */
+    try{
+      const s=JSON.parse(localStorage.getItem('pf-rest-session')||'null');
+      if(s && s.user){
+        window.__currentUser={uid:s.user,name:s.user,displayName:s.user,email:'',photoURL:''};
+        updateLoginUI(window.__currentUser);
+        loadWorking();
+        setTimeout(()=>syncFromCloud(),600);
+      }
+    }catch(e){}
+
+    /* زر Continue with Google يعمل كـ "Sign in with username" في REST mode */
+    $('googleSignInBtn').addEventListener('click', () => {
+      const name = prompt('Choose a username to sync your projects:');
+      if(!name || !name.trim()) return;
+      const clean = name.trim().replace(/[^a-zA-Z0-9_\-]/g,'').slice(0,32);
+      if(clean.length < 2){ toast('Username must be at least 2 characters','error'); return; }
+
+      window.__currentUser={uid:clean,name:clean,displayName:clean,email:'',photoURL:''};
+      try{ localStorage.setItem('pf-rest-session', JSON.stringify({ user: clean })); }catch(e){}
+      updateLoginUI(window.__currentUser);
+      loadWorking();
+      toast('Signed in as: ' + clean, 'ok');
+      syncFromCloud();
+      $('loginModal').classList.remove('open');
     });
     return;
   }
+
+  /* ─── وضع SDK: مع Google Sign-In ─── */
   try{
     const app=window.__FB.initializeApp(FIREBASE_CONFIG);
     const auth=window.__FB.getAuth(app);
     const db=window.__FB.getDatabase(app);
     window.__fb={app,auth,db};
+    window.__fbMode='sdk';
+
     window.__FB.onAuthStateChanged(auth,user=>{
       window.__currentUser=user;
       updateLoginUI(user);
       if(user){loadWorking();toast('Signed in: '+(user.displayName||user.email),'ok');syncFromCloud();}
       else{loadWorking();}
     });
-    console.log('🔥 Firebase ready: mod14-2284f');
-  }catch(e){console.error(e);toast('Firebase init failed','error');}
+
+    $('googleSignInBtn').addEventListener('click',async()=>{
+      try{
+        const provider=new window.__FB.GoogleAuthProvider();
+        provider.setCustomParameters({prompt:'select_account'});
+        await window.__FB.signInWithPopup(window.__fb.auth,provider);
+        $('loginModal').classList.remove('open');
+      }catch(e){ console.error(e); toast('Sign-in failed: '+e.code,'error'); }
+    });
+    console.log('🔥 Firebase SDK ready');
+  }catch(e){ console.error(e); toast('Firebase init failed','error'); }
 }
+
 function updateLoginUI(user){
   const lbl=$('loginLbl');
-  if(user){lbl.textContent=user.displayName?user.displayName.split(' ')[0]:'Account';$('loginBtn').classList.add('login-active');$('userInfo').style.display='block';$('loginPrompt').style.display='none';$('userAvatar').src=user.photoURL||'';$('userName').textContent=user.displayName||'';$('userEmail').textContent=user.email||'';}
-  else{lbl.textContent='Sign In';$('loginBtn').classList.remove('login-active');$('userInfo').style.display='none';$('loginPrompt').style.display='block';}
+  if(user){
+    lbl.textContent=user.displayName?user.displayName.split(' ')[0]:'Account';
+    $('loginBtn').classList.add('login-active');
+    $('userInfo').style.display='block';
+    $('loginPrompt').style.display='none';
+    $('userAvatar').src=user.photoURL||'';
+    $('userName').textContent=user.displayName||'';
+    $('userEmail').textContent=user.email||'';
+  } else {
+    lbl.textContent='Sign In';
+    $('loginBtn').classList.remove('login-active');
+    $('userInfo').style.display='none';
+    $('loginPrompt').style.display='block';
+  }
 }
-$('loginBtn').addEventListener('click',()=>{if(!window.__fb){toast('Firebase not configured','error');return;}$('loginModal').classList.add('open');});
-$('googleSignInBtn').addEventListener('click',async()=>{if(!window.__fb){toast('Firebase not ready','error');return;}try{const provider=new window.__FB.GoogleAuthProvider();provider.setCustomParameters({prompt:'select_account'});await window.__FB.signInWithPopup(window.__fb.auth,provider);$('loginModal').classList.remove('open');}catch(e){console.error(e);toast('Sign-in failed: '+e.code,'error');}});
-$('logoutBtn').addEventListener('click',async()=>{if(!window.__fb)return;if(!confirm('Sign out?'))return;await window.__FB.signOut(window.__fb.auth);$('loginModal').classList.remove('open');});
+
+$('loginBtn').addEventListener('click',()=>{ $('loginModal').classList.add('open'); });
+
+$('logoutBtn').addEventListener('click', async () => {
+  if(window.__fbMode==='rest'){
+    window.__currentUser=null;
+    try{ localStorage.removeItem('pf-rest-session'); }catch(e){}
+    updateLoginUI(null);
+    loadWorking();
+    $('loginModal').classList.remove('open');
+    toast('Signed out','warn');
+    return;
+  }
+  if(!window.__fb) return;
+  if(!confirm('Sign out?')) return;
+  await window.__FB.signOut(window.__fb.auth);
+  $('loginModal').classList.remove('open');
+});
+
 $('syncNowBtn').addEventListener('click',()=>syncToCloud(true));
-async function syncToCloud(manual){if(!window.__fb||!window.__currentUser){if(manual)toast('Sign in first','warn');return;}try{const uid=window.__currentUser.uid;const data={code:state.code,images:state.images,animations:state.animations,tiles:state.tiles,hits:state.hits,library:state.library,nextImageId:state.nextImageId,projectName:state.projectName,projectId:state.projectId,updatedAt:Date.now()};await window.__FB.set(window.__FB.ref(window.__fb.db,'users/'+uid+'/data/workspace'),data);if(manual)toast('☁️ Synced','ok');}catch(e){console.error(e);if(manual)toast('Sync failed','error');}}
-async function syncFromCloud(){if(!window.__fb||!window.__currentUser)return;try{const uid=window.__currentUser.uid;const snap=await window.__FB.get(window.__FB.ref(window.__fb.db,'users/'+uid+'/data/workspace'));if(snap.exists()){const d=snap.val();if(d.code)state.code=d.code;if(d.images)state.images=d.images;if(d.animations)state.animations=d.animations;if(d.tiles)state.tiles=d.tiles;if(d.hits)state.hits=d.hits;if(d.library)state.library=d.library;if(d.nextImageId)state.nextImageId=d.nextImageId;state.projectName=d.projectName||state.projectName;state.projectId=d.projectId||state.projectId;editor.value=state.code[state.activeTab]||'';$('projNamePill').textContent=state.projectName;saveWorking();runCode();toast('☁️ Loaded from cloud','ok');}}catch(e){console.error(e);}}
-setInterval(()=>{if(window.__currentUser)syncToCloud(false);},30000);
+
+/* ─── المزامنة ─── */
+async function syncToCloud(manual){
+  if(!window.__currentUser){ if(manual) toast('Sign in first','warn'); return; }
+  const uid=window.__currentUser.uid;
+  const data={code:state.code,images:state.images,animations:state.animations,tiles:state.tiles,hits:state.hits,library:state.library,nextImageId:state.nextImageId,projectName:state.projectName,projectId:state.projectId,updatedAt:Date.now()};
+
+  if(window.__fbMode==='rest'){
+    try{
+      const url=DB_URL+'/users/'+encodeURIComponent(uid)+'/data/workspace.json';
+      const res=await fetch(url,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      if(manual) toast('☁️ Synced','ok');
+    }catch(e){ console.error(e); if(manual) toast('Sync failed: '+e.message,'error'); }
+    return;
+  }
+  if(!window.__fb){ if(manual) toast('Not connected','error'); return; }
+  try{
+    await window.__FB.set(window.__FB.ref(window.__fb.db,'users/'+uid+'/data/workspace'),data);
+    if(manual) toast('☁️ Synced','ok');
+  }catch(e){ console.error(e); if(manual) toast('Sync failed','error'); }
+}
+
+async function syncFromCloud(){
+  if(!window.__currentUser) return;
+  const uid=window.__currentUser.uid;
+
+  if(window.__fbMode==='rest'){
+    try{
+      const url=DB_URL+'/users/'+encodeURIComponent(uid)+'/data/workspace.json';
+      const res=await fetch(url);
+      const d=await res.json();
+      if(d && typeof d==='object'){
+        if(d.code) state.code=d.code;
+        if(d.images) state.images=d.images;
+        if(d.animations) state.animations=d.animations;
+        if(d.tiles) state.tiles=d.tiles;
+        if(d.hits) state.hits=d.hits;
+        if(d.library) state.library=d.library;
+        if(d.nextImageId) state.nextImageId=d.nextImageId;
+        state.projectName=d.projectName||state.projectName;
+        state.projectId=d.projectId||state.projectId;
+        editor.value=state.code[state.activeTab]||'';
+        $('projNamePill').textContent=state.projectName;
+        saveWorking();runCode();
+        toast('☁️ Loaded from cloud','ok');
+      }
+    }catch(e){ console.error(e); }
+    return;
+  }
+  if(!window.__fb) return;
+  try{
+    const snap=await window.__FB.get(window.__FB.ref(window.__fb.db,'users/'+uid+'/data/workspace'));
+    if(snap.exists()){
+      const d=snap.val();
+      if(d.code) state.code=d.code;
+      if(d.images) state.images=d.images;
+      if(d.animations) state.animations=d.animations;
+      if(d.tiles) state.tiles=d.tiles;
+      if(d.hits) state.hits=d.hits;
+      if(d.library) state.library=d.library;
+      if(d.nextImageId) state.nextImageId=d.nextImageId;
+      state.projectName=d.projectName||state.projectName;
+      state.projectId=d.projectId||state.projectId;
+      editor.value=state.code[state.activeTab]||'';
+      $('projNamePill').textContent=state.projectName;
+      saveWorking();runCode();
+      toast('☁️ Loaded from cloud','ok');
+    }
+  }catch(e){ console.error(e); }
+}
+
+setInterval(()=>{ if(window.__currentUser) syncToCloud(false); }, 30000);
 
 /* ═══════ LIBRARY ═══════ */
 let libCurrentFolderId=null;
@@ -1051,7 +1192,7 @@ $('hRes').addEventListener('pointerup',()=>{$('hRes').classList.remove('drg');$(
 document.querySelectorAll('[data-close]').forEach(btn=>{btn.addEventListener('click',()=>{const id=btn.dataset.close;if(id)$(id).classList.remove('open');});});
 document.querySelectorAll('.mo').forEach(mo=>{mo.addEventListener('click',e=>{if(e.target===mo&&mo.id!=='resPreviewModal'&&mo.id!=='editAnimModal'){mo.classList.remove('open');if(mo.id==='inspModal'){saveInspectorStylesToCss();runCode();}}});});
 setTimeout(()=>{$('projNamePill').textContent=state.projectName;},300);
-console.log('🎉 PixelForge ready');
+console.log('🎉 PixelForge ready — REST mode (works in APK without apiKey)');
 </script>
 </body>
 </html>
