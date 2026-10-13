@@ -2,10 +2,10 @@ plugins {
     id 'com.android.application'
 }
 android {
-    namespace 'com.myapps.myappbq3hw'
+    namespace 'com.myapps.myapp623rr'
     compileSdk 34
     defaultConfig {
-        applicationId 'com.myapps.myappbq3hw'
+        applicationId 'com.myapps.myapp623rr'
         minSdk 21
         targetSdk 34
         versionCode 1
