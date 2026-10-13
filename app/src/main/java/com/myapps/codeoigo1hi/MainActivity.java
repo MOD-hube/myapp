@@ -1,4 +1,4 @@
-package com.myapps.codeoiwp9vp;
+package com.myapps.codeoigo1hi;
 
 import android.app.Activity;
 import android.content.Intent;
