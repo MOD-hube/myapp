@@ -345,7 +345,6 @@ body.live .ws{position:fixed;inset:54px 0 0 0;z-index:50}
   .insp-top .st{display:none}
 }
 </style>
-<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -1212,8 +1211,7 @@ function buildFullHTML(inspectorMode){
   const js=replaceAll(state.code.js||'');
   const rt=buildRuntime();
   const inspScript = inspectorMode ? ('<script>'+getInspectorScript()+'<\/script>') : '';
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${state.projectName||'PixelForge'}</title><style>${css}</style></head><body>${html}<script>(function(){try{${rt}\n${js}}catch(e){document.body.insertAdjacentHTML('beforeend','<pre style="color:#e74c3c;background:#fdd;padding:12px;border-radius:8px;font-size:12px;margin:10px;white-space:pre-wrap">'+e.message+'</pre>')}})();<\/script>${inspScript}<script src="script.js"></script>
-</body></html>`;
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${state.projectName||'PixelForge'}</title><style>${css}</style></head><body>${html}<script>(function(){try{${rt}\n${js}}catch(e){document.body.insertAdjacentHTML('beforeend','<pre style="color:#e74c3c;background:#fdd;padding:12px;border-radius:8px;font-size:12px;margin:10px;white-space:pre-wrap">'+e.message+'</pre>')}})();<\/script>${inspScript}</body></html>`;
 }
 function runCode(){$('pvFrame').srcdoc=buildFullHTML(false)}
 $('runBtn').addEventListener('click',runCode);
