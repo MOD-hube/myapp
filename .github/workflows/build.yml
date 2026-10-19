@@ -1,6 +1,11 @@
 name: Build APK
 on:
   push:
+    paths:
+      - 'app/**'
+      - 'build.gradle'
+      - 'settings.gradle'
+      - 'gradle.properties'
   workflow_dispatch:
 permissions:
   contents: write
