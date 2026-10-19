@@ -1,0 +1,43 @@
+{
+  "name": "my-app",
+  "productName": "My App",
+  "version": "1.0.0",
+  "description": "My App",
+  "main": "main.js",
+  "author": "MOD-hube",
+  "license": "UNLICENSED",
+  "private": true,
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.myapps.myapptdm1q",
+    "productName": "My App",
+    "copyright": "Copyright",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "config.json",
+      "icon.png",
+      "app/**/*"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "icon.png",
+      "artifactName": "${name}.exe"
+    },
+    "portable": {
+      "artifactName": "${name}.exe"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "My App",
+  "id": "com.myapps.myapptdm1q",
+  "bg": "#000000",
+  "orient": "unspecified",
+  "fullscreen": false,
+  "immersive": false,
+  "keepAwake": false,
+  "internet": true,
+  "autoplay": false,
+  "external": true,
+  "noZoom": false,
+  "noSelect": false,
+  "cam": false,
+  "mic": false,
+  "loc": false
+}
