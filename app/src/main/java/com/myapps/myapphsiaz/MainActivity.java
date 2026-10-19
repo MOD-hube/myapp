@@ -1,4 +1,4 @@
-package com.myapps.myapptdm1q;
+package com.myapps.myapphsiaz;
 
 import android.app.Activity;
 import android.content.Intent;
