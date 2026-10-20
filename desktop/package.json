@@ -1,8 +1,8 @@
 {
-  "name": "my-app",
-  "productName": "My App",
+  "name": "modcode",
+  "productName": "modcode",
   "version": "1.0.0",
-  "description": "My App",
+  "description": "modcode",
   "main": "main.js",
   "author": "MOD-hube",
   "license": "UNLICENSED",
@@ -12,8 +12,8 @@
     "electron-builder": "^24.13.3"
   },
   "build": {
-    "appId": "com.myapps.myappjm321",
-    "productName": "My App",
+    "appId": "com.myapps.modcodeavjhl",
+    "productName": "modcode",
     "copyright": "Copyright",
     "directories": {
       "output": "dist"
