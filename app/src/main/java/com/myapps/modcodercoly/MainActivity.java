@@ -1,4 +1,4 @@
-package com.myapps.myapphsiaz;
+package com.myapps.modcodercoly;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -29,11 +29,11 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setStatusBarColor(Color.parseColor("#000000"));
-        getWindow().setNavigationBarColor(Color.parseColor("#000000"));
+        getWindow().setStatusBarColor(Color.parseColor("#ffffff"));
+        getWindow().setNavigationBarColor(Color.parseColor("#ffffff"));
 
         web = new WebView(this);
-        web.setBackgroundColor(Color.parseColor("#000000"));
+        web.setBackgroundColor(Color.parseColor("#fff9eb"));
         setContentView(web);
 
         WebSettings s = web.getSettings();
