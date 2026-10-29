@@ -1516,8 +1516,7 @@ function buildFullHTML(inspectorMode,withConsole){
   const htmlStart=mark();
   out+=html+`<script>(function(){try{`+rt+'\n';
   const jsStart=mark();
-  out+=js+`\n}catch(e){window.__pfRep?window.__pfRep(e):console.error(e)}})();<\/script>`+inspScript+`<script src="script.js"></script>
-</body></html>`;
+  out+=js+`\n}catch(e){window.__pfRep?window.__pfRep(e):console.error(e)}})();<\/script>`+inspScript+`</body></html>`;
   if(withConsole){
     LASTMAP={css:cssStart,cssEnd:cssStart+css.split('\n').length-1,html:htmlStart,htmlEnd:htmlStart+html.split('\n').length-1,js:jsStart};
   }

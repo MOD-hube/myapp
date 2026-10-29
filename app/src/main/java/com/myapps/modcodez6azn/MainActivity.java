@@ -1,4 +1,4 @@
-package com.myapps.modcodez508a;
+package com.myapps.modcodez6azn;
 
 import android.app.Activity;
 import android.content.Intent;
